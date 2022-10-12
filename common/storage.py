@@ -19,7 +19,7 @@ class Reading:
 
 
 def to_file(*new_entries: Reading):
-    contents = set(new_entries) | from_file()
+    contents = from_file() | set(new_entries)
     with DATA_FILE.open("w", encoding="UTF-8", newline="") as stream:
         writer = csv.writer(stream)
         writer.writerow(["Timestamp", "Value"])

@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from time import sleep
 
 from rich.console import Group
@@ -23,6 +23,7 @@ ECOWITT = Ecowitt(
 
 
 def generate_table() -> Group:
+    pull_ecowitt_history()
     pull_ecowitt_data()
     return Group(
         generate_daily_table(),
@@ -38,7 +39,7 @@ def pull_ecowitt_data():
         timestamp, rainfall = ECOWITT.get_device_reading(device, Category.RAINFALL)
         to_file(Reading(timestamp=timestamp.date(), value=float(rainfall)))
 
-    SETTINGS.ecowitt.last_updated = datetime.now()
+    SETTINGS.ecowitt.last_updated = datetime.now() - timedelta(days=3)
     SETTINGS.save()
 
 
@@ -69,11 +70,6 @@ def main():
         while not ECOWITT.test_credentials():
             setup_ecowitt()
         CONSOLE.print("Ecowitt account setup", style="logging.level.debug")
-        with CONSOLE.status("Loading Ecowitt historical data..."):
-            pull_ecowitt_history()
-        CONSOLE.print(
-            "Loading Ecowitt historical data...[OK]", style="logging.level.debug"
-        )
         with Live(
             generate_table(), console=CONSOLE, screen=False, refresh_per_second=20
         ) as live:

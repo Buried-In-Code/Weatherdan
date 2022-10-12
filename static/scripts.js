@@ -13,7 +13,7 @@ function addUser(){
       "username": username
     }),
     success: function(){
-      window.location = "/weather-dan/" + username;
+      window.location = "/Weatherdan/" + username;
     },
     error: function(xhr){
       alert("Request Status: " + xhr.status + " Status Text: " + xhr.statusText + " " + xhr.responseText);
@@ -33,7 +33,7 @@ function selectUser(){
     },
     dataType: "json",
     success: function(){
-      window.location = "/weather-dan/" + username;
+      window.location = "/Weatherdan/" + username;
     },
     error: function(xhr){
       alert("Request Status: " + xhr.status + " Status Text: " + xhr.statusText + " " + xhr.responseText);
@@ -91,7 +91,7 @@ function loadInfo(username) {
 	});
 }
 
-function createGraph(name, labels, dataset, type = 'line') {
+function createGraph(name, labels, dataset, type = 'bar') {
 	let ctx = document.getElementById(name);
 	new Chart(ctx, {
 		type: type,
@@ -114,8 +114,8 @@ function createGraph(name, labels, dataset, type = 'line') {
 			scales: {
 			  x: {
 			    ticks: {
-//			      maxRotation: 90,
-//			      minRotation: 90
+			      maxRotation: 90,
+			      minRotation: 90
 			    },
 			    title: {
             display: true,

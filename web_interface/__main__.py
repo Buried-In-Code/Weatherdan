@@ -9,7 +9,7 @@ from common.console import CONSOLE
 from web_interface.routers.api import router as api_router
 from web_interface.routers.html import router as html_router
 
-LOGGER = logging.getLogger("Pydex")
+LOGGER = logging.getLogger("Weatherdan")
 
 
 def setup_logging(debug: bool = False):
@@ -34,7 +34,7 @@ setup_logging()
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(name="Weather-Dan", version=__version__)
+    app = FastAPI(name="Weatherdan", version=__version__)
     app.include_router(html_router)
     app.include_router(api_router)
     return app

@@ -67,7 +67,6 @@ def setup_ecowitt():
 def main():
     try:
         while not ECOWITT.test_credentials():
-            CONSOLE.print("Invalid credentials", style="logging.level.warning")
             setup_ecowitt()
         CONSOLE.print("Ecowitt account setup", style="logging.level.debug")
         with CONSOLE.status("Loading Ecowitt historical data..."):

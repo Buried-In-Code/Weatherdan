@@ -23,7 +23,7 @@ dependencies = [
 dynamic = []
 keywords = []
 license = "MIT"
-name = "weather-dan"
+name = "weatherdan"
 requires-python = ">= 3.10"
 version = "0.1.0b0"
 
@@ -43,10 +43,10 @@ manual = "common.manual:main"
 stats = "common.statistics:print_stats"
 
 [project.urls]
-Documentation = "https://github.com/Buried-In-Code/weather-dan#readme"
-Homepage = "https://pypi.org/project/weather-dan"
-Issues = "https://github.com/Buried-In-Code/weather-dan/issues"
-Source = "https://github.com/Buried-In-Code/weather-dan"
+Documentation = "https://github.com/Buried-In-Code/Weatherdan#readme"
+Homepage = "https://pypi.org/project/Weatherdan"
+Issues = "https://github.com/Buried-In-Code/Weatherdan/issues"
+Source = "https://github.com/Buried-In-Code/Weatherdan"
 
 [tool.bandit]
 recursive = true

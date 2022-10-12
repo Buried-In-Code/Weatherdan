@@ -1,4 +1,4 @@
-# Weather Dan
+# Weatherdan
 
 ![Python](https://img.shields.io/badge/Python-3.10-green?style=flat-square)
 ![Status](https://img.shields.io/badge/Status-Beta-yellowgreen?style=flat-square)
@@ -8,21 +8,34 @@
 [![isort](https://img.shields.io/badge/Imports-isort-informational?style=flat-square)](https://pycqa.github.io/isort/)
 [![Flake8](https://img.shields.io/badge/Flake8-Enabled-informational?style=flat-square)](https://github.com/PyCQA/flake8)
 
-[![Github - Version](https://img.shields.io/github/v/tag/Buried-In-Code/Weather-Dan?logo=Github&label=Version&style=flat-square)](https://github.com/Buried-In-Code/Weather-Dan/tags)
-[![Github - License](https://img.shields.io/github/license/Buried-In-Code/Weather-Dan?logo=Github&label=License&style=flat-square)](https://opensource.org/licenses/MIT)
-[![Github - Contributors](https://img.shields.io/github/contributors/Buried-In-Code/Weather-Dan?logo=Github&label=Contributors&style=flat-square)](https://github.com/Buried-In-Code/Weather-Dan/graphs/contributors)
+[![Github - Version](https://img.shields.io/github/v/tag/Buried-In-Code/Weatherdan?logo=Github&label=Version&style=flat-square)](https://github.com/Buried-In-Code/Weatherdan/tags)
+[![Github - License](https://img.shields.io/github/license/Buried-In-Code/Weatherdan?logo=Github&label=License&style=flat-square)](https://opensource.org/licenses/MIT)
+[![Github - Contributors](https://img.shields.io/github/contributors/Buried-In-Code/Weatherdan?logo=Github&label=Contributors&style=flat-square)](https://github.com/Buried-In-Code/Weatherdan/graphs/contributors)
 
-[![Github Action - Code Analysis](https://img.shields.io/github/workflow/status/Buried-In-Code/Weather-Dan/Code%20Analysis?logo=Github-Actions&label=Code-Analysis&style=flat-square)](https://github.com/Buried-In-Code/Weather-Dan/actions/workflows/code-analysis.yaml)
-[![Github Action - Release](https://img.shields.io/github/workflow/status/Buried-In-Code/Weather-Dan/Release?logo=Github-Actions&label=Release&style=flat-square)](https://github.com/Buried-In-Code/Weather-Dan/actions/workflows/release.yaml)
+[![Github Action - Code Analysis](https://img.shields.io/github/workflow/status/Buried-In-Code/Weatherdan/Code%20Analysis?logo=Github-Actions&label=Code-Analysis&style=flat-square)](https://github.com/Buried-In-Code/Weatherdan/actions/workflows/code-analysis.yaml)
+[![Github Action - Release](https://img.shields.io/github/workflow/status/Buried-In-Code/Weatherdan/Release?logo=Github-Actions&label=Release&style=flat-square)](https://github.com/Buried-In-Code/Weatherdan/actions/workflows/release.yaml)
 
 _TODO_
 
-## Execution
+## Installation
+
+### PyPI
 
 1. Make sure you have [Python](https://www.python.org/) installed: `python --version`
-2. Clone this repo: `git clone https://github.com/Buried-In-Code/Weather-Dan`
-3. Install the project and its dependencies: `pip install .`
-4. Run the program: `stats`
+2. Install the project from PyPI: `pip install weatherdan`
+
+### Github
+
+1. Make sure you have [Python](https://www.python.org/) installed: `python --version`
+2. Clone the repo: `git clone https://github.com/Buried-In-Code/Weatherdan`
+3. Install the project: `pip install .`
+
+## Execution
+
+- ecowitt
+- manual
+- stats
+- uvicorn web_interface.__main__:app --use-colors --no-server-header --reload
 
 ## Socials
 

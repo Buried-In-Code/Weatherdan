@@ -1,0 +1,53 @@
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling"]
+
+[project]
+authors = [
+    { name = "BuriedInCode" },
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3.10",
+]
+dependencies = [
+  "rich >= 12.6.0",
+  "tomli >= 2.0.1; python_version < \"3.11\"",
+  "tomli-w >= 1.0.0",
+  "ratelimit >= 2.2.1",
+  "requests >= 2.28.1",
+  "fastapi >= 0.85.0",
+  "jinja2 >= 3.1.2",
+  "uvicorn >= 0.18.3"
+]
+dynamic = []
+keywords = []
+license = "MIT"
+name = "weather-dan"
+requires-python = ">= 3.10"
+version = "0.1.0b0"
+
+[project.optional-dependencies]
+dev = [
+    "pre-commit >= 2.20.0",
+]
+test = [
+    "pytest >= 7.1.3",
+    "pytest-cov >= 3.0.0",
+    "tox >= 3.26.0",
+]
+
+[project.scripts]
+ecowitt = "ecowitt.__main__:main"
+manual = "common.manual:main"
+stats = "common.statistics:print_stats"
+
+[project.urls]
+Documentation = "https://github.com/Buried-In-Code/weather-dan#readme"
+Homepage = "https://pypi.org/project/weather-dan"
+Issues = "https://github.com/Buried-In-Code/weather-dan/issues"
+Source = "https://github.com/Buried-In-Code/weather-dan"
+
+[tool.bandit]
+recursive = true
+skips = ["B101"]

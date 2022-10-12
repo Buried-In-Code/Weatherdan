@@ -15,7 +15,7 @@ class Reading:
     value: float
 
     def __hash__(self):
-        return hash((self.timestamp, self.value))
+        return hash(self.timestamp)
 
 
 def to_file(*new_entries: Reading):

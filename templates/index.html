@@ -13,33 +13,33 @@
 </head>
 <body class="has-navbar-fixed-top">
 <nav class="navbar is-fixed-top is-dark">
-	<div class="navbar-brand">
-		<a class="navbar-item icon-text" href="/weather-dan">
-			<span class="icon is-large">
-				<ion-icon name="home-outline"></ion-icon>
-			</span>
-			<span>Home</span>
-		</a>
-	</div>
+  <div class="navbar-brand">
+    <a class="navbar-item icon-text" href="/Weatherdan">
+      <span class="icon is-large">
+        <ion-icon name="home-outline"></ion-icon>
+      </span>
+      <span>Home</span>
+    </a>
+  </div>
 </nav>
 <section class="section">
-	<div class="container is-fluid">
-		<h1 class="title has-text-centered">Weatherdan</h1>
-		<div class="columns is-multiline is-centered">
-			<div class="column is-narrow">
-				<div class="box has-text-light has-background-dark">
-					<label class="label">
-						<span>Username</span>
-						<input class="input" id="usernameEntry" placeholder="Username" type="text">
-					</label>
-					<div class="buttons is-centered">
-						<button class="button" onclick="addUser()">New User</button>
-						<button class="button" onclick="selectUser()">Returning User</button>
-					</div>
-				</div>
-			</div>
+  <div class="container is-fluid">
+    <h1 class="title has-text-centered">Weatherdan</h1>
+    <div class="columns is-multiline is-centered">
+	  <div class="column is-narrow">
+	    <div class="box has-text-light has-background-dark">
+		  <label class="label">
+		    <span>Username</span>
+			<input class="input" id="usernameEntry" placeholder="Username" type="text">
+		  </label>
+		  <div class="buttons is-centered">
+		    <button class="button" onclick="addUser()">New User</button>
+			<button class="button" onclick="selectUser()">Returning User</button>
+		  </div>
 		</div>
+	  </div>
 	</div>
+  </div>
 </section>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 <script src="{{ url_for('static', path='/scripts.js') }}" type="text/javascript"></script>

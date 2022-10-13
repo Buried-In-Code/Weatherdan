@@ -13,19 +13,19 @@
 </head>
 <body class="has-navbar-fixed-top">
 <nav class="navbar is-fixed-top is-dark">
-	<div class="navbar-brand">
-		<a class="navbar-item icon-text" href="/weather-dan">
+  <div class="navbar-brand">
+    <a class="navbar-item icon-text" href="/Weatherdan">
       <span class="icon is-large">
         <ion-icon name="home-outline"></ion-icon>
       </span>
-			<span>Home</span>
-		</a>
-	</div>
+	  <span>Home</span>
+	</a>
+  </div>
 </nav>
 <section class="section">
-	<div class="container is-fluid">
-		<h1 class="title has-text-centered">Welcome {{ user.username }}</h1>
-		<div class="columns is-multiline is-centered">
+  <div class="container is-fluid">
+    <h1 class="title has-text-centered">Welcome {{ user.username }}</h1>
+	<div class="columns is-multiline is-centered">
       <div class="column is-narrow">
         <div class="card has-text-light has-background-dark">
           <div class="card-content">
@@ -90,16 +90,16 @@
           </div>
         </div>
       </div>
-		</div>
-	</div>
+    </div>
+  </div>
 </section>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js" type="text/javascript"></script>
 <script src="{{ url_for('static', path='/scripts.js') }}" type="text/javascript"></script>
 <script type="text/javascript">
-  $(document).ready(function() {
-    loadInfo("{{ user.username }}")
-  });
+$(document).ready(function() {
+  loadInfo("{{ user.username }}")
+});
 </script>
 </body>
 </html>

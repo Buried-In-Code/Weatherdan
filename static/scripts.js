@@ -54,33 +54,33 @@ function loadInfo(username) {
 		success: function (data) {
 		  createGraph("daily-stats", Object.keys(data.daily), [{
 		    label: "Daily",
-		    fill: true,
-		    backgroundColor: "rgba(0,0,192,0.5)",
-		    borderColor: "rgba(0,0,192,1)",
+            fill: true,
+            backgroundColor: "rgba(65,105,225,0.1)",
+            borderColor: "rgba(65,105,225,1)",
 		    data: Object.values(data.daily),
 		    steppedLine: false
 		  }])
 		  createGraph("weekly-stats", Object.keys(data.weekly), [{
 		    label: "Weekly",
-		    fill: true,
-		    backgroundColor: "rgba(0,0,192,0.5)",
-		    borderColor: "rgba(0,0,192,1)",
+            fill: true,
+            backgroundColor: "rgba(65,105,225,0.1)",
+            borderColor: "rgba(65,105,225,1)",
 		    data: Object.values(data.weekly),
 		    steppedLine: false
 		  }])
 		  createGraph("monthly-stats", Object.keys(data.monthly), [{
 		    label: "Monthly",
-		    fill: true,
-		    backgroundColor: "rgba(0,0,192,0.5)",
-		    borderColor: "rgba(0,0,192,1)",
+            fill: true,
+            backgroundColor: "rgba(65,105,225,0.1)",
+            borderColor: "rgba(65,105,225,1)",
 		    data: Object.values(data.monthly),
 		    steppedLine: false
 		  }])
 		  createGraph("yearly-stats", Object.keys(data.yearly), [{
 		    label: "Yearly",
-		    fill: true,
-		    backgroundColor: "rgba(0,0,192,0.5)",
-		    borderColor: "rgba(0,0,192,1)",
+            fill: true,
+            backgroundColor: "rgba(65,105,225,0.1)",
+            borderColor: "rgba(65,105,225,1)",
 		    data: Object.values(data.yearly),
 		    steppedLine: false
 		  }])
@@ -91,7 +91,7 @@ function loadInfo(username) {
 	});
 }
 
-function createGraph(name, labels, dataset, type = 'bar') {
+function createGraph(name, labels, dataset, type = 'line') {
 	let ctx = document.getElementById(name);
 	new Chart(ctx, {
 		type: type,

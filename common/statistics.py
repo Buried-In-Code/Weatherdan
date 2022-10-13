@@ -55,7 +55,7 @@ def load_weekly_stats() -> dict[str, str]:
             weekly[key] = 0.0
         weekly[key] += entry.value
     return {
-        f"{date_to_str(k[0])} - {date_to_str(k[1])}": f"{v:,.2f}"
+        f"{k[0].strftime('%d')} - {date_to_str(k[1])}": f"{v:,.2f}"
         for k, v in weekly.items()
     }
 

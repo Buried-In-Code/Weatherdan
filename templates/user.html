@@ -25,68 +25,51 @@
 <section class="section">
   <div class="container is-fluid">
     <h1 class="title has-text-centered">Welcome {{ user.username }}</h1>
+    <div class="columns is-multiline is-centered">
+      <div class="column is-narrow">
+        <div class="box has-text-light has-background-dark">
+          <label class="label">
+            <span>Date</span>
+            <input class="input" id="dateEntry" placeholder="DD-MM-YYYY" type="text">
+          </label>
+          <label class="label">
+            <span>Rainfall (mm)</span>
+            <input class="input" id="rainfallEntry" placeholder="0.2" type="number">
+          </label>
+          <button class="button" onclick="addRainfall('{{ user.username }}')">Add Rainfall</button>
+        </div>
+      </div>
+    </div>
 	<div class="columns is-multiline is-centered">
       <div class="column is-narrow">
-        <div class="card has-text-light has-background-dark">
-          <div class="card-content">
-            <div class="media">
-              <div class="media-content">
-                <p class="title is-4">Daily Stats</p>
-              </div>
-            </div>
-            <div class="content">
-              <div class="chart-container">
-                <canvas id="daily-stats" height="375" width="750"></canvas>
-              </div>
-            </div>
+        <div class="box has-text-light has-background-dark">
+          <p class="title is-4">Daily Stats</p>
+          <div class="chart-container">
+            <canvas id="daily-stats" height="375" width="750"></canvas>
           </div>
         </div>
       </div>
       <div class="column is-narrow">
-        <div class="card has-text-light has-background-dark">
-          <div class="card-content">
-            <div class="media">
-              <div class="media-content">
-                <p class="title is-4">Weekly Stats</p>
-              </div>
-            </div>
-            <div class="content">
-              <div class="chart-container">
-                <canvas id="weekly-stats" height="375" width="750"></canvas>
-              </div>
-            </div>
+        <div class="box has-text-light has-background-dark">
+          <p class="title is-4">Weekly Stats</p>
+          <div class="chart-container">
+            <canvas id="weekly-stats" height="375" width="750"></canvas>
           </div>
         </div>
       </div>
       <div class="column is-narrow">
-        <div class="card has-text-light has-background-dark">
-          <div class="card-content">
-            <div class="media">
-              <div class="media-content">
-                <p class="title is-4">Monthly Stats</p>
-              </div>
-            </div>
-            <div class="content">
-              <div class="chart-container">
-                <canvas id="monthly-stats" height="375" width="750"></canvas>
-              </div>
-            </div>
+        <div class="box has-text-light has-background-dark">
+          <p class="title is-4">Monthly Stats</p>
+          <div class="chart-container">
+            <canvas id="monthly-stats" height="375" width="750"></canvas>
           </div>
         </div>
       </div>
       <div class="column is-narrow">
-        <div class="card has-text-light has-background-dark">
-          <div class="card-content">
-            <div class="media">
-              <div class="media-content">
-                <p class="title is-4">Yearly Stats</p>
-              </div>
-            </div>
-            <div class="content">
-              <div class="chart-container">
-                <canvas id="yearly-stats" height="375" width="750"></canvas>
-              </div>
-            </div>
+        <div class="box has-text-light has-background-dark">
+          <p class="title is-4">Yearly Stats</p>
+          <div class="chart-container">
+            <canvas id="yearly-stats" height="375" width="750"></canvas>
           </div>
         </div>
       </div>

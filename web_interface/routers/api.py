@@ -1,5 +1,7 @@
 __all__ = ["router"]
 
+from datetime import date
+
 from fastapi import APIRouter, Body
 
 from common import __version__
@@ -9,6 +11,7 @@ from common.statistics import (
     load_weekly_stats,
     load_yearly_stats,
 )
+from common.storage import Reading, to_file
 from web_interface.models.stats import Stats
 from web_interface.models.user import User
 from web_interface.responses import ErrorResponse
@@ -42,10 +45,21 @@ def get_user(username: str) -> User:
     response_model=Stats,
     responses={404: {"model": ErrorResponse}},
 )
-def get_user_stats(username: str) -> Stats:
+def get_stats(username: str) -> Stats:
     return Stats(
         daily=dict(reversed(list(load_daily_stats().items()))),
         weekly=dict(reversed(list(load_weekly_stats().items()))),
         monthly=dict(reversed(list(load_monthly_stats().items()))),
         yearly=dict(reversed(list(load_yearly_stats().items()))),
     )
+
+
+@router.post(
+    path="/{username}/stats",
+    status_code=204,
+    responses={404: {"model": ErrorResponse}},
+)
+def add_stats(
+    username: str, timestamp: date = Body(embed=True), value: float = Body(embed=True)
+):
+    to_file(Reading(timestamp=timestamp, value=value))

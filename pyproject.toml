@@ -8,7 +8,14 @@ authors = [
 ]
 classifiers = [
   "Development Status :: 4 - Beta",
+  "Intended Audience :: End Users/Desktop",
+  "License :: OSI Approved :: MIT License",
+  "Natural Language :: English",
+  "Operating System :: MacOS",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX :: Linux",
   "Programming Language :: Python :: 3.10",
+  "Typing :: Typed"
 ]
 dependencies = [
   "rich >= 12.6.0",
@@ -20,10 +27,12 @@ dependencies = [
   "jinja2 >= 3.1.2",
   "uvicorn >= 0.18.3"
 ]
+description = ""
 dynamic = []
 keywords = []
 license = "MIT"
 name = "weatherdan"
+readme = "README.md"
 requires-python = ">= 3.10"
 version = "0.1.0b0"
 

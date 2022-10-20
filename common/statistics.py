@@ -31,14 +31,14 @@ def print_stats():
 
 def load_daily_stats() -> dict[str, str]:
     daily = sorted(from_file(), key=lambda x: x.timestamp, reverse=True)
-    return {date_to_str(x.timestamp): f"{x.value:,.2f}" for x in daily}
+    return {date_to_str(x.timestamp): x.value for x in daily}
 
 
-def generate_daily_table(max_rows: int = 12) -> Table | None:
+def generate_daily_table(max_rows: int = 13) -> Table | None:
     return generate_table(
         title="Daily Stats",
         columns=get_table_headers(),
-        rows=[[k, v] for k, v in load_daily_stats().items()][:max_rows],
+        rows=[[k, f"{v:,.2f}"] for k, v in load_daily_stats().items()][:max_rows],
     )
 
 
@@ -54,17 +54,14 @@ def load_weekly_stats() -> dict[str, str]:
         if key not in weekly:
             weekly[key] = 0.0
         weekly[key] += entry.value
-    return {
-        f"{k[0].strftime('%d')} - {date_to_str(k[1])}": f"{v:,.2f}"
-        for k, v in weekly.items()
-    }
+    return {f"{k[0].strftime('%d')} - {date_to_str(k[1])}": v for k, v in weekly.items()}
 
 
-def generate_weekly_table(max_rows: int = 12) -> Table | None:
+def generate_weekly_table(max_rows: int = 13) -> Table | None:
     return generate_table(
         title="Weekly Stats",
         columns=get_table_headers(),
-        rows=[[k, v] for k, v in load_weekly_stats().items()][:max_rows],
+        rows=[[k, f"{v:,.2f}"] for k, v in load_weekly_stats().items()][:max_rows],
     )
 
 
@@ -75,14 +72,14 @@ def load_monthly_stats() -> dict[str, str]:
         if key not in monthly:
             monthly[key] = 0.0
         monthly[key] += entry.value
-    return {k.strftime("%b-%Y"): f"{v:,.2f}" for k, v in monthly.items()}
+    return {k.strftime("%b-%Y"): v for k, v in monthly.items()}
 
 
-def generate_monthly_table(max_rows: int = 12) -> Table | None:
+def generate_monthly_table(max_rows: int = 13) -> Table | None:
     return generate_table(
         title="Monthly Stats",
         columns=get_table_headers(),
-        rows=[[k, v] for k, v in load_monthly_stats().items()][:max_rows],
+        rows=[[k, f"{v:,.2f}"] for k, v in load_monthly_stats().items()][:max_rows],
     )
 
 
@@ -93,14 +90,14 @@ def load_yearly_stats() -> dict[str, str]:
         if key not in yearly:
             yearly[key] = 0.0
         yearly[key] += entry.value
-    return {k.strftime("%Y"): f"{v:,.2f}" for k, v in yearly.items()}
+    return {k.strftime("%Y"): v for k, v in yearly.items()}
 
 
-def generate_yearly_table(max_rows: int = 12) -> Table | None:
+def generate_yearly_table(max_rows: int = 13) -> Table | None:
     return generate_table(
         title="Yearly Stats",
         columns=get_table_headers(),
-        rows=[[k, v] for k, v in load_yearly_stats().items()][:max_rows],
+        rows=[[k, f"{v:,.2f}"] for k, v in load_yearly_stats().items()][:max_rows],
     )
 
 

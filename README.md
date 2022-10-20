@@ -33,7 +33,7 @@ _TODO_
 ## Execution
 
 - `ecowitt`
-- `manual`
+- `importer`
 - `stats`
 - `uvicorn web_interface.__main__:app --use-colors --no-server-header --reload`
 

@@ -57,9 +57,7 @@ def setup_ecowitt():
     ECOWITT.application_key = Prompt.ask(
         "Ecowitt Application Key", default=ECOWITT.application_key, console=CONSOLE
     )
-    ECOWITT.api_key = Prompt.ask(
-        "Ecowitt API Key", default=ECOWITT.api_key, console=CONSOLE
-    )
+    ECOWITT.api_key = Prompt.ask("Ecowitt API Key", default=ECOWITT.api_key, console=CONSOLE)
     SETTINGS.ecowitt.application_key = ECOWITT.application_key
     SETTINGS.ecowitt.api_key = ECOWITT.api_key
     SETTINGS.save()
@@ -70,9 +68,7 @@ def main():
         while not ECOWITT.test_credentials():
             setup_ecowitt()
         CONSOLE.print("Ecowitt account setup", style="logging.level.debug")
-        with Live(
-            generate_table(), console=CONSOLE, screen=False, refresh_per_second=20
-        ) as live:
+        with Live(generate_table(), console=CONSOLE, screen=False, refresh_per_second=20) as live:
             while True:
                 sleep(1 * 60 * 60)
                 live.update(generate_table())

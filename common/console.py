@@ -115,9 +115,7 @@ def create_menu(
         CONSOLE.print(f"[prompt]{index + 1}:[/] [prompt.choices]{item}[/]")
     if default:
         CONSOLE.print(f"[prompt]0:[/] [prompt.default]{default}[/]")
-    selected = IntPrompt.ask(
-        prompt=prompt, default=0 if default else None, console=CONSOLE
-    )
+    selected = IntPrompt.ask(prompt=prompt, default=0 if default else None, console=CONSOLE)
     if selected < 0 or selected > len(options) or (selected == 0 and not default):
         CONSOLE.print(f"Invalid Option: `{selected}`", style="prompt.invalid")
         return create_menu(options=options, prompt=prompt, default=default)

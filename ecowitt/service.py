@@ -45,9 +45,7 @@ class Ecowitt:
 
     @sleep_and_retry
     @limits(calls=20, period=MINUTE)
-    def _get_request(
-        self, endpoint: str, params: dict[str, str] = None
-    ) -> dict[str, Any]:
+    def _get_request(self, endpoint: str, params: dict[str, str] = None) -> dict[str, Any]:
         if params is None:
             params = {}
         params["application_key"] = self.application_key
@@ -56,9 +54,7 @@ class Ecowitt:
         url = self.API_URL + endpoint
 
         try:
-            response = get(
-                url, params=params, headers=self.headers, timeout=self.timeout
-            )
+            response = get(url, params=params, headers=self.headers, timeout=self.timeout)
             response.raise_for_status()
             response_data = response.json()
             if response_data["code"] != 0:
@@ -116,9 +112,7 @@ class Ecowitt:
                 "temp_unitid": 1,
             },
         )["data"]
-        timestamp = datetime.fromtimestamp(
-            int(results[category.group_1][category.group_2]["time"])
-        )
+        timestamp = datetime.fromtimestamp(int(results[category.group_1][category.group_2]["time"]))
         return timestamp, results[category.group_1][category.group_2]["value"]
 
     def _retrieve_all_responses(

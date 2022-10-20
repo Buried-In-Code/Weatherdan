@@ -33,9 +33,7 @@ def create_user(username: str = Body(embed=True)) -> User:
     return User(username=username)
 
 
-@router.get(
-    path="/{username}", response_model=User, responses={404: {"model": ErrorResponse}}
-)
+@router.get(path="/{username}", response_model=User, responses={404: {"model": ErrorResponse}})
 def get_user(username: str) -> User:
     return User(username=username)
 
@@ -47,10 +45,10 @@ def get_user(username: str) -> User:
 )
 def get_stats(username: str) -> Stats:
     return Stats(
-        daily=dict(reversed(list(load_daily_stats().items()))),
-        weekly=dict(reversed(list(load_weekly_stats().items()))),
-        monthly=dict(reversed(list(load_monthly_stats().items()))),
-        yearly=dict(reversed(list(load_yearly_stats().items()))),
+        daily=dict(reversed(list(load_daily_stats().items())[:28])),
+        weekly=dict(reversed(list(load_weekly_stats().items())[:28])),
+        monthly=dict(reversed(list(load_monthly_stats().items())[:28])),
+        yearly=dict(reversed(list(load_yearly_stats().items())[:28])),
     )
 
 
@@ -59,7 +57,5 @@ def get_stats(username: str) -> Stats:
     status_code=204,
     responses={404: {"model": ErrorResponse}},
 )
-def add_stats(
-    username: str, timestamp: date = Body(embed=True), value: float = Body(embed=True)
-):
+def add_stats(username: str, timestamp: date = Body(embed=True), value: float = Body(embed=True)):
     to_file(Reading(timestamp=timestamp, value=value))

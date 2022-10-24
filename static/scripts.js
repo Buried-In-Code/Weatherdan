@@ -1,78 +1,102 @@
-function addUser(){
-  const username = document.getElementById("usernameEntry").value;
+function loadYearlyStats(maximum = 1000){
   $.ajax({
     async: false,
-    url: "/api/v0/users",
-    type: "POST",
-    contentType: "application/json",
-    dataType: "json",
-    data: JSON.stringify({
-      "username": username
-    }),
-    success: function(){
-      window.location = "/Weatherdan/" + username;
-    },
-    error: function(xhr){
-      alert("Request Status: " + xhr.status + "\nStatus Text: " + xhr.statusText + "\n" + xhr.responseText);
-    }
-  });
-}
-
-function selectUser(){
-  const username = document.getElementById("usernameEntry").value;
-  $.ajax({
-    async: false,
-    url: "/api/v0/" + username,
+    url: "/api/v0/yearly-stats?maximum=" + maximum,
     type: "GET",
     dataType: "json",
-    success: function(){
-      window.location = "/Weatherdan/" + username;
-    },
-    error: function(xhr){
-      alert("Request Status: " + xhr.status + "\nStatus Text: " + xhr.statusText + "\n" + xhr.responseText);
-    }
-  });
-}
-
-function loadInfo(username) {
-  $.ajax({
-    async: false,
-    url: "/api/v0/" + username + "/stats",
-    type: 'GET',
-    dataType: 'json',
     success: function (data) {
-      createGraph("daily-stats", Object.keys(data.daily), [{
-        label: "Daily",
-        fill: true,
-        backgroundColor: "rgba(65,105,225,0.1)",
-        borderColor: "rgba(65,105,225,1)",
-        data: Object.values(data.daily),
-        steppedLine: false
-      }])
-      createGraph("weekly-stats", Object.keys(data.weekly), [{
-        label: "Weekly",
-        fill: true,
-        backgroundColor: "rgba(65,105,225,0.1)",
-        borderColor: "rgba(65,105,225,1)",
-        data: Object.values(data.weekly),
-        steppedLine: false
-      }])
-      createGraph("monthly-stats", Object.keys(data.monthly), [{
-        label: "Monthly",
-        fill: true,
-        backgroundColor: "rgba(65,105,225,0.1)",
-        borderColor: "rgba(65,105,225,1)",
-        data: Object.values(data.monthly),
-        steppedLine: false
-      }])
-      createGraph("yearly-stats", Object.keys(data.yearly), [{
+      createGraph("yearly-stats", Object.keys(data), [{
         label: "Yearly",
         fill: true,
         backgroundColor: "rgba(65,105,225,0.1)",
         borderColor: "rgba(65,105,225,1)",
-        data: Object.values(data.yearly),
+        data: Object.values(data),
         steppedLine: false
-      }])
+      }]);
+    },
+    error: function(xhr){
+      alert("Request Status: " + xhr.status + "\nStatus Text: " + xhr.statusText + "\n" + xhr.responseText);
+    }
+  });
+}
+
+function loadMonthlyStats(maximum = 1000){
+  let params = new URLSearchParams(window.location.search);
+  let year = params.get("year");
+  if (year == "" || year == null)
+    year = 0
+  $.ajax({
+    async: false,
+    url: "/api/v0/monthly-stats?year=" + year + "&maximum=" + maximum,
+    type: "GET",
+    dataType: "json",
+    success: function(data){
+      createGraph("monthly-stats", Object.keys(data), [{
+        label: "Monthly",
+        fill: true,
+        backgroundColor: "rgba(65,105,225,0.1)",
+        borderColor: "rgba(65,105,225,1)",
+        data: Object.values(data),
+        steppedLine: false
+      }]);
+    },
+    error: function(xhr){
+      alert("Request Status: " + xhr.status + "\nStatus Text: " + xhr.statusText + "\n" + xhr.responseText);
+    }
+  });
+}
+
+function loadWeeklyStats(maximum = 1000){
+  let params = new URLSearchParams(window.location.search);
+  let year = params.get("year");
+  if (year == "" || year == null)
+    year = 0;
+  let month = params.get("month");
+  if (month == "" || month == null)
+    month = 0;
+  $.ajax({
+    async: false,
+    url: "/api/v0/weekly-stats?year=" + year + "&month=" + month + "&maximum=" + maximum,
+    type: "GET",
+    dataType: "json",
+    success: function(data){
+      createGraph("weekly-stats", Object.keys(data), [{
+        label: "Weekly",
+        fill: true,
+        backgroundColor: "rgba(65,105,225,0.1)",
+        borderColor: "rgba(65,105,225,1)",
+        data: Object.values(data),
+        steppedLine: false
+      }]);
+    },
+    error: function(xhr){
+      alert("Request Status: " + xhr.status + "\nStatus Text: " + xhr.statusText + "\n" + xhr.responseText);
+    }
+  });
+}
+
+function loadDailyStats(maximum = 1000){
+  let params = new URLSearchParams(window.location.search);
+  let year = params.get("year");
+  if (year == "" || year == null)
+    year = 0;
+  let month = params.get("month");
+  if (month == "" || month == null)
+    month = 0;
+  $.ajax({
+    async: false,
+    url: "/api/v0/daily-stats?year=" + year + "&month=" + month + "&maximum=" + maximum,
+    type: "GET",
+    dataType: "json",
+    success: function(data){
+      createGraph("daily-stats", Object.keys(data), [{
+        label: "Daily",
+        fill: true,
+        backgroundColor: "rgba(65,105,225,0.1)",
+        borderColor: "rgba(65,105,225,1)",
+        data: Object.values(data),
+        steppedLine: false
+      }]);
     },
     error: function(xhr){
       alert("Request Status: " + xhr.status + "\nStatus Text: " + xhr.statusText + "\n" + xhr.responseText);
@@ -122,28 +146,18 @@ function createGraph(name, labels, dataset, type = 'line') {
   });
 }
 
-function addRainfall(username){
-  const dateStr = document.getElementById("dateEntry").value;
-  let dayField = dateStr.split("-")[0];
-  let monthField = dateStr.split("-")[1];
-  let yearField = dateStr.split("-")[2];
-//  let timestamp = new Date(yearField, monthField, dayField);
-  const valueStr = document.getElementById("rainfallEntry").value;
-  $.ajax({
-    async: false,
-    url: "/api/v0/" + username + "/stats",
-    type: "POST",
-    contentType: "application/json",
-    dataType: "json",
-    data: JSON.stringify({
-      "timestamp": yearField + "-" + monthField + "-" + dayField,
-      "value": valueStr
-    }),
-    success: function(){
-      window.location.reload();
-    },
-    error: function(xhr){
-      alert("Request Status: " + xhr.status + "\nStatus Text: " + xhr.statusText + "\n" + xhr.responseText);
-    }
-  });
+function setYear(year, caller){
+  if (year == 0)
+    window.location = "/Weatherdan/filtered";
+  else
+    window.location = "/Weatherdan/filtered?year=" + year;
+}
+
+function setMonth(month){
+  let params = new URLSearchParams(window.location.search);
+  let year = params.get("year");
+  if (month == 0)
+    window.location = "/Weatherdan/filtered?year=" + year;
+  else
+    window.location = "/Weatherdan/filtered?year=" + year + "&month=" + month;
 }

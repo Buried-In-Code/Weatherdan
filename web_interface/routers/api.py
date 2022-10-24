@@ -23,7 +23,7 @@ router = APIRouter(
     response_model=dict[str, float],
     responses={409: {"model": ErrorResponse}},
 )
-def get_yearly_stats(maximum: int = 1000) -> dict[str, str]:
+def get_yearly_stats(maximum: int = 1000) -> dict[str, float]:
     return dict(reversed(list(generate_yearly_stats().items())[:maximum]))
 
 
@@ -32,7 +32,7 @@ def get_yearly_stats(maximum: int = 1000) -> dict[str, str]:
     response_model=dict[str, float],
     responses={409: {"model": ErrorResponse}},
 )
-def get_monthly_stats(maximum: int = 1000, year: int = 0) -> dict[str, str]:
+def get_monthly_stats(maximum: int = 1000, year: int = 0) -> dict[str, float]:
     return dict(reversed(list(generate_monthly_stats(year=year).items())[:maximum]))
 
 
@@ -41,12 +41,12 @@ def get_monthly_stats(maximum: int = 1000, year: int = 0) -> dict[str, str]:
     response_model=dict[str, float],
     responses={409: {"model": ErrorResponse}},
 )
-def get_weekly_stats(maximum: int = 1000, year: int = 0, month: int = 0) -> dict[str, str]:
+def get_weekly_stats(maximum: int = 1000, year: int = 0, month: int = 0) -> dict[str, float]:
     return dict(reversed(list(generate_weekly_stats(year=year, month=month).items())[:maximum]))
 
 
 @router.get(
     path="/daily-stats", response_model=dict[str, float], responses={409: {"model": ErrorResponse}}
 )
-def get_daily_stats(maximum: int = 1000, year: int = 0, month: int = 0) -> dict[str, str]:
+def get_daily_stats(maximum: int = 1000, year: int = 0, month: int = 0) -> dict[str, float]:
     return dict(reversed(list(generate_daily_stats(year=year, month=month).items())[:maximum]))

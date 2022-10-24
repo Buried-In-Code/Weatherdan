@@ -4,7 +4,7 @@ from http import HTTPStatus
 
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from rich.logging import RichHandler
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -47,6 +47,11 @@ def create_app() -> FastAPI:
 
 app = create_app()
 app.mount("/static", StaticFiles(directory=get_project_root() / "static"), name="static")
+
+
+@app.get("/")
+def redirect():
+    return RedirectResponse(url="/Weatherdan")
 
 
 @app.exception_handler(StarletteHTTPException)

@@ -4,14 +4,10 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Any, ClassVar
 
-from common import get_config_root
-
-try:
-    import tomlreader  # Python >= 3.11
-except ModuleNotFoundError:
-    import tomli as tomlreader  # Python < 3.11
-
 import tomli_w as tomlwriter
+import tomllib as tomlreader
+
+from common import get_config_root
 
 
 @dataclass

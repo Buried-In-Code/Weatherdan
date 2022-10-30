@@ -41,6 +41,7 @@ def main():
             )
     to_file(*entries)
     print_stats()
+    import_file.unlink(missing_ok=True)
 
 
 if __name__ == "__main__":

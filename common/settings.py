@@ -1,76 +1,43 @@
 __all__ = ["Settings"]
 
-from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import Any, ClassVar
+from typing import ClassVar
 
 import tomli_w as tomlwriter
 import tomllib as tomlreader
+from pydantic import BaseModel as PyModel
+from pydantic import Extra, validator
 
 from common import get_config_root
 
 
-@dataclass
-class Display:
+class BaseModel(PyModel):
+    class Config:
+        anystr_strip_whitespace = True
+        allow_population_by_field_name = True
+        extra = Extra.ignore
+
+
+class Display(BaseModel):
     show_rainfall: bool = True
     show_temperature: bool = False
 
-    @staticmethod
-    def parse(content: dict[str, bool]) -> "Display":
-        return Display(
-            show_rainfall=content["show_rainfall"],
-            show_temperature=content["show_temperature"],
-        )
 
-    def unparse(self) -> dict[str, bool]:
-        return {
-            "show_rainfall": self.show_rainfall,
-            "show_temperature": self.show_temperature,
-        }
-
-
-@dataclass
-class Ecowitt:
+class Ecowitt(BaseModel):
     application_key: str = ""
     api_key: str = ""
     last_updated: datetime = datetime.now() - timedelta(days=365)
 
-    def __post_init__(self):
+    @validator("last_updated", always=True)
+    def validate_last_updated(cls, v) -> datetime:
         year_ago = datetime.now() - timedelta(days=365)
-        if self.last_updated < year_ago:
-            self.last_updated = year_ago
-
-    @staticmethod
-    def parse(content: dict[str, str]) -> "Ecowitt":
-        return Ecowitt(
-            application_key=content["application_key"],
-            api_key=content["api_key"],
-            last_updated=datetime.fromisoformat(content["last_updated"]),
-        )
-
-    def unparse(self) -> dict[str, str]:
-        return {
-            "application_key": self.application_key,
-            "api_key": self.api_key,
-            "last_updated": self.last_updated.isoformat(),
-        }
+        return year_ago if v < year_ago else v
 
 
-@dataclass
-class Settings:
+class Settings(BaseModel):
     FILENAME: ClassVar = get_config_root() / "settings.toml"
     display: Display = Display()
     ecowitt: Ecowitt = Ecowitt()
-
-    @staticmethod
-    def parse(content: dict[str, Any]) -> "Settings":
-        return Settings(
-            display=Display.parse(content["display"]),
-            ecowitt=Ecowitt.parse(content["ecowitt"]),
-        )
-
-    def unparse(self) -> dict[str, Any]:
-        return {"display": self.display.unparse(), "ecowitt": self.ecowitt.unparse()}
 
     @classmethod
     def load(cls) -> "Settings":
@@ -78,9 +45,9 @@ class Settings:
             Settings().save()
         with cls.FILENAME.open("rb") as stream:
             content = tomlreader.load(stream)
-        return Settings.parse(content)
+        return Settings(**content)
 
     def save(self):
         with self.FILENAME.open("wb") as stream:
-            content = self.unparse()
+            content = self.dict(by_alias=False)
             tomlwriter.dump(content, stream)

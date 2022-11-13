@@ -148,16 +148,16 @@ function createGraph(name, labels, dataset, type = 'line') {
 
 function setYear(year, caller){
   if (year == 0)
-    window.location = "/Weatherdan/filtered";
+    window.location = "/weatherdan/filtered";
   else
-    window.location = "/Weatherdan/filtered?year=" + year;
+    window.location = "/weatherdan/filtered?year=" + year;
 }
 
 function setMonth(month){
   let params = new URLSearchParams(window.location.search);
   let year = params.get("year");
   if (month == 0)
-    window.location = "/Weatherdan/filtered?year=" + year;
+    window.location = "/weatherdan/filtered?year=" + year;
   else
-    window.location = "/Weatherdan/filtered?year=" + year + "&month=" + month;
+    window.location = "/weatherdan/filtered?year=" + year + "&month=" + month;
 }

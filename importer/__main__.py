@@ -6,11 +6,10 @@ from pathlib import Path
 
 from pathvalidate.argparse import sanitize_filepath_arg
 
-from common import __version__, setup_logging
-from common.statistics import print_stats
 from common.storage import Reading, to_file
+from importer import __version__, setup_logging
 
-LOGGER = logging.getLogger("Weatherdan.importer")
+LOGGER = logging.getLogger("importer")
 
 
 def parse_arguments() -> Namespace:
@@ -40,7 +39,7 @@ def main():
                 )
             )
     to_file(*entries)
-    print_stats()
+    LOGGER.info(f"{import_file.name} imported")
     import_file.unlink(missing_ok=True)
 
 

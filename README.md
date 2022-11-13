@@ -35,6 +35,7 @@ _TODO_
 - `importer`
 - `stats`
 - `uvicorn web_interface.__main__:app --use-colors --no-server-header --reload`
+- `python run.py`
 
 ## Socials
 

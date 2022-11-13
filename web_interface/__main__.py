@@ -6,36 +6,13 @@ from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
-from rich.logging import RichHandler
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from common import __version__, get_project_root
-from common.console import CONSOLE
-from web_interface.routers.api import router as api_router
-from web_interface.routers.html import router as html_router
+from web_interface import __version__, get_project_root
+from web_interface.routing.api import router as api_router
+from web_interface.routing.html import router as html_router
 
-LOGGER = logging.getLogger("Weatherdan")
-
-
-def setup_logging(debug: bool = False):
-    logging.getLogger("uvicorn").handlers.clear()
-    logging.basicConfig(
-        format="%(message)s",
-        datefmt="[%Y-%m-%d %H:%M:%S]",
-        level=logging.DEBUG if debug else logging.INFO,
-        handlers=[
-            RichHandler(
-                rich_tracebacks=True,
-                tracebacks_show_locals=True,
-                log_time_format="[%Y-%m-%d %H:%M:%S]",
-                omit_repeated_times=False,
-                console=CONSOLE,
-            )
-        ],
-    )
-
-
-setup_logging()
+LOGGER = logging.getLogger("weatherdan")
 
 
 def create_app() -> FastAPI:
@@ -51,14 +28,14 @@ app.mount("/static", StaticFiles(directory=get_project_root() / "static"), name=
 
 @app.get("/")
 def redirect():
-    return RedirectResponse(url="/Weatherdan")
+    return RedirectResponse(url="/weatherdan")
 
 
 @app.exception_handler(StarletteHTTPException)
 async def http_exception_handler(request, exc):
     status = HTTPStatus(exc.status_code)
     return JSONResponse(
-        status_code=status.value,
+        status_code=status,
         content={
             "timestamp": datetime.now().replace(microsecond=0).isoformat(),
             "status": f"{status.value}: {status.phrase}",
@@ -76,7 +53,7 @@ async def validation_exception_handler(request, exc):
         temp = ".".join(error["loc"])
         details.append(f"{temp}: {error['msg']}")
     return JSONResponse(
-        status_code=status.value,
+        status_code=status,
         content={
             "timestamp": datetime.now().replace(microsecond=0).isoformat(),
             "status": f"{status.value}: {status.phrase}",

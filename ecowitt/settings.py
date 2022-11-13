@@ -8,7 +8,7 @@ import tomllib as tomlreader
 from pydantic import BaseModel as PyModel
 from pydantic import Extra, validator
 
-from common import get_config_root
+from ecowitt import get_config_root
 
 
 class BaseModel(PyModel):
@@ -16,11 +16,6 @@ class BaseModel(PyModel):
         anystr_strip_whitespace = True
         allow_population_by_field_name = True
         extra = Extra.ignore
-
-
-class Display(BaseModel):
-    show_rainfall: bool = True
-    show_temperature: bool = False
 
 
 class Ecowitt(BaseModel):
@@ -36,7 +31,6 @@ class Ecowitt(BaseModel):
 
 class Settings(BaseModel):
     FILENAME: ClassVar = get_config_root() / "settings.toml"
-    display: Display = Display()
     ecowitt: Ecowitt = Ecowitt()
 
     @classmethod

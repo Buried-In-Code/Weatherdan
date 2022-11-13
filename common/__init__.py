@@ -2,6 +2,7 @@ __all__ = ["__version__", "get_project_root", "get_cache_root", "get_config_root
 
 import logging
 from importlib.metadata import version
+from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
 from rich.logging import RichHandler
@@ -28,17 +29,23 @@ def get_config_root() -> Path:
 
 
 def setup_logging(debug: bool = False):
+    log_folder = get_project_root() / "logs"
     logging.basicConfig(
-        format="%(message)s",
-        datefmt="[%Y-%m-%d %H:%M:%S]",
+        format="[%(asctime)s] [%(levelname)-8s] {%(name)s} | %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
         level=logging.DEBUG if debug else logging.INFO,
         handlers=[
             RichHandler(
                 rich_tracebacks=True,
                 tracebacks_show_locals=True,
-                log_time_format="[%Y-%m-%d %H:%M:%S]",
                 omit_repeated_times=False,
+                show_level=False,
+                show_path=False,
+                show_time=False,
                 console=CONSOLE,
-            )
+            ),
+            RotatingFileHandler(
+                filename=log_folder / "Weatherdan.log", maxBytes=100000000, backupCount=3
+            ),
         ],
     )

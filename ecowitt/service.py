@@ -1,5 +1,6 @@
 __all__ = ["Ecowitt", "Category"]
 
+import logging
 import platform
 from datetime import datetime
 from enum import Enum
@@ -9,11 +10,11 @@ from ratelimit import limits, sleep_and_retry
 from requests import get
 from requests.exceptions import ConnectionError, HTTPError, JSONDecodeError, ReadTimeout
 
-from common import __version__
-from common.console import CONSOLE
+from ecowitt import __version__
 from ecowitt.exceptions import ServiceError
 
 MINUTE = 60
+LOGGER = logging.getLogger(__name__)
 
 
 class Category(Enum):
@@ -74,7 +75,7 @@ class Ecowitt:
             self.list_devices()
             return True
         except ServiceError as err:
-            CONSOLE.print(err, style="logging.level.warning")
+            LOGGER.warning(err)
             return False
 
     def list_devices(self) -> list[str]:

@@ -7,9 +7,6 @@ __all__ = [
 
 from datetime import date, timedelta
 
-from rich.table import Column, Table
-
-from common.console import CONSOLE, date_to_str, generate_table
 from common.storage import from_file
 
 
@@ -51,55 +48,3 @@ def load_yearly_stats() -> dict[date, float]:
             yearly[key] = 0.0
         yearly[key] += entry.value
     return yearly
-
-
-def get_table_headers():
-    return ["Date", Column("Rain (mm)", justify="right")]
-
-
-def generate_daily_table(max_rows: int = 13) -> Table | None:
-    return generate_table(
-        title="Daily Stats",
-        columns=get_table_headers(),
-        rows=[[date_to_str(k), f"{v:,.2f}"] for k, v in load_daily_stats().items()][:max_rows],
-    )
-
-
-def generate_weekly_table(max_rows: int = 13) -> Table | None:
-    return generate_table(
-        title="Weekly Stats",
-        columns=get_table_headers(),
-        rows=[
-            [f"{k[0].strftime('%d')} - {date_to_str(k[1])}", f"{v:,.2f}"]
-            for k, v in load_weekly_stats().items()
-        ][:max_rows],
-    )
-
-
-def generate_monthly_table(max_rows: int = 13) -> Table | None:
-    return generate_table(
-        title="Monthly Stats",
-        columns=get_table_headers(),
-        rows=[[k.strftime("%b-%Y"), f"{v:,.2f}"] for k, v in load_monthly_stats().items()][
-            :max_rows
-        ],
-    )
-
-
-def generate_yearly_table(max_rows: int = 13) -> Table | None:
-    return generate_table(
-        title="Yearly Stats",
-        columns=get_table_headers(),
-        rows=[[k.strftime("%Y"), f"{v:,.2f}"] for k, v in load_yearly_stats().items()][:max_rows],
-    )
-
-
-def print_stats():
-    CONSOLE.print(generate_daily_table())
-    CONSOLE.print(generate_weekly_table())
-    CONSOLE.print(generate_monthly_table())
-    CONSOLE.print(generate_yearly_table())
-
-
-if __name__ == "__main__":
-    print_stats()

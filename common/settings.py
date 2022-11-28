@@ -18,9 +18,16 @@ class SettingsModel(BaseModel):
         extra = Extra.ignore
 
 
+class WebSettings(SettingsModel):
+    host: str = "localhost"
+    port: int = 8001
+
+
 class EmailSettings(SettingsModel):
-    from_address: str = ""
-    to_addresses: list[str] = Field(default_factory=list)
+    sender_email: str = ""
+    sender_password: str = ""
+    reciever_emails: list[str] = Field(default_factory=list)
+    enable: bool = False
 
 
 class EcowittSettings(SettingsModel):
@@ -38,6 +45,7 @@ class Settings(SettingsModel):
     FILENAME: ClassVar = get_config_root() / "settings.toml"
     ecowitt: EcowittSettings = EcowittSettings()
     email: EmailSettings = EmailSettings()
+    web: WebSettings = WebSettings()
 
     @classmethod
     def load(cls) -> "Settings":

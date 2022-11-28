@@ -3,6 +3,7 @@ __all__ = ["Reading", "to_file", "from_file"]
 import csv
 from dataclasses import dataclass, field
 from datetime import date
+from decimal import Decimal
 
 from common import get_project_root
 
@@ -12,8 +13,8 @@ DATA_FILE = get_project_root() / "data.csv"
 @dataclass
 class Reading:
     timestamp: date
+    value: Decimal = field(compare=False, hash=False)
     device: str = "GW1100"
-    value: float = field(default=0.0, compare=False, hash=False)
 
     def __post_init__(self):
         if not self.device:
@@ -55,7 +56,7 @@ def from_file() -> set[Reading]:
                 Reading(
                     device=entry["Device"] if "Device" in entry else None,
                     timestamp=date.fromisoformat(entry["Timestamp"]),
-                    value=float(entry["Value"]),
+                    value=Decimal(entry["Value"]),
                 )
             )
     return output

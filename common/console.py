@@ -1,4 +1,6 @@
-__all__ = ["CONSOLE"]
+__all__ = ["CONSOLE", "date_to_str"]
+
+from datetime import date
 
 from rich.console import Console
 from rich.theme import Theme
@@ -17,3 +19,7 @@ CONSOLE = Console(
         }
     )
 )
+
+
+def date_to_str(value: date) -> str:
+    return value.strftime("%d/%b/%Y")

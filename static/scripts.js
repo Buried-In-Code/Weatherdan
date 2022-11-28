@@ -1,3 +1,5 @@
+const unique = (arr) => [...new Set(arr)];
+
 function loadYearlyStats(maximum = 1000){
   $.ajax({
     async: false,
@@ -5,14 +7,31 @@ function loadYearlyStats(maximum = 1000){
     type: "GET",
     dataType: "json",
     success: function (data) {
-      createGraph("yearly-stats", Object.keys(data), [{
-        label: "Yearly",
-        fill: true,
-        backgroundColor: "rgba(65,105,225,0.1)",
-        borderColor: "rgba(65,105,225,1)",
-        data: Object.values(data),
-        steppedLine: false
-      }]);
+      let graphLabels = [];
+      data.forEach(function(device){
+        device.stats.forEach(function(stat){
+          graphLabels.push(stat.timestamp);
+        });
+      });
+      graphLabels = unique(graphLabels);
+      let graphData = [];
+      data.forEach(function(device){
+        let entryData = [];
+        device.stats.forEach(function(stat){
+          entryData.push(stat.value);
+        });
+
+        let entry = {
+          label: device.name,
+          fill: true,
+          backgroundColor: "rgba(65,105,225,0.1)",
+          borderColor: "rgba(65,105,225,1)",
+          data: entryData,
+          steppedLine: false
+        };
+        graphData.push(entry);
+      });
+      createGraph("yearly-stats", graphLabels, graphData);
     },
     error: function(xhr){
       alert("Request Status: " + xhr.status + "\nStatus Text: " + xhr.statusText + "\n" + xhr.responseText);
@@ -31,14 +50,31 @@ function loadMonthlyStats(maximum = 1000){
     type: "GET",
     dataType: "json",
     success: function(data){
-      createGraph("monthly-stats", Object.keys(data), [{
-        label: "Monthly",
-        fill: true,
-        backgroundColor: "rgba(65,105,225,0.1)",
-        borderColor: "rgba(65,105,225,1)",
-        data: Object.values(data),
-        steppedLine: false
-      }]);
+      let graphLabels = [];
+      data.forEach(function(device){
+        device.stats.forEach(function(stat){
+          graphLabels.push(stat.timestamp);
+        });
+      });
+      graphLabels = unique(graphLabels);
+      let graphData = [];
+      data.forEach(function(device){
+        let entryData = [];
+        device.stats.forEach(function(stat){
+          entryData.push(stat.value);
+        });
+
+        let entry = {
+          label: device.name,
+          fill: true,
+          backgroundColor: "rgba(65,105,225,0.1)",
+          borderColor: "rgba(65,105,225,1)",
+          data: entryData,
+          steppedLine: false
+        };
+        graphData.push(entry);
+      });
+      createGraph("monthly-stats", graphLabels, graphData);
     },
     error: function(xhr){
       alert("Request Status: " + xhr.status + "\nStatus Text: " + xhr.statusText + "\n" + xhr.responseText);
@@ -60,14 +96,31 @@ function loadWeeklyStats(maximum = 1000){
     type: "GET",
     dataType: "json",
     success: function(data){
-      createGraph("weekly-stats", Object.keys(data), [{
-        label: "Weekly",
-        fill: true,
-        backgroundColor: "rgba(65,105,225,0.1)",
-        borderColor: "rgba(65,105,225,1)",
-        data: Object.values(data),
-        steppedLine: false
-      }]);
+      let graphLabels = [];
+      data.forEach(function(device){
+        device.stats.forEach(function(stat){
+          graphLabels.push(stat.timestamp);
+        });
+      });
+      graphLabels = unique(graphLabels);
+      let graphData = [];
+      data.forEach(function(device){
+        let entryData = [];
+        device.stats.forEach(function(stat){
+          entryData.push(stat.value);
+        });
+
+        let entry = {
+          label: device.name,
+          fill: true,
+          backgroundColor: "rgba(65,105,225,0.1)",
+          borderColor: "rgba(65,105,225,1)",
+          data: entryData,
+          steppedLine: false
+        };
+        graphData.push(entry);
+      });
+      createGraph("weekly-stats", graphLabels, graphData);
     },
     error: function(xhr){
       alert("Request Status: " + xhr.status + "\nStatus Text: " + xhr.statusText + "\n" + xhr.responseText);
@@ -89,14 +142,31 @@ function loadDailyStats(maximum = 1000){
     type: "GET",
     dataType: "json",
     success: function(data){
-      createGraph("daily-stats", Object.keys(data), [{
-        label: "Daily",
-        fill: true,
-        backgroundColor: "rgba(65,105,225,0.1)",
-        borderColor: "rgba(65,105,225,1)",
-        data: Object.values(data),
-        steppedLine: false
-      }]);
+      let graphLabels = [];
+      data.forEach(function(device){
+        device.stats.forEach(function(stat){
+          graphLabels.push(stat.timestamp);
+        });
+      });
+      graphLabels = unique(graphLabels);
+      let graphData = [];
+      data.forEach(function(device){
+        let entryData = [];
+        device.stats.forEach(function(stat){
+          entryData.push(stat.value);
+        });
+
+        let entry = {
+          label: device.name,
+          fill: true,
+          backgroundColor: "rgba(65,105,225,0.1)",
+          borderColor: "rgba(65,105,225,1)",
+          data: entryData,
+          steppedLine: false
+        };
+        graphData.push(entry);
+      });
+      createGraph("daily-stats", graphLabels, graphData);
     },
     error: function(xhr){
       alert("Request Status: " + xhr.status + "\nStatus Text: " + xhr.statusText + "\n" + xhr.responseText);
@@ -119,7 +189,7 @@ function createGraph(name, labels, dataset, type = 'line') {
             fontColor: '#D0D0D0',
             fontSize: 14
           },
-          display: false
+          display: true
         }
       },
       responsive: true,

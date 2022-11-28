@@ -1,7 +1,11 @@
 import logging
+import smtplib
+import ssl
 import time
 from argparse import ArgumentParser, Namespace
 from datetime import datetime, timedelta
+from decimal import Decimal
+from email.message import EmailMessage
 
 from rich import box
 from rich.panel import Panel
@@ -16,15 +20,26 @@ from readings import __version__, setup_logging
 LOGGER = logging.getLogger("readings")
 
 
-def send_email(settings: EmailSettings):
+def send_email(settings: EmailSettings, device: str, email_content: str = ""):
+    if not settings.enable:
+        return
     LOGGER.info("Sending email")
-    pass
+
+    message = EmailMessage()
+    message["From"] = settings.sender_email
+    message["To"] = settings.reciever_emails
+    message["Subject"] = f"Ecowitt {device} Status"
+    message.set_content(email_content)
+    with smtplib.SMTP("smtp.gmail.com", 587) as server:
+        server.starttls(context=ssl.create_default_context())
+        server.login(user=settings.sender_email, password=settings.sender_password)
+        server.send_message(msg=message)
 
 
 def retrieve_live_readings(ecowitt: Ecowitt, device: tuple[str, str]):
     LOGGER.info(f"Pulling live readings for device '{device[1]}'")
     timestamp, rainfall = ecowitt.get_device_reading(mac=device[0], category=Category.RAINFALL)
-    to_file(Reading(device=device[1], timestamp=timestamp.date(), value=float(rainfall)))
+    to_file(Reading(device=device[1], timestamp=timestamp.date(), value=Decimal(rainfall)))
 
 
 def retrieve_historical_readings(ecowitt: Ecowitt, device: tuple[str, str], last_updated: datetime):
@@ -33,7 +48,7 @@ def retrieve_historical_readings(ecowitt: Ecowitt, device: tuple[str, str], last
         mac=device[0], last_updated=last_updated, category=Category.RAINFALL
     ):
         for timestamp, rainfall in history.items():
-            to_file(Reading(device=device[1], timestamp=timestamp.date(), value=float(rainfall)))
+            to_file(Reading(device=device[1], timestamp=timestamp.date(), value=Decimal(rainfall)))
 
 
 def retrieve_readings(ecowitt: Ecowitt, device: tuple[str, str], last_updated: datetime) -> bool:
@@ -81,11 +96,20 @@ def main():
             ):
                 if active_devices[device[0]]:
                     LOGGER.warning(f"{device[1]} connection lost")
-                    send_email(settings.email)
+                    send_email(
+                        settings=settings.email,
+                        device=device[1],
+                        email_content=f"Connection to {device[1]} has been lost.",
+                    )
                     active_devices[device[0]] = False
             else:
                 if not active_devices[device[0]]:
                     LOGGER.info(f"{device[1]} connection restored")
+                    send_email(
+                        settings=settings.email,
+                        device=device[1],
+                        email_content=f"Connection to {device[1]} has been restored.",
+                    )
                     active_devices[device[0]] = True
         all_devices_live = True
         for _, value in active_devices.items():

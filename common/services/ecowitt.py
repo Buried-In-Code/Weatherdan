@@ -10,8 +10,9 @@ from ratelimit import limits, sleep_and_retry
 from requests import get
 from requests.exceptions import ConnectionError, HTTPError, JSONDecodeError, ReadTimeout
 
-from ecowitt import __version__
-from ecowitt.exceptions import ServiceError
+from common import __version__
+from common.services.exceptions import AuthenticationError, ServiceError
+from common.settings import EcowittSettings
 
 MINUTE = 60
 LOGGER = logging.getLogger(__name__)
@@ -34,15 +35,31 @@ class Category(Enum):
 class Ecowitt:
     API_URL = "https://api.ecowitt.net/api/v3"
 
-    def __init__(self, application_key: str, api_key: str, timeout: float = 30.0):
+    def __init__(self, settings: EcowittSettings, timeout: float = 30.0):
         self.headers = {
             "Accept": "application/json",
             "User-Agent": f"Weather-Dan/{__version__}/{platform.system()}: {platform.release()}",
         }
         self.timeout = timeout
 
-        self.application_key = application_key
-        self.api_key = api_key
+        self.application_key = settings.application_key
+        self.api_key = settings.api_key
+
+    @sleep_and_retry
+    @limits(calls=20, period=MINUTE)
+    def _perform_get_request(self, url: str, params: dict[str, str]) -> dict[str, Any]:
+        try:
+            response = get(url, params=params, headers=self.headers, timeout=self.timeout)
+            response.raise_for_status()
+            return response.json()
+        except ConnectionError:
+            raise ServiceError(f"Unable to connect to '{url}'")
+        except HTTPError as err:
+            raise ServiceError(err.response.text)
+        except JSONDecodeError:
+            raise ServiceError(f"Unable to parse response from '{url}' as Json")
+        except ReadTimeout:
+            raise ServiceError("Server took too long to respond")
 
     @sleep_and_retry
     @limits(calls=20, period=MINUTE)
@@ -54,33 +71,24 @@ class Ecowitt:
 
         url = self.API_URL + endpoint
 
-        try:
-            response = get(url, params=params, headers=self.headers, timeout=self.timeout)
-            response.raise_for_status()
-            response_data = response.json()
-            if response_data["code"] != 0:
-                raise ServiceError(f"{response_data['code']} - {response_data['msg']}")
-            return response_data
-        except ConnectionError:
-            raise ServiceError(f"Unable to connect to '{url}'")
-        except HTTPError as err:
-            raise ServiceError(err.response.text)
-        except JSONDecodeError:
-            raise ServiceError(f"Unable to parse response from '{url}' as Json")
-        except ReadTimeout:
-            raise ServiceError("Server took too long to respond")
+        response = self._perform_get_request(url=url, params=params)
+        if response["code"] != 0:
+            if response["code"] == 40010:
+                raise AuthenticationError(response["msg"])
+            raise ServiceError(f"{response['code']} | {response['msg']}")
+        return response
 
     def test_credentials(self) -> bool:
         try:
             self.list_devices()
             return True
-        except ServiceError as err:
-            LOGGER.warning(err)
-            return False
+        except AuthenticationError:
+            pass
+        return False
 
-    def list_devices(self) -> list[str]:
+    def list_devices(self) -> list[tuple[str, str]]:
         results = self._retrieve_all_responses(endpoint="/device/list")
-        return [x["mac"] for x in results]
+        return [(x["mac"], x["name"]) for x in results]
 
     def list_device_history(
         self, mac: str, last_updated: datetime, category: Category

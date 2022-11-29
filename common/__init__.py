@@ -30,6 +30,8 @@ def get_config_root() -> Path:
 
 def setup_logging(debug: bool = False):
     log_folder = get_project_root() / "logs"
+    log_folder.mkdir(parents=True, exist_ok=True)
+
     logging.basicConfig(
         format="[%(asctime)s] [%(levelname)-8s] {%(name)s} | %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",

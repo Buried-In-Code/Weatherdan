@@ -1,24 +1,36 @@
-__all__ = ["Settings"]
+__all__ = ["Settings", "EcowittSettings", "EmailSettings"]
 
 from datetime import datetime, timedelta
 from typing import ClassVar
 
 import tomli_w as tomlwriter
 import tomllib as tomlreader
-from pydantic import BaseModel as PyModel
-from pydantic import Extra, validator
+from pydantic import BaseModel, Extra, Field, validator
 
-from ecowitt import get_config_root
+from common import get_config_root
 
 
-class BaseModel(PyModel):
+class SettingsModel(BaseModel):
     class Config:
-        anystr_strip_whitespace = True
         allow_population_by_field_name = True
+        anystr_strip_whitespace = True
+        validate_assignment = True
         extra = Extra.ignore
 
 
-class Ecowitt(BaseModel):
+class WebSettings(SettingsModel):
+    host: str = "localhost"
+    port: int = 8001
+
+
+class EmailSettings(SettingsModel):
+    sender_email: str = ""
+    sender_password: str = ""
+    reciever_emails: list[str] = Field(default_factory=list)
+    enable: bool = False
+
+
+class EcowittSettings(SettingsModel):
     application_key: str = ""
     api_key: str = ""
     last_updated: datetime = datetime.now() - timedelta(days=365)
@@ -29,9 +41,11 @@ class Ecowitt(BaseModel):
         return year_ago if v < year_ago else v
 
 
-class Settings(BaseModel):
+class Settings(SettingsModel):
     FILENAME: ClassVar = get_config_root() / "settings.toml"
-    ecowitt: Ecowitt = Ecowitt()
+    ecowitt: EcowittSettings = EcowittSettings()
+    email: EmailSettings = EmailSettings()
+    web: WebSettings = WebSettings()
 
     @classmethod
     def load(cls) -> "Settings":
@@ -41,7 +55,8 @@ class Settings(BaseModel):
             content = tomlreader.load(stream)
         return Settings(**content)
 
-    def save(self):
+    def save(self) -> "Settings":
         with self.FILENAME.open("wb") as stream:
             content = self.dict(by_alias=False)
             tomlwriter.dump(content, stream)
+        return self

@@ -43,11 +43,6 @@ dev = [
   "pre-commit >= 2.20.0",
 ]
 
-[project.scripts]
-ecowitt = "ecowitt.__main__:main"
-importer = "importer.__main__:main"
-stats = "common.statistics:print_stats"
-
 [project.urls]
 Documentation = "https://github.com/Buried-In-Code/Weatherdan#readme"
 Homepage = "https://pypi.org/project/Weatherdan"
@@ -56,7 +51,7 @@ Source = "https://github.com/Buried-In-Code/Weatherdan"
 
 [tool.bandit]
 recursive = true
-skips = ["B101", "B104"]
+skips = ["B101"]
 
 [tool.black]
 line-length = 100

@@ -22,4 +22,4 @@ CONSOLE = Console(
 
 
 def date_to_str(value: date) -> str:
-    return value.strftime("%d/%b/%Y")
+    return value.strftime("%d-%b-%Y")

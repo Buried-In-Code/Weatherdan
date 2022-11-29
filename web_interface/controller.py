@@ -74,7 +74,7 @@ def generate_monthly_stats(year: int, device: str, maximum: int = 1000) -> Devic
         stats=list(
             reversed(
                 [
-                    Stat(timestamp=key.strftime("%b/%Y"), value=value)
+                    Stat(timestamp=key.strftime("%b-%Y"), value=value)
                     for key, value in monthly.items()
                 ][:maximum]
             )
@@ -115,7 +115,7 @@ def generate_weekly_stats(year: int, month: int, device: str, maximum: int = 100
         stats=list(
             reversed(
                 [
-                    Stat(timestamp=f"{key[0].strftime('%d')}-{date_to_str(key[1])}", value=value)
+                    Stat(timestamp=f"{key[0].strftime('%d')} - {date_to_str(key[1])}", value=value)
                     for key, value in weekly.items()
                 ][:maximum]
             )

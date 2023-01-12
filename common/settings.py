@@ -1,4 +1,4 @@
-__all__ = ["Settings"]
+__all__ = ["Settings", "EmailSettings"]
 
 from datetime import datetime, timedelta
 from typing import ClassVar
@@ -36,7 +36,7 @@ class EcowittSettings(SettingsModel):
     last_updated: datetime = datetime.now() - timedelta(days=365)
 
     @validator("last_updated", always=True)
-    def validate_last_updated(cls, v) -> datetime:
+    def validate_last_updated(cls, v: datetime) -> datetime:
         year_ago = datetime.now() - timedelta(days=365)
         return year_ago if v < year_ago else v
 

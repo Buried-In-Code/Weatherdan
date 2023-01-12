@@ -8,17 +8,16 @@ __all__ = [
 ]
 
 import logging
-from datetime import date, timedelta, datetime
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 
-from natsort import humansorted as sorted
-from natsort import ns
+from natsort import humansorted as sorted, ns
 
 from common.console import date_to_str
-from common.storage import from_file
-from common.settings import Settings
 from common.services import update_data
 from common.services.ecowitt import Ecowitt
+from common.settings import Settings
+from common.storage import from_file
 from website.schemas import Stat
 
 LOGGER = logging.getLogger(__name__)
@@ -28,7 +27,7 @@ def date_list() -> list[date]:
     return sorted({x.timestamp for x in from_file()}, alg=ns.NA | ns.G)
 
 
-def refresh_data():
+def refresh_data() -> None:
     settings = Settings.load().save()
     if settings.ecowitt.last_updated >= datetime.now() - timedelta(hours=3):
         return
@@ -57,9 +56,7 @@ def generate_yearly_stats(maximum: int = 1000) -> list[Stat]:
             yearly[key] = Decimal(0.0)
         yearly[key] += entry.value
     return list(
-        reversed(
-            [Stat(timestamp=k.strftime("%Y"), value=v) for k, v in yearly.items()][:maximum]
-        )
+        reversed([Stat(timestamp=k.strftime("%Y"), value=v) for k, v in yearly.items()][:maximum])
     )
 
 
@@ -104,7 +101,10 @@ def generate_weekly_stats(year: int, month: int, maximum: int = 1000) -> list[St
         weekly = {k: v for k, v in weekly.items() if k[0].month == month or k[1].month == month}
     return list(
         reversed(
-            [Stat(timestamp=f"{k[0].strftime('%d')} - {date_to_str(k[1])}", value=v) for k, v in weekly.items()][:maximum]
+            [
+                Stat(timestamp=f"{k[0].strftime('%d')} - {date_to_str(k[1])}", value=v)
+                for k, v in weekly.items()
+            ][:maximum]
         )
     )
 
@@ -123,7 +123,5 @@ def generate_daily_stats(year: int, month: int, maximum: int = 1000) -> list[Sta
     elif month:
         daily = {k: v for k, v in daily.items() if k.month == month}
     return list(
-        reversed(
-            [Stat(timestamp=date_to_str(k), value=v) for k, v in daily.items()][:maximum]
-        )
+        reversed([Stat(timestamp=date_to_str(k), value=v) for k, v in daily.items()][:maximum])
     )

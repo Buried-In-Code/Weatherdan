@@ -7,7 +7,7 @@ from common.console import CONSOLE
 from common.settings import Settings
 
 
-def main():
+def main() -> None:
     CONSOLE.print(
         Panel.fit(
             "Welcome to Weatherdan",

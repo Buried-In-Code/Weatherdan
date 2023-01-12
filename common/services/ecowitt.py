@@ -24,11 +24,11 @@ class Category(Enum):
     HUMIDITY = "indoor.humidity"
 
     @property
-    def group_1(self):
+    def group_1(self) -> str:
         return self.value.split(".")[0]
 
     @property
-    def group_2(self):
+    def group_2(self) -> str:
         return self.value.split(".")[1]
 
 
@@ -52,14 +52,14 @@ class Ecowitt:
             response = get(url, params=params, headers=self.headers, timeout=self.timeout)
             response.raise_for_status()
             return response.json()
-        except ConnectionError:
-            raise ServiceError(f"Unable to connect to '{url}'")
+        except ConnectionError as err:
+            raise ServiceError(f"Unable to connect to '{url}'") from err
         except HTTPError as err:
-            raise ServiceError(err.response.text)
-        except JSONDecodeError:
-            raise ServiceError(f"Unable to parse response from '{url}' as Json")
-        except ReadTimeout:
-            raise ServiceError("Server took too long to respond")
+            raise ServiceError(err.response.text) from err
+        except JSONDecodeError as err:
+            raise ServiceError(f"Unable to parse response from '{url}' as Json") from err
+        except ReadTimeout as err:
+            raise ServiceError("Server took too long to respond") from err
 
     @sleep_and_retry
     @limits(calls=20, period=MINUTE)
@@ -79,7 +79,7 @@ class Ecowitt:
         return response
 
     def test_credentials(self) -> bool:
-        try:
+        try:  # noqa: SIM105
             self.list_devices()
             return True
         except AuthenticationError:

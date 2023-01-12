@@ -1,7 +1,7 @@
 __all__ = ["router"]
 
 from fastapi import APIRouter, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, Response
 from fastapi.templating import Jinja2Templates
 
 from website import controller, get_project_root
@@ -11,16 +11,13 @@ templates = Jinja2Templates(directory=get_project_root() / "templates")
 
 
 @router.get("/latest", response_class=HTMLResponse)
-def latest(request: Request, maximum: int = 28):
+def latest(request: Request, maximum: int = 28) -> Response:
     controller.refresh_data()
-    return templates.TemplateResponse("latest.html", {
-        "request": request,
-        "count": maximum
-    })
+    return templates.TemplateResponse("latest.html", {"request": request, "count": maximum})
 
 
 @router.get("/filtered", response_class=HTMLResponse)
-def filtered(request: Request, year: int = 0, month: int = 0):
+def filtered(request: Request, year: int = 0, month: int = 0) -> Response:
     controller.refresh_data()
     return templates.TemplateResponse(
         "filtered.html",

@@ -4,7 +4,7 @@ requires = ["hatchling"]
 
 [project]
 authors = [
-  { name = "BuriedInCode", email = "BuriedInCode@tuta.io" },
+  {email = "BuriedInCode@tuta.io", name = "BuriedInCode"}
 ]
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -39,7 +39,7 @@ requires-python = ">= 3.11"
 
 [project.optional-dependencies]
 dev = [
-  "pre-commit >= 2.21.0",
+  "pre-commit >= 2.21.0"
 ]
 
 [project.urls]

@@ -15,12 +15,12 @@ class Reading:
     timestamp: date
     value: Decimal = field(compare=False, hash=False)
 
-    def __lt__(self, other):
+    def __lt__(self, other):  # noqa: ANN001
         if not isinstance(other, Reading):
             raise NotImplementedError()
         return self.timestamp < other.timestamp
 
-    def __eq__(self, other):
+    def __eq__(self, other):  # noqa: ANN001
         if not isinstance(other, Reading):
             raise NotImplementedError()
         return self.timestamp == other.timestamp
@@ -29,7 +29,7 @@ class Reading:
         return hash((type(self), self.timestamp))
 
 
-def to_file(*new_entries: Reading):
+def to_file(*new_entries: Reading) -> None:
     contents = set(new_entries) | from_file()
     with DATA_FILE.open("w", encoding="UTF-8", newline="") as stream:
         writer = csv.writer(stream)

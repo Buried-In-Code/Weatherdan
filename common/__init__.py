@@ -1,4 +1,11 @@
-__all__ = ["__version__", "get_project_root", "get_cache_root", "get_config_root", "get_data_root", "setup_logging"]
+__all__ = [
+    "__version__",
+    "get_project_root",
+    "get_cache_root",
+    "get_config_root",
+    "get_data_root",
+    "setup_logging",
+]
 
 import logging
 import os
@@ -38,7 +45,7 @@ def get_project_root() -> Path:
     return Path(__file__).parent.parent
 
 
-def setup_logging(debug: bool = False):
+def setup_logging(debug: bool = False) -> None:
     install(show_locals=True, console=CONSOLE)
     log_folder = get_project_root() / "logs"
     log_folder.mkdir(parents=True, exist_ok=True)

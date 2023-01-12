@@ -4,7 +4,6 @@ import ssl
 import time
 from argparse import ArgumentParser, Namespace
 from datetime import datetime, timedelta
-from decimal import Decimal
 from email.message import EmailMessage
 
 from rich import box
@@ -14,13 +13,12 @@ from common.console import CONSOLE
 from common.services.ecowitt import Category, Ecowitt
 from common.services.exceptions import ServiceError
 from common.settings import EmailSettings, Settings
-from common.storage import Reading, to_file
 from notifications import __version__, setup_logging
 
 LOGGER = logging.getLogger("readings")
 
 
-def send_email(settings: EmailSettings, device: str, email_content: str = ""):
+def send_email(settings: EmailSettings, device: str, email_content: str = "") -> None:
     if not settings.enable:
         return
     LOGGER.info("Sending email")
@@ -38,7 +36,9 @@ def send_email(settings: EmailSettings, device: str, email_content: str = ""):
 
 def retrieve_readings(ecowitt: Ecowitt, device: tuple[str, str], last_updated: datetime) -> bool:
     try:
-        _ = ecowitt.list_device_history(mac=device[0], last_updated=last_updated, category=Category.RAINFALL)
+        _ = ecowitt.list_device_history(
+            mac=device[0], last_updated=last_updated, category=Category.RAINFALL
+        )
         _, _ = ecowitt.get_device_reading(mac=device[0], category=Category.RAINFALL)
         return True
     except ServiceError:
@@ -53,13 +53,16 @@ def parse_arguments() -> Namespace:
     return parser.parse_args()
 
 
-def main():
+def main() -> None:  # noqa: C901
     args = parse_arguments()
     setup_logging(args.debug)
 
     CONSOLE.print(
         Panel.fit(
-            "Welcome to Weatherdan", title="Notifications", subtitle=f"v{__version__}", box=box.SQUARE
+            "Welcome to Weatherdan",
+            title="Notifications",
+            subtitle=f"v{__version__}",
+            box=box.SQUARE,
         ),
         style="bold magenta",
         justify="center",

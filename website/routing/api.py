@@ -9,9 +9,7 @@ from website.schemas import Stat
 router = APIRouter(
     prefix=f"/api/v{__version__.split('.')[0]}",
     tags=["API"],
-    responses={
-        422: {"description": "Validation error", "model": ErrorResponse}
-    },
+    responses={422: {"description": "Validation error", "model": ErrorResponse}},
 )
 
 

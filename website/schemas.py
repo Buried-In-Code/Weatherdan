@@ -9,7 +9,7 @@ class Stat(BaseModel):
     timestamp: str
     value: Decimal
 
-    def __eq__(self, other):
+    def __eq__(self, other):  # noqa: ANN001
         if not isinstance(other, Stat):
             raise NotImplementedError()
         return self.timestamp == other.timestamp

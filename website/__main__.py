@@ -29,7 +29,7 @@ app.mount("/static", StaticFiles(directory=get_project_root() / "static"), name=
 
 
 @app.get("/")
-def redirect():
+def redirect() -> RedirectResponse:
     return RedirectResponse(url="/latest")
 
 

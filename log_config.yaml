@@ -12,7 +12,7 @@ handlers:
   rotating_file:
     class: logging.handlers.RotatingFileHandler
     formatter: default
-    filename: ./logs/Weatherdan-Web.log
+    filename: ./logs/Weatherdan.log
     maxBytes: 100000000
     backupCount: 3
 root:

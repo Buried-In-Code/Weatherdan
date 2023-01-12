@@ -12,13 +12,12 @@
 [![Github - Version](https://img.shields.io/github/v/tag/Buried-In-Code/Weatherdan?logo=Github&label=Version&style=flat-square)](https://github.com/Buried-In-Code/Weatherdan/tags)
 [![Github - License](https://img.shields.io/github/license/Buried-In-Code/Weatherdan?logo=Github&label=License&style=flat-square)](https://opensource.org/licenses/MIT)
 [![Github - Contributors](https://img.shields.io/github/contributors/Buried-In-Code/Weatherdan?logo=Github&label=Contributors&style=flat-square)](https://github.com/Buried-In-Code/Weatherdan/graphs/contributors)
-[![Github Action - Code Analysis](https://img.shields.io/github/workflow/status/Buried-In-Code/Weatherdan/Code%20Analysis?logo=Github-Actions&label=Code-Analysis&style=flat-square)](https://github.com/Buried-In-Code/Weatherdan/actions/workflows/code-analysis.yaml)
 
 _TODO_
 
 ## Installation
 
-### PyPI
+### PyPI (Not Yet Available)
 
 1. Make sure you have [Python](https://www.python.org/) installed: `python --version`
 2. Install the project from PyPI: `pip install weatherdan`
@@ -31,9 +30,6 @@ _TODO_
 
 ## Execution
 
-- `ecowitt`
-- `importer`
-- `stats`
 - `uvicorn web_interface.__main__:app --use-colors --no-server-header --reload`
 - `python run.py`
 

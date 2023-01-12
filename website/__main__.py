@@ -8,14 +8,16 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from web_interface import __version__, get_project_root
-from web_interface.routing.api import router as api_router
-from web_interface.routing.html import router as html_router
+from common import setup_logging
+from website import __version__, get_project_root
+from website.routing.api import router as api_router
+from website.routing.html import router as html_router
 
 LOGGER = logging.getLogger("weatherdan")
 
 
 def create_app() -> FastAPI:
+    setup_logging()
     app = FastAPI(name="Weatherdan", version=__version__)
     app.include_router(html_router)
     app.include_router(api_router)
@@ -28,11 +30,11 @@ app.mount("/static", StaticFiles(directory=get_project_root() / "static"), name=
 
 @app.get("/")
 def redirect():
-    return RedirectResponse(url="/weatherdan")
+    return RedirectResponse(url="/latest")
 
 
 @app.exception_handler(StarletteHTTPException)
-async def http_exception_handler(request, exc):
+async def http_exception_handler(request, exc) -> JSONResponse:  # noqa: ARG001, ANN001
     status = HTTPStatus(exc.status_code)
     return JSONResponse(
         status_code=status,
@@ -46,7 +48,7 @@ async def http_exception_handler(request, exc):
 
 
 @app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request, exc):
+async def validation_exception_handler(request, exc) -> JSONResponse:  # noqa: ARG001, ANN001
     status = HTTPStatus(422)
     details = []
     for error in exc.errors():

@@ -11,7 +11,6 @@ def main():
     CONSOLE.print(
         Panel.fit(
             "Welcome to Weatherdan",
-            title="Web Interface",
             subtitle=f"v{__version__}",
             box=box.SQUARE,
         ),
@@ -23,9 +22,9 @@ def main():
     log_folder = get_project_root() / "logs"
     log_folder.mkdir(parents=True, exist_ok=True)
     uvicorn.run(
-        "web_interface.__main__:app",
-        host=settings.web.host,
-        port=settings.web.port,
+        "website.__main__:app",
+        host=settings.website.host,
+        port=settings.website.port,
         use_colors=True,
         server_header=False,
         log_config="log_config.yaml",

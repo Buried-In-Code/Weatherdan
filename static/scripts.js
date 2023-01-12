@@ -1,42 +1,41 @@
 const unique = (arr) => [...new Set(arr)];
 
-function loadYearlyStats(maximum = 1000){
-  $.ajax({
-    async: false,
-    url: "/api/v0/yearly-stats?maximum=" + maximum,
-    type: "GET",
-    dataType: "json",
-    success: function (data) {
-      let graphLabels = [];
-      data.forEach(function(device){
-        device.stats.forEach(function(stat){
-          graphLabels.push(stat.timestamp);
-        });
-      });
-      graphLabels = unique(graphLabels);
-      let graphData = [];
-      data.forEach(function(device){
-        let entryData = [];
-        device.stats.forEach(function(stat){
-          entryData.push(stat.value);
-        });
+const headers = {
+  "Accept": "application/json; charset=UTF-8",
+  "Content-Type": "application/json; charset=UTF-8",
+};
 
-        let entry = {
-          label: device.name,
-          fill: true,
-          backgroundColor: "rgba(65,105,225,0.1)",
-          borderColor: "rgba(65,105,225,1)",
-          data: entryData,
-          steppedLine: false
-        };
-        graphData.push(entry);
-      });
-      createGraph("yearly-stats", graphLabels, graphData);
-    },
-    error: function(xhr){
-      alert("Request Status: " + xhr.status + "\nStatus Text: " + xhr.statusText + "\n" + xhr.responseText);
+function loadYearlyStats(maximum = 1000){
+  fetch(`/api/v0/yearly-stats?maximum=${maximum}`, {
+    method: "GET",
+    headers,
+  })
+  .then((response) => {
+    if (response.ok){
+      return response.json();
     }
-  });
+    return Promise.reject(response);
+  })
+  .then((data) => {
+    let labelList = [];
+    let entryData = [];
+    data.forEach((stat) => {
+      labelList.push(stat.timestamp);
+      entryData.push(stat.value);
+    });
+    let entryList = [{
+      label: "Label",
+      fill: true,
+      backgroundColor: "rgba(65,105,225,0.1)",
+      borderColor: "rgba(65,105,225,1)",
+      data: entryData,
+      steppedLine: false
+    }];
+    createGraph("yearly-stats", labelList, entryList);
+  })
+  .catch((response) => response.json().then((msg) => {
+    alert(`${response.status} ${response.statusText}: ${msg.details}`);
+  }));
 }
 
 function loadMonthlyStats(maximum = 1000){
@@ -44,42 +43,36 @@ function loadMonthlyStats(maximum = 1000){
   let year = params.get("year");
   if (year == "" || year == null)
     year = 0
-  $.ajax({
-    async: false,
-    url: "/api/v0/monthly-stats?year=" + year + "&maximum=" + maximum,
-    type: "GET",
-    dataType: "json",
-    success: function(data){
-      let graphLabels = [];
-      data.forEach(function(device){
-        device.stats.forEach(function(stat){
-          graphLabels.push(stat.timestamp);
-        });
-      });
-      graphLabels = unique(graphLabels);
-      let graphData = [];
-      data.forEach(function(device){
-        let entryData = [];
-        device.stats.forEach(function(stat){
-          entryData.push(stat.value);
-        });
-
-        let entry = {
-          label: device.name,
-          fill: true,
-          backgroundColor: "rgba(65,105,225,0.1)",
-          borderColor: "rgba(65,105,225,1)",
-          data: entryData,
-          steppedLine: false
-        };
-        graphData.push(entry);
-      });
-      createGraph("monthly-stats", graphLabels, graphData);
-    },
-    error: function(xhr){
-      alert("Request Status: " + xhr.status + "\nStatus Text: " + xhr.statusText + "\n" + xhr.responseText);
+  fetch(`/api/v0/monthly-stats?year=${year}&maximum=${maximum}`, {
+    method: "GET",
+    headers,
+  })
+  .then((response) => {
+    if (response.ok){
+      return response.json();
     }
-  });
+    return Promise.reject(response);
+  })
+  .then((data) => {
+    let labelList = [];
+    let entryData = [];
+    data.forEach((stat) => {
+      labelList.push(stat.timestamp);
+      entryData.push(stat.value);
+    });
+    let entryList = [{
+      label: "Label",
+      fill: true,
+      backgroundColor: "rgba(65,105,225,0.1)",
+      borderColor: "rgba(65,105,225,1)",
+      data: entryData,
+      steppedLine: false
+    }];
+    createGraph("monthly-stats", labelList, entryList);
+  })
+  .catch((response) => response.json().then((msg) => {
+    alert(`${response.status} ${response.statusText}: ${msg.details}`);
+  }));
 }
 
 function loadWeeklyStats(maximum = 1000){
@@ -90,42 +83,36 @@ function loadWeeklyStats(maximum = 1000){
   let month = params.get("month");
   if (month == "" || month == null)
     month = 0;
-  $.ajax({
-    async: false,
-    url: "/api/v0/weekly-stats?year=" + year + "&month=" + month + "&maximum=" + maximum,
-    type: "GET",
-    dataType: "json",
-    success: function(data){
-      let graphLabels = [];
-      data.forEach(function(device){
-        device.stats.forEach(function(stat){
-          graphLabels.push(stat.timestamp);
-        });
-      });
-      graphLabels = unique(graphLabels);
-      let graphData = [];
-      data.forEach(function(device){
-        let entryData = [];
-        device.stats.forEach(function(stat){
-          entryData.push(stat.value);
-        });
-
-        let entry = {
-          label: device.name,
-          fill: true,
-          backgroundColor: "rgba(65,105,225,0.1)",
-          borderColor: "rgba(65,105,225,1)",
-          data: entryData,
-          steppedLine: false
-        };
-        graphData.push(entry);
-      });
-      createGraph("weekly-stats", graphLabels, graphData);
-    },
-    error: function(xhr){
-      alert("Request Status: " + xhr.status + "\nStatus Text: " + xhr.statusText + "\n" + xhr.responseText);
+  fetch(`/api/v0/weekly-stats?year=${year}&month=${month}&maximum=${maximum}`, {
+    method: "GET",
+    headers,
+  })
+  .then((response) => {
+    if (response.ok){
+      return response.json();
     }
-  });
+    return Promise.reject(response);
+  })
+  .then((data) => {
+    let labelList = [];
+    let entryData = [];
+    data.forEach((stat) => {
+      labelList.push(stat.timestamp);
+      entryData.push(stat.value);
+    });
+    let entryList = [{
+      label: "Label",
+      fill: true,
+      backgroundColor: "rgba(65,105,225,0.1)",
+      borderColor: "rgba(65,105,225,1)",
+      data: entryData,
+      steppedLine: false
+    }];
+    createGraph("weekly-stats", labelList, entryList);
+  })
+  .catch((response) => response.json().then((msg) => {
+    alert(`${response.status} ${response.statusText}: ${msg.details}`);
+  }));
 }
 
 function loadDailyStats(maximum = 1000){
@@ -136,42 +123,36 @@ function loadDailyStats(maximum = 1000){
   let month = params.get("month");
   if (month == "" || month == null)
     month = 0;
-  $.ajax({
-    async: false,
-    url: "/api/v0/daily-stats?year=" + year + "&month=" + month + "&maximum=" + maximum,
-    type: "GET",
-    dataType: "json",
-    success: function(data){
-      let graphLabels = [];
-      data.forEach(function(device){
-        device.stats.forEach(function(stat){
-          graphLabels.push(stat.timestamp);
-        });
-      });
-      graphLabels = unique(graphLabels);
-      let graphData = [];
-      data.forEach(function(device){
-        let entryData = [];
-        device.stats.forEach(function(stat){
-          entryData.push(stat.value);
-        });
-
-        let entry = {
-          label: device.name,
-          fill: true,
-          backgroundColor: "rgba(65,105,225,0.1)",
-          borderColor: "rgba(65,105,225,1)",
-          data: entryData,
-          steppedLine: false
-        };
-        graphData.push(entry);
-      });
-      createGraph("daily-stats", graphLabels, graphData);
-    },
-    error: function(xhr){
-      alert("Request Status: " + xhr.status + "\nStatus Text: " + xhr.statusText + "\n" + xhr.responseText);
+  fetch(`/api/v0/daily-stats?year=${year}&month=${month}&maximum=${maximum}`, {
+    method: "GET",
+    headers,
+  })
+  .then((response) => {
+    if (response.ok){
+      return response.json();
     }
-  });
+    return Promise.reject(response);
+  })
+  .then((data) => {
+    let labelList = [];
+    let entryData = [];
+    data.forEach((stat) => {
+      labelList.push(stat.timestamp);
+      entryData.push(stat.value);
+    });
+    let entryList = [{
+      label: "Label",
+      fill: true,
+      backgroundColor: "rgba(65,105,225,0.1)",
+      borderColor: "rgba(65,105,225,1)",
+      data: entryData,
+      steppedLine: false
+    }];
+    createGraph("daily-stats", labelList, entryList);
+  })
+  .catch((response) => response.json().then((msg) => {
+    alert(`${response.status} ${response.statusText}: ${msg.details}`);
+  }));
 }
 
 function createGraph(name, labels, dataset, type = 'line') {
@@ -189,7 +170,7 @@ function createGraph(name, labels, dataset, type = 'line') {
             fontColor: '#D0D0D0',
             fontSize: 14
           },
-          display: true
+          display: false
         }
       },
       responsive: true,
@@ -214,20 +195,4 @@ function createGraph(name, labels, dataset, type = 'line') {
       }
     }
   });
-}
-
-function setYear(year, caller){
-  if (year == 0)
-    window.location = "/weatherdan/filtered";
-  else
-    window.location = "/weatherdan/filtered?year=" + year;
-}
-
-function setMonth(month){
-  let params = new URLSearchParams(window.location.search);
-  let year = params.get("year");
-  if (month == 0)
-    window.location = "/weatherdan/filtered?year=" + year;
-  else
-    window.location = "/weatherdan/filtered?year=" + year + "&month=" + month;
 }

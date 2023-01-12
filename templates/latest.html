@@ -6,76 +6,149 @@
   <title>Weatherdan</title>
   <!--<link href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" rel="stylesheet">-->
   <link href="https://cdn.rawgit.com/jenil/bulmaswatch/gh-pages/darkly/bulmaswatch.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@creativebulma/bulma-divider@1.1.0/dist/bulma-divider.min.css" rel="stylesheet">
   <link href="/static/styles.css" rel="stylesheet">
   <link href="/static/favicon.ico" id="favicon" rel="icon" type="image/x-icon">
-  <script src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js" type="module"></script>
-  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+  <link href="https://use.fontawesome.com/releases/v5.14.0/css/all.css" rel="stylesheet">
 </head>
 <body class="has-navbar-fixed-top">
-<nav class="navbar is-fixed-top is-dark">
+<nav aria-label="main navigation" class="navbar is-fixed-top is-info" role="navigation">
   <div class="navbar-brand">
-    <a class="navbar-item icon-text" href="/weatherdan/latest">
-      <span class="icon is-large">
-        <ion-icon name="time-outline"></ion-icon>
-      </span>
-      <span>Latest</span>
+    <a class="navbar-item" href="/" id="navbar-banner">
+      <img alt="Logo" src="/static/Weatherdan.png">
     </a>
-    <a class="navbar-item icon-text" href="/weatherdan/filtered">
-      <span class="icon is-large">
-        <ion-icon name="filter-outline"></ion-icon>
-      </span>
-      <span>Filtered</span>
-    </a>
+    <span class="navbar-burger burger" data-target="navMenu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </span>
   </div>
-</nav>
-<section class="section">
-  <div class="container is-fluid">
-    <h1 class="title is-1 has-text-centered">Weatherdan</h1>
-    <div class="columns is-multiline is-centered">
-      <div class="column">
-        <div class="box has-text-light has-background-dark">
-          <h2 class="subtitle is-2">Daily Stats</h2>
-          <div class="chart-container">
-            <canvas height="375" id="daily-stats" width="750"></canvas>
-          </div>
-        </div>
-      </div>
-      <div class="column">
-        <div class="box has-text-light has-background-dark">
-          <h2 class="subtitle is-2">Weekly Stats</h2>
-          <div class="chart-container">
-            <canvas height="375" id="weekly-stats" width="750"></canvas>
-          </div>
-        </div>
-      </div>
-      <div class="column">
-        <div class="box has-text-light has-background-dark">
-          <h2 class="subtitle is-2">Monthly Stats</h2>
-          <div class="chart-container">
-            <canvas height="375" id="monthly-stats" width="750"></canvas>
-          </div>
-        </div>
-      </div>
-      <div class="column">
-        <div class="box has-text-light has-background-dark">
-          <h2 class="subtitle is-2">Yearly Stats</h2>
-          <div class="chart-container">
-            <canvas height="375" id="yearly-stats" width="750"></canvas>
-          </div>
-        </div>
-      </div>
+  <div class="navbar-menu" id="navMenu">
+    <div class="navbar-start">
+      <a class="navbar-item" href="/latest">
+        <span class="icon is-medium">
+          <i class="far fa-lg fa-clock"></i>
+        </span>
+        <span>Latest</span>
+      </a>
+      <a class="navbar-item" href="/filtered">
+        <span class="icon is-medium">
+          <i class="fas fa-lg fa-filter"></i>
+        </span>
+        <span>Filtered</span>
+      </a>
     </div>
   </div>
-</section>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+</nav>
+<main class="section is-flex-grow-1">
+  <div class="container">
+    <header class="block has-text-centered">
+      <h1 class="title">Weatherdan</h1>
+    </header>
+    <section>
+      <div class="columns">
+        <div class="column is-one-fifth">
+          <div class="box">
+            <h1 class="title is-5">Settings</h1>
+            <form accept-charset="UTF-8" action="/latest" method="get">
+              <div class="field">
+                <label class="label">Maximum entries</label>
+                <div class="control">
+                  <input class="input" name="maximum" placeholder="Maximum" type="number" value="{{ count }}">
+                </div>
+              </div>
+              <div class="buttons is-centered has-addons">
+                <button class="button is-primary">Save</button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="column">
+          <div class="columns is-multiline is-centered">
+            <div class="column is-full has-text-centered">
+              <div class="box">
+                <h2 class="subtitle is-2">Daily Stats</h2>
+                <div class="chart-container">
+                  <canvas height="500" id="daily-stats" width="750"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="column is-full has-text-centered">
+              <div class="box">
+                <h2 class="subtitle is-2">Weekly Stats</h2>
+                <div class="chart-container">
+                  <canvas height="500" id="weekly-stats" width="750"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="column is-full has-text-centered">
+              <div class="box">
+                <h2 class="subtitle is-2">Monthly Stats</h2>
+                <div class="chart-container">
+                  <canvas height="500" id="monthly-stats" width="750"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="column is-full has-text-centered">
+              <div class="box">
+                <h2 class="subtitle is-2">Yearly Stats</h2>
+                <div class="chart-container">
+                  <canvas height="500" id="yearly-stats" width="750"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+<footer class="footer has-background-dark has-text-light">
+  <div class="columns">
+    <div class="column is-one-third">
+      <h4>Contact Us</h4>
+      <p>
+        <a href="mailto:BuriedInCode@tuta.io" target="_blank">
+          <span class="icon is-medium">
+            <i class="fas fa-lg fa-inbox"></i>
+          </span>
+          <span>Email</span>
+        </a>
+      </p>
+      <p>
+        <a href="https://github.com/Buried-In-Code/Weatherdan" target="_blank">
+          <span class="icon is-medium">
+            <i class="fab fa-lg fa-github"></i>
+          </span>
+          <span>Github</span>
+        </a>
+      </p>
+      <p>
+        <a href="https://fosstodon.org/@BuriedInCode" target="_blank">
+          <span class="icon is-medium">
+            <i class="fab fa-lg fa-mastodon"></i>
+          </span>
+          <span>Mastodon</span>
+        </a>
+      </p>
+    </div>
+    <div class="column is-two-third">
+      <a href="https://bulma.io">
+        <img alt="Made with Bulma" height="24" src="https://bulma.io/images/made-with-bulma.png" width="128">
+      </a>
+    </div>
+  </div>
+</footer>
+<script src="/static/bulma-navbar-burger.js" type="text/javascript"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js" type="text/javascript"></script>
 <script src="/static/scripts.js" type="text/javascript"></script>
 <script type="text/javascript">
 $(document).ready(function() {
-  loadYearlyStats(28);
-  loadMonthlyStats(28);
-  loadWeeklyStats(28);
-  loadDailyStats(28);
+  loadYearlyStats({{ count }});
+  loadMonthlyStats({{ count }});
+  loadWeeklyStats({{ count }});
+  loadDailyStats({{ count }});
 });
 </script>
 </body>

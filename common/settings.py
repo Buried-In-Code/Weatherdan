@@ -1,4 +1,4 @@
-__all__ = ["Settings", "EcowittSettings", "EmailSettings"]
+__all__ = ["Settings"]
 
 from datetime import datetime, timedelta
 from typing import ClassVar
@@ -18,7 +18,7 @@ class SettingsModel(BaseModel):
         extra = Extra.ignore
 
 
-class WebSettings(SettingsModel):
+class WebsiteSettings(SettingsModel):
     host: str = "localhost"
     port: int = 8001
 
@@ -45,7 +45,7 @@ class Settings(SettingsModel):
     FILENAME: ClassVar = get_config_root() / "settings.toml"
     ecowitt: EcowittSettings = EcowittSettings()
     email: EmailSettings = EmailSettings()
-    web: WebSettings = WebSettings()
+    website: WebsiteSettings = WebsiteSettings()
 
     @classmethod
     def load(cls) -> "Settings":

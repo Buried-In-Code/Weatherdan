@@ -17,12 +17,13 @@ def latest(request: Request, maximum: int = 28) -> Response:
 
 
 @router.get("/filtered", response_class=HTMLResponse)
-def filtered(request: Request, year: int = 0, month: int = 0) -> Response:
+def filtered(request: Request, maximum: int = 28, year: int = 0, month: int = 0) -> Response:
     controller.refresh_data()
     return templates.TemplateResponse(
         "filtered.html",
         {
             "request": request,
+            "count": maximum,
             "year_list": controller.list_available_years(),
             "month_list": controller.list_available_months(year=year) if year else [],
             "year": year,

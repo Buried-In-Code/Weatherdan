@@ -1,9 +1,26 @@
 const unique = (arr) => [...new Set(arr)];
-
 const headers = {
   "Accept": "application/json; charset=UTF-8",
   "Content-Type": "application/json; charset=UTF-8",
 };
+
+function addLoading(caller){
+  let element = document.getElementById(caller);
+  element.classList.add("is-loading");
+}
+
+function removeLoading(caller){
+  let element = document.getElementById(caller);
+  element.classList.remove("is-loading");
+}
+
+function ready(fn) {
+  if (document.readyState !== 'loading') {
+    fn();
+    return;
+  }
+  document.addEventListener('DOMContentLoaded', fn);
+}
 
 function loadYearlyStats(maximum = 1000){
   fetch(`/api/v0/yearly-stats?maximum=${maximum}`, {

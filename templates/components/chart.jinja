@@ -1,0 +1,8 @@
+{% macro chart(label, id) %}
+  <div class="box has-text-centered">
+    <h2 class="subtitle is-2">{{ label }}</h2>
+    <div class="chart-container">
+      <canvas height="500" id="{{ id }}" width="750"></canvas>
+    </div>
+  </div>
+{% endmacro %}

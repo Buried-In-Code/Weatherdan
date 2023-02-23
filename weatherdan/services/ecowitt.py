@@ -10,9 +10,9 @@ from ratelimit import limits, sleep_and_retry
 from requests import get
 from requests.exceptions import ConnectionError, HTTPError, JSONDecodeError, ReadTimeout
 
-from common import __version__
-from common.services.exceptions import AuthenticationError, ServiceError
-from common.settings import EcowittSettings
+from weatherdan import __version__
+from weatherdan.services.exceptions import AuthenticationError, ServiceError
+from weatherdan.settings import Settings
 
 MINUTE = 60
 LOGGER = logging.getLogger(__name__)
@@ -35,15 +35,16 @@ class Category(Enum):
 class Ecowitt:
     API_URL = "https://api.ecowitt.net/api/v3"
 
-    def __init__(self, settings: EcowittSettings, timeout: float = 30.0):
+    def __init__(self, timeout: float = 30.0):
         self.headers = {
             "Accept": "application/json",
             "User-Agent": f"Weather-Dan/{__version__}/{platform.system()}: {platform.release()}",
         }
         self.timeout = timeout
 
-        self.application_key = settings.application_key
-        self.api_key = settings.api_key
+        settings = Settings()
+        self.application_key = settings.ecowitt.application_key
+        self.api_key = settings.ecowitt.api_key
 
     @sleep_and_retry
     @limits(calls=20, period=MINUTE)
@@ -79,7 +80,7 @@ class Ecowitt:
         return response
 
     def test_credentials(self) -> bool:
-        try:  # noqa: SIM105
+        try:
             self.list_devices()
             return True
         except AuthenticationError:

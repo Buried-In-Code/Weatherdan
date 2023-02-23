@@ -4,10 +4,10 @@ import logging
 from datetime import datetime
 from decimal import Decimal
 
-from common.services.ecowitt import Category, Ecowitt
-from common.services.exceptions import ServiceError
-from common.settings import Settings
-from common.storage import Reading, to_file
+from weatherdan.services.ecowitt import Category, Ecowitt
+from weatherdan.services.exceptions import ServiceError
+from weatherdan.settings import Settings
+from weatherdan.storage import Reading, to_file
 
 LOGGER = logging.getLogger(__name__)
 
@@ -29,7 +29,8 @@ def _retrieve_historical_readings(
             to_file(Reading(timestamp=timestamp.date(), value=Decimal(rainfall)))
 
 
-def update_data(ecowitt: Ecowitt, settings: Settings) -> bool:
+def update_data(ecowitt: Ecowitt) -> bool:
+    settings = Settings()
     for device in ecowitt.list_devices():
         try:
             _retrieve_historical_readings(
@@ -39,5 +40,6 @@ def update_data(ecowitt: Ecowitt, settings: Settings) -> bool:
             settings.ecowitt.last_updated = datetime.now()
             settings.save()
             return True
-        except ServiceError:
+        except (ServiceError, TypeError):
             return False
+    return False

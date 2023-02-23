@@ -3,6 +3,7 @@ __pycache__/
 __pypackages__/
 .idea/
 .pytest_cache/
+.ruff_cache/
 .tox/
 .venv/
 .vscode/
@@ -18,4 +19,4 @@ logs/
 .python-version
 
 # =====Project=====
-*cache.sqlite
+pdm.lock

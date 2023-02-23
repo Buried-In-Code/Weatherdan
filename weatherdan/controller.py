@@ -13,12 +13,11 @@ from decimal import Decimal
 
 from natsort import humansorted as sorted, ns
 
-from common.console import date_to_str
-from common.services import update_data
-from common.services.ecowitt import Ecowitt
-from common.settings import Settings
-from common.storage import from_file
-from website.schemas import Stat
+from weatherdan.console import date_to_str
+from weatherdan.schemas import Stat
+from weatherdan.services import Ecowitt, update_data
+from weatherdan.settings import Settings
+from weatherdan.storage import from_file
 
 LOGGER = logging.getLogger(__name__)
 
@@ -28,16 +27,16 @@ def date_list() -> list[date]:
 
 
 def refresh_data() -> None:
-    settings = Settings.load().save()
+    settings = Settings()
     if settings.ecowitt.last_updated >= datetime.now() - timedelta(hours=3):
         return
 
     LOGGER.info("Refreshing data")
-    ecowitt = Ecowitt(settings.ecowitt)
+    ecowitt = Ecowitt()
     if not ecowitt.test_credentials():
         LOGGER.critical("Invalid Ecowitt credentials")
         return
-    update_data(ecowitt=ecowitt, settings=settings)
+    update_data(ecowitt=ecowitt)
 
 
 def list_available_years() -> list[int]:

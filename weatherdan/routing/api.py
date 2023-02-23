@@ -2,9 +2,9 @@ __all__ = ["router"]
 
 from fastapi import APIRouter
 
-from website import __version__, controller
-from website.responses import ErrorResponse
-from website.schemas import Stat
+from weatherdan import __version__, controller
+from weatherdan.responses import ErrorResponse
+from weatherdan.schemas import Stat
 
 router = APIRouter(
     prefix=f"/api/v{__version__.split('.')[0]}",

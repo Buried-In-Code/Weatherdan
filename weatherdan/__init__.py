@@ -15,7 +15,7 @@ from pathlib import Path
 from rich.logging import RichHandler
 from rich.traceback import install
 
-from common.console import CONSOLE
+from weatherdan.console import CONSOLE
 
 __version__ = "0.2.0"
 
@@ -46,7 +46,7 @@ def get_project_root() -> Path:
 
 
 def setup_logging(debug: bool = False) -> None:
-    install(show_locals=True, console=CONSOLE)
+    install(show_locals=True, max_frames=5, console=CONSOLE)
     log_folder = get_project_root() / "logs"
     log_folder.mkdir(parents=True, exist_ok=True)
 
@@ -60,12 +60,16 @@ def setup_logging(debug: bool = False) -> None:
                 tracebacks_show_locals=True,
                 omit_repeated_times=False,
                 show_level=False,
-                show_path=False,
                 show_time=False,
+                show_path=False,
                 console=CONSOLE,
             ),
             RotatingFileHandler(
-                filename=log_folder / "Weatherdan.log", maxBytes=100000000, backupCount=3
+                filename=log_folder / "weatherdan.log", maxBytes=100000000, backupCount=3
             ),
         ],
     )
+
+    logging.getLogger("uvicorn").setLevel(logging.WARNING)
+    logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
+    logging.getLogger("uvicorn.error").setLevel(logging.WARNING)

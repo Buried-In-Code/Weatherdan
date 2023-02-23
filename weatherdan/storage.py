@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from datetime import date
 from decimal import Decimal
 
-from common import get_data_root
+from weatherdan import get_data_root
 
 DATA_FILE = get_data_root() / "weatherdan-data.csv"
 

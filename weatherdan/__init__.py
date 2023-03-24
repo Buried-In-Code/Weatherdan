@@ -65,7 +65,9 @@ def setup_logging(debug: bool = False) -> None:
                 console=CONSOLE,
             ),
             RotatingFileHandler(
-                filename=log_folder / "weatherdan.log", maxBytes=100000000, backupCount=3
+                filename=log_folder / "weatherdan.log",
+                maxBytes=100000000,
+                backupCount=3,
             ),
         ],
     )

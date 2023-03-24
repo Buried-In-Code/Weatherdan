@@ -92,7 +92,10 @@ class Ecowitt:
         return [(x["mac"], x["name"]) for x in results]
 
     def list_device_history(
-        self, mac: str, last_updated: datetime, category: Category
+        self,
+        mac: str,
+        last_updated: datetime,
+        category: Category,
     ) -> dict[datetime, str]:
         results = self._get_request(
             endpoint="/device/history",
@@ -126,7 +129,9 @@ class Ecowitt:
         return timestamp, results[category.group_1][category.group_2]["value"]
 
     def _retrieve_all_responses(
-        self, endpoint: str, params: dict[str, Any] | None = None
+        self,
+        endpoint: str,
+        params: dict[str, Any] | None = None,
     ) -> list[dict[str, Any]]:
         if params is None:
             params = {}

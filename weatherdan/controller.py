@@ -55,7 +55,7 @@ def generate_yearly_stats(maximum: int = 1000) -> list[Stat]:
             yearly[key] = Decimal(0.0)
         yearly[key] += entry.value
     return list(
-        reversed([Stat(timestamp=k.strftime("%Y"), value=v) for k, v in yearly.items()][:maximum])
+        reversed([Stat(timestamp=k.strftime("%Y"), value=v) for k, v in yearly.items()][:maximum]),
     )
 
 
@@ -70,8 +70,8 @@ def generate_monthly_stats(year: int, maximum: int = 1000) -> list[Stat]:
         monthly = {k: v for k, v in monthly.items() if k.year == year}
     return list(
         reversed(
-            [Stat(timestamp=k.strftime("%b-%Y"), value=v) for k, v in monthly.items()][:maximum]
-        )
+            [Stat(timestamp=k.strftime("%b-%Y"), value=v) for k, v in monthly.items()][:maximum],
+        ),
     )
 
 
@@ -103,8 +103,8 @@ def generate_weekly_stats(year: int, month: int, maximum: int = 1000) -> list[St
             [
                 Stat(timestamp=f"{k[0].strftime('%d')} - {date_to_str(k[1])}", value=v)
                 for k, v in weekly.items()
-            ][:maximum]
-        )
+            ][:maximum],
+        ),
     )
 
 
@@ -122,5 +122,5 @@ def generate_daily_stats(year: int, month: int, maximum: int = 1000) -> list[Sta
     elif month:
         daily = {k: v for k, v in daily.items() if k.month == month}
     return list(
-        reversed([Stat(timestamp=date_to_str(k), value=v) for k, v in daily.items()][:maximum])
+        reversed([Stat(timestamp=date_to_str(k), value=v) for k, v in daily.items()][:maximum]),
     )

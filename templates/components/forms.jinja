@@ -1,8 +1,19 @@
 {% macro input(label, name, type="text", value="") %}
   <div class="field">
-    <label class="label has-text-info-light">{{ label }}</label>
+    <label class="label has-text-info">{{ label }}</label>
     <div class="control is-expanded">
-      <input class="input is-rounded" name="{{ name }}" placeholder="{{ label }}" type="{{ type }}" value="{{ value or '' }}">
+      <input class="input" name="{{ name }}" placeholder="{{ label }}" type="{{ type }}" value="{{ value or '' }}">
+    </div>
+  </div>
+{% endmacro %}
+
+
+
+{% macro date_input(label, name, type="text", value="") %}
+  <div class="field">
+    <label class="label has-text-info">{{ label }}</label>
+    <div class="control is-expanded">
+      <input class="input" name="{{ name }}" placeholder="{{ label }} (yyyy-mm-dd)" type="{{ type }}" value="{{ value or '' }}">
     </div>
   </div>
 {% endmacro %}
@@ -11,9 +22,9 @@
 
 {% macro number_input(label, name, value=0, min=0, max=1000) %}
   <div class="field">
-    <label class="label has-text-info-light">{{ label }}</label>
+    <label class="label has-text-info">{{ label }}</label>
     <div class="control is-expanded">
-      <input class="input is-rounded" name="{{ name }}" max={{ max }} min={{ min }} placeholder="{{ label }}" type="number" value={{ value }}>
+      <input class="input" name="{{ name }}" max={{ max }} min={{ min }} placeholder="{{ label }}" type="number" value={{ value }}>
     </div>
   </div>
 {% endmacro %}
@@ -22,7 +33,7 @@
 
 {% macro textarea(label, name, value="") %}
   <div class="field">
-    <label class="label has-text-info-light">{{ label }}</label>
+    <label class="label has-text-info">{{ label }}</label>
     <div class="control">
       <textarea class="textarea has-fixed-size" name="{{ name }}" placeholder="{{ label }}">{{ value or "" }}</textarea>
     </div>

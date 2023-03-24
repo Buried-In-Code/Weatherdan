@@ -17,12 +17,12 @@ class Reading:
 
     def __lt__(self, other):  # noqa: ANN001
         if not isinstance(other, Reading):
-            raise NotImplementedError()
+            raise NotImplementedError
         return self.timestamp < other.timestamp
 
     def __eq__(self, other):  # noqa: ANN001
         if not isinstance(other, Reading):
-            raise NotImplementedError()
+            raise NotImplementedError
         return self.timestamp == other.timestamp
 
     def __hash__(self):
@@ -49,6 +49,6 @@ def from_file() -> set[Reading]:
                 Reading(
                     timestamp=date.fromisoformat(entry["Timestamp"]),
                     value=Decimal(entry["Value"]),
-                )
+                ),
             )
     return output

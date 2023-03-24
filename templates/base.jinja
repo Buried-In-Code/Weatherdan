@@ -5,8 +5,8 @@
   <meta content="width=device-width, initial-scale=1" name="viewport">
   <title>Weatherdan</title>
   <link href="https://use.fontawesome.com/releases/v6.3.0/css/all.css" rel="stylesheet">
-  <link href="/static/css/custom-bulma.css" rel="stylesheet">
   <link href="/static/css/styles.css" rel="stylesheet">
+  <link href="/static/css/custom-bulma.css" rel="stylesheet">
   <link href="/static/img/favicon.ico" id="favicon" rel="icon" type="image/x-icon">
   {% block css %}{% endblock %}
 </head>
@@ -18,16 +18,14 @@
       <h1 class="title is-1">{% block title required %}{% endblock %}</h1>
     </header>
     {% block content %}
-      <section class="section">
-        <div class="columns">
-          <div class="column is-one-quarter-tablet is-one-fifth-fullhd">
-            {% block side_panel required %}{% endblock %}
-          </div>
-          <div class="column">
-            {% block list_content required %}{% endblock %}
-          </div>
+      <div class="columns">
+        <div class="column is-one-quarter-tablet is-one-fifth-fullhd">
+          {% block sidebar required %}{% endblock %}
         </div>
-      </section>
+        <div class="column">
+          {% block list_content required %}{% endblock %}
+        </div>
+      </div>
     {% endblock %}
   </div>
 </main>

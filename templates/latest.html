@@ -1,16 +1,16 @@
 {% extends "base.jinja" %}
 {% from "components/forms.jinja" import number_input %}
 {% from "components/chart.jinja" import chart %}
-{% block title %}Weatherdan - Latest{% endblock %}
-{% block side_panel %}
+{% block title %}Latest{% endblock %}
+{% block sidebar %}
   <div class="box">
-    <h5 class="title is-5 has-text-info">Settings</h5>
-    <form accept-charset="UTF-8" action="/latest" method="get">
+    <h5 class="title is-5 has-text-info-light">Settings</h5>
+    <form accept-charset="UTF-8" action="/latest" method="GET">
       {{ number_input(label="Maximum Entries", name="maximum", value=count) }}
       <div class="buttons is-centered">
-        <button class="button is-link is-rounded">
-          <span class="icon is-medium">
-            <i class="fa-solid fa-lg fa-filter"></i>
+        <button class="button is-info">
+          <span class="icon">
+            <i class="fa-solid fa-filter"></i>
           </span>
           <span>Filter</span>
         </button>

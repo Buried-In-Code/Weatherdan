@@ -1,16 +1,16 @@
 {% extends "base.jinja" %}
 {% from "components/forms.jinja" import number_input %}
 {% from "components/chart.jinja" import chart %}
-{% block title %}Weatherdan - Filtered{% endblock %}
-{% block side_panel %}
+{% block title %}Filtered{% endblock %}
+{% block sidebar %}
   <div class="box">
-    <h5 class="title is-5 has-text-info">Settings</h5>
-    <form accept-charset="UTF-8" action="/filtered" method="get">
+    <h5 class="title is-5 has-text-info-light">Settings</h5>
+    <form accept-charset="UTF-8" action="/filtered" method="GET">
       {{ number_input(label="Maximum Entries", name="maximum", value=count) }}
       <div class="field">
-        <label class="label has-text-info-light">Select Year</label>
+        <label class="label has-text-info">Select Year</label>
         <div class="control is-expanded">
-          <div class="select is-fullwidth is-rounded">
+          <div class="select is-fullwidth">
             <select name="year">
               <option value="0"{% if not year %} selected{% endif %}>Year Select</option>
               {% for _year in year_list %}
@@ -22,9 +22,9 @@
       </div>
       {% if year %}
       <div class="field">
-        <label class="label has-text-info-light">Select Month</label>
+        <label class="label has-text-info">Select Month</label>
         <div class="control is-expanded">
-          <div class="select is-fullwidth is-rounded">
+          <div class="select is-fullwidth">
             <select name="month">
               <option value="0"{% if not month %} selected{% endif %}>Month Select</option>
               {% for _month in month_list %}
@@ -36,9 +36,9 @@
       </div>
       {% endif %}
       <div class="buttons is-centered">
-        <button class="button is-link is-rounded">
-          <span class="icon is-medium">
-            <i class="fa-solid fa-lg fa-filter"></i>
+        <button class="button is-info">
+          <span class="icon">
+            <i class="fa-solid fa-filter"></i>
           </span>
           <span>Filter</span>
         </button>

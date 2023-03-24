@@ -19,11 +19,15 @@ def _retrieve_live_readings(ecowitt: Ecowitt, device: tuple[str, str]) -> None:
 
 
 def _retrieve_historical_readings(
-    ecowitt: Ecowitt, device: tuple[str, str], last_updated: datetime
+    ecowitt: Ecowitt,
+    device: tuple[str, str],
+    last_updated: datetime,
 ) -> None:
     LOGGER.info(f"Pulling historical readings for device '{device[1]}'")
     if history := ecowitt.list_device_history(
-        mac=device[0], last_updated=last_updated, category=Category.RAINFALL
+        mac=device[0],
+        last_updated=last_updated,
+        category=Category.RAINFALL,
     ):
         for timestamp, rainfall in history.items():
             to_file(Reading(timestamp=timestamp.date(), value=Decimal(rainfall)))
@@ -34,7 +38,9 @@ def update_data(ecowitt: Ecowitt) -> bool:
     for device in ecowitt.list_devices():
         try:
             _retrieve_historical_readings(
-                ecowitt=ecowitt, device=device, last_updated=settings.ecowitt.last_updated
+                ecowitt=ecowitt,
+                device=device,
+                last_updated=settings.ecowitt.last_updated,
             )
             _retrieve_live_readings(ecowitt=ecowitt, device=device)
             settings.ecowitt.last_updated = datetime.now()

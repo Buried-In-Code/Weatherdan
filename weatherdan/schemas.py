@@ -11,7 +11,7 @@ class Stat(BaseModel):
 
     def __eq__(self, other):  # noqa: ANN001
         if not isinstance(other, Stat):
-            raise NotImplementedError()
+            raise NotImplementedError
         return self.timestamp == other.timestamp
 
     def __hash__(self):

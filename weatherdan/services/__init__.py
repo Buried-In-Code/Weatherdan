@@ -4,10 +4,11 @@ import logging
 from datetime import datetime
 from decimal import Decimal
 
+from weatherdan.models import Reading
 from weatherdan.services.ecowitt import Category, Ecowitt
 from weatherdan.services.exceptions import ServiceError
 from weatherdan.settings import Settings
-from weatherdan.storage import Reading, to_file
+from weatherdan.storage import add_entry
 
 LOGGER = logging.getLogger(__name__)
 
@@ -15,7 +16,7 @@ LOGGER = logging.getLogger(__name__)
 def _retrieve_live_readings(ecowitt: Ecowitt, device: tuple[str, str]) -> None:
     LOGGER.info(f"Pulling live readings for device '{device[1]}'")
     timestamp, rainfall = ecowitt.get_device_reading(mac=device[0], category=Category.RAINFALL)
-    to_file(Reading(timestamp=timestamp.date(), value=Decimal(rainfall)))
+    add_entry(entry=Reading(timestamp=timestamp.date(), value=Decimal(rainfall)))
 
 
 def _retrieve_historical_readings(
@@ -30,7 +31,7 @@ def _retrieve_historical_readings(
         category=Category.RAINFALL,
     ):
         for timestamp, rainfall in history.items():
-            to_file(Reading(timestamp=timestamp.date(), value=Decimal(rainfall)))
+            add_entry(entry=Reading(timestamp=timestamp.date(), value=Decimal(rainfall)))
 
 
 def update_data(ecowitt: Ecowitt) -> bool:

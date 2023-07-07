@@ -1,54 +1,49 @@
-__all__ = ["Reading", "to_file", "from_file"]
+__all__ = ["add_entry", "remove_entry", "write_to_file", "read_from_file"]
 
 import csv
-from dataclasses import dataclass, field
 from datetime import date
 from decimal import Decimal
 
 from weatherdan import get_data_root
+from weatherdan.models import Reading
 
 DATA_FILE = get_data_root() / "weatherdan-data.csv"
 
 
-@dataclass
-class Reading:
-    timestamp: date
-    value: Decimal = field(compare=False, hash=False)
-
-    def __lt__(self, other):  # noqa: ANN001
-        if not isinstance(other, Reading):
-            raise NotImplementedError
-        return self.timestamp < other.timestamp
-
-    def __eq__(self, other):  # noqa: ANN001
-        if not isinstance(other, Reading):
-            raise NotImplementedError
-        return self.timestamp == other.timestamp
-
-    def __hash__(self):
-        return hash((type(self), self.timestamp))
+def add_entry(entry: Reading) -> None:
+    entries = read_from_file()
+    if entry in entries:
+        entries.remove(entry)
+    entries.add(entry)
+    write_to_file(entries=entries)
 
 
-def to_file(*new_entries: Reading) -> None:
-    contents = set(new_entries) | from_file()
+def remove_entry(timestamp: date) -> None:
+    temp = Reading(timestamp=timestamp, value=Decimal(-1))
+    entries = read_from_file()
+    if temp in entries:
+        entries.remove(temp)
+    write_to_file(entries=entries)
+
+
+def write_to_file(entries: set[Reading]) -> None:
     with DATA_FILE.open("w", encoding="UTF-8", newline="") as stream:
         writer = csv.writer(stream)
         writer.writerow(["Timestamp", "Value"])
-        for entry in sorted(contents, key=lambda x: x.timestamp, reverse=True):
+        for entry in sorted(entries, key=lambda x: x.timestamp, reverse=True):
             writer.writerow([entry.timestamp.isoformat(), entry.value])
 
 
-def from_file() -> set[Reading]:
+def read_from_file() -> set[Reading]:
     output = set()
-    if not DATA_FILE.exists():
-        return output
-    with DATA_FILE.open("r", encoding="UTF-8") as stream:
-        reader = csv.DictReader(stream)
-        for entry in reader:
-            output.add(
-                Reading(
-                    timestamp=date.fromisoformat(entry["Timestamp"]),
-                    value=Decimal(entry["Value"]),
-                ),
-            )
+    if DATA_FILE.exists():
+        with DATA_FILE.open("r", encoding="UTF-8") as stream:
+            reader = csv.DictReader(stream)
+            for entry in reader:
+                output.add(
+                    Reading(
+                        timestamp=date.fromisoformat(entry["Timestamp"]),
+                        value=Decimal(entry["Value"]),
+                    ),
+                )
     return output

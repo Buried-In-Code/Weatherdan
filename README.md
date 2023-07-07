@@ -28,4 +28,5 @@ _TODO_
 
 ## Socials
 
-[![Social - Discord](https://img.shields.io/discord/618581423070117932?color=7289DA&label=The-DEV-Environment&logo=discord&style=for-the-badge)](https://discord.gg/nqGMeGg)
+[![Social - Fosstodon](https://img.shields.io/badge/%40BuriedInCode-teal?label=Fosstodon&logo=mastodon&style=for-the-badge)](https://fosstodon.org/@BuriedInCode)\
+[![Social - Matrix](https://img.shields.io/badge/%23The--Dev--Environment-teal?label=Matrix&logo=matrix&style=for-the-badge)](https://matrix.to/#/#The-Dev-Environment:matrix.org)

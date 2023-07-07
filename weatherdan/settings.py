@@ -6,17 +6,20 @@ from pathlib import Path
 from typing import ClassVar
 
 import tomli_w as tomlwriter
-from pydantic import BaseModel, Extra, validator
+from pydantic import BaseModel, field_validator
 
 from weatherdan import get_config_root
 
 
-class SettingsModel(BaseModel):
-    class Config:
-        allow_population_by_field_name = True
-        anystr_strip_whitespace = True
-        validate_assignment = True
-        extra = Extra.ignore
+class SettingsModel(
+    BaseModel,
+    populate_by_name=True,
+    str_strip_whitespace=True,
+    validate_assignment=True,
+    revalidate_instances="always",
+    extra="ignore",
+):
+    pass
 
 
 class WebsiteSettings(SettingsModel):
@@ -30,7 +33,7 @@ class EcowittSettings(SettingsModel):
     api_key: str = ""
     last_updated: datetime = datetime.now() - timedelta(days=365)
 
-    @validator("last_updated", always=True)
+    @field_validator("last_updated")
     def validate_last_updated(cls, v: datetime) -> datetime:
         year_ago = datetime.now() - timedelta(days=365)
         return year_ago if v < year_ago else v
@@ -52,7 +55,7 @@ class _Settings(SettingsModel):
 
     def save(self) -> "_Settings":
         with self._filepath.open("wb") as stream:
-            content = self.dict(by_alias=False)
+            content = self.model_dump(by_alias=False)
             tomlwriter.dump(content, stream)
         return self
 

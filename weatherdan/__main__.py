@@ -10,8 +10,8 @@ from jinja2.exceptions import TemplateNotFound
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from weatherdan import __version__, get_project_root, setup_logging
-from weatherdan.routing.api import router as api_router
-from weatherdan.routing.html import router as html_router
+from weatherdan.routers.api import router as api_router
+from weatherdan.routers.html import router as html_router
 from weatherdan.settings import Settings
 
 LOGGER = logging.getLogger("weatherdan")
@@ -30,7 +30,7 @@ app = create_app()
 
 @app.get(path="/")
 def redirect() -> RedirectResponse:
-    return RedirectResponse(url="/latest")
+    return RedirectResponse(url="/current")
 
 
 @app.on_event(event_type="startup")

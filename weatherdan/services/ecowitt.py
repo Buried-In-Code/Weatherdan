@@ -64,7 +64,7 @@ class Ecowitt:
 
     @sleep_and_retry
     @limits(calls=20, period=MINUTE)
-    def _get_request(self, endpoint: str, params: dict[str, str] = None) -> dict[str, Any]:
+    def _get_request(self, endpoint: str, params: dict[str, str] | None = None) -> dict[str, Any]:
         if params is None:
             params = {}
         params["application_key"] = self.application_key

@@ -1,4 +1,4 @@
-{% from "components/forms.jinja" import input, input_date, input_number %}
+{% from "components/forms.jinja" import select_number %}
 {% from "components/chart.jinja" import chart %}
 <!DOCTYPE html>
 <html lang="en-GB">
@@ -17,41 +17,16 @@
   <main class="section">
     <div class="container">
       <header class="block has-text-centered">
-        <h1 class="title is-1">Historical Readings</h1>
+        <h1 class="title is-1">Historical</h1>
       </header>
       <div class="columns">
         <div class="column is-one-quarter-tablet is-one-fifth-fullhd">
           <div class="box">
-            <h5 class="title is-5 has-text-info-light">Settings</h5>
+            <h5 class="title is-5 has-text-info-light">Filter</h5>
             <form accept-charset="UTF-8" action="/historical" method="GET">
-              {{ input_number(label="Count", name="count", value=count) }}
-              <div class="field">
-                <label class="label has-text-info">Select Year</label>
-                <div class="control is-expanded">
-                  <div class="select is-fullwidth">
-                    <select name="year">
-                      <option value="0"{% if not year %} selected{% endif %}>Year Select</option>
-                      {% for _year in year_list %}
-                        <option value="{{ _year }}"{% if _year == year %}selected{% endif %}>{{ _year }}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                </div>
-              </div>
+              {{ select_number(label="Select Year", name="year", value=year, options=year_list) }}
               {% if year %}
-                <div class="field">
-                  <label class="label has-text-info">Select Month</label>
-                  <div class="control is-expanded">
-                    <div class="select is-fullwidth">
-                      <select name="month">
-                        <option value="0"{% if not month %} selected{% endif %}>Month Select</option>
-                        {% for _month in month_list %}
-                          <option value="{{ _month }}"{% if _month == month %}selected{% endif %}>{{ _month }}</option>
-                        {% endfor %}
-                      </select>
-                    </div>
-                  </div>
-                </div>
+                {{ select_number(label="Select Month", name="month", value=month, options=month_list) }}
               {% endif %}
               <div class="buttons is-centered">
                 <button class="button is-info">
@@ -60,34 +35,11 @@
                   </span>
                   <span>Filter</span>
                 </button>
-              </div>
-            </form>
-          </div>
-          <div class="box">
-            <h5 class="title is-5 has-text-info-light">Add Entry</h5>
-            <form id="add-entry-form" onsubmit="return false;">
-              {{ input_date(label="Datestamp", name="datestamp") }}
-              {{ input(label="Rainfall (mm)", name="value") }}
-              <div class="buttons is-centered">
-                <button class="button is-success" id="add-entry-button" onclick="addEntry()" type="button">
+                <button class="button is-warning" onclick="resetForm('/historical')" type="button">
                   <span class="icon">
-                    <i class="fa-solid fa-add"></i>
+                    <i class="fa-solid fa-rotate"></i>
                   </span>
-                  <span>Add</span>
-                </button>
-              </div>
-            </form>
-          </div>
-          <div class="box">
-            <h5 class="title is-5 has-text-info-light">Remove Entry</h5>
-            <form id="remove-entry-form" onsubmit="return false;">
-              {{ input_date(label="Datestamp", name="datestamp") }}
-              <div class="buttons is-centered">
-                <button class="button is-danger" id="remove-entry-button" onclick="removeEntry()" type="button">
-                  <span class="icon">
-                    <i class="fa-solid fa-minus"></i>
-                  </span>
-                  <span>Remove</span>
+                  <span>Reset</span>
                 </button>
               </div>
             </form>
@@ -123,6 +75,7 @@
         element.value = `${yyyy}-${mm}-${dd}`
       });
     });
+
     ready(function() {
       let caller = "loading"
 
@@ -145,5 +98,9 @@
         alert(`${response.status} ${response.statusText} => ${msg.details}`)
       })).finally(() => removeLoading(caller));
     });
+
+    function resetForm(page) {
+      window.location = page;
+    }
   </script>
 </body>

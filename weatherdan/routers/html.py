@@ -1,6 +1,8 @@
 __all__ = ["router"]
 
-from fastapi import APIRouter, Request
+from typing import Annotated
+
+from fastapi import APIRouter, Cookie, Request
 from fastapi.responses import HTMLResponse, Response
 from fastapi.templating import Jinja2Templates
 
@@ -12,12 +14,17 @@ templates = Jinja2Templates(directory=get_project_root() / "templates")
 
 
 @router.get("/current", response_class=HTMLResponse)
-def latest(request: Request, count: int = 28) -> Response:
+def current(request: Request, count: Annotated[int, Cookie()] = 28) -> Response:
     return templates.TemplateResponse("current.html.jinja", {"request": request, "count": count})
 
 
 @router.get("/historical", response_class=HTMLResponse)
-def filtered(request: Request, maximum: int = 28, year: int = 0, month: int = 0) -> Response:
+def historical(
+    request: Request,
+    year: int = 0,
+    month: int = 0,
+    count: Annotated[int, Cookie()] = 28,
+) -> Response:
     def year_list() -> list[int]:
         return sorted({x.timestamp.year for x in read_from_file()})
 
@@ -28,10 +35,15 @@ def filtered(request: Request, maximum: int = 28, year: int = 0, month: int = 0)
         "historical.html.jinja",
         {
             "request": request,
-            "count": maximum,
+            "count": count,
             "year_list": year_list(),
             "month_list": month_list(year=year) if year else [],
             "year": year,
             "month": month,
         },
     )
+
+
+@router.get("/editor", response_class=HTMLResponse)
+def editor(request: Request, count: Annotated[int, Cookie()] = 28) -> Response:
+    return templates.TemplateResponse("editor.html.jinja", {"request": request, "count": count})

@@ -1,0 +1,142 @@
+{% from "components/forms.jinja" import input_date, input_number %}
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <title>Weatherdan</title>
+  <link href="https://use.fontawesome.com/releases/v6.3.0/css/all.css" rel="stylesheet">
+  <link href="/static/css/styles.css" rel="stylesheet">
+  <link href="/static/css/custom-bulma-dark.css" id="dark-theme" rel="stylesheet">
+  <link disabled href="/static/css/custom-bulma-light.css" id="light-theme" rel="stylesheet">
+  <link href="/static/img/favicon.ico" id="favicon" rel="icon" type="image/x-icon">
+</head>
+<body class="has-navbar-fixed-top">
+  {% include "components/navbar.jinja" %}
+  <main class="section">
+    <div class="container">
+      <header class="block has-text-centered">
+        <h1 class="title is-1">Editor</h1>
+      </header>
+      <div class="columns">
+        <div class="column is-one-quarter-tablet is-one-fifth-fullhd">
+          <div class="box">
+            <h5 class="title is-5 has-text-info-light">Settings</h5>
+            <form id="settings-form" onsubmit="return false;">
+              {{ input_number(label="Max Entries", name="count", value=count) }}
+              <div class="buttons is-centered">
+                <button class="button is-info" id="save-settings-button" onclick="saveSettings()" type="button">
+                  <span class="icon">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                  </span>
+                  <span>Save</span>
+                </button>
+              </div>
+            </form>
+          </div>
+          <div class="box">
+            <h5 class="title is-5 has-text-info-light">Add Entry</h5>
+            <form id="add-entry-form" onsubmit="return false;">
+              {{ input_date(label="Datestamp", name="datestamp") }}
+              {{ input_number(label="Rainfall (mm)", name="value") }}
+              <div class="buttons is-centered">
+                <button class="button is-success" id="add-entry-button" onclick="addEntry()" type="button">
+                  <span class="icon">
+                    <i class="fa-solid fa-add"></i>
+                  </span>
+                  <span>Add</span>
+                </button>
+              </div>
+            </form>
+          </div>
+          <div class="box">
+            <h5 class="title is-5 has-text-info-light">Remove Entry</h5>
+            <form id="remove-entry-form" onsubmit="return false;">
+              {{ input_date(label="Datestamp", name="datestamp") }}
+              <div class="buttons is-centered">
+                <button class="button is-danger" id="remove-entry-button" onclick="removeEntry()" type="button">
+                  <span class="icon">
+                    <i class="fa-solid fa-minus"></i>
+                  </span>
+                  <span>Remove</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  {% include "components/footer.jinja" %}
+  <script src="/static/js/bulma-navbar.js" type="text/javascript"></script>
+  <script src="/static/js/scripts.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    ready(function() {
+      let today = new Date();
+      let dd = String(today.getDate()).padStart(2, '0');
+      let mm = String(today.getMonth() + 1).padStart(2, '0');
+      let yyyy = today.getFullYear();
+      document.getElementsByName("datestamp").forEach(function(element) {
+        element.value = `${yyyy}-${mm}-${dd}`
+      });
+    });
+
+    function saveSettings() {
+      const caller = "save-settings-button";
+      addLoading(caller);
+      let form = document.getElementById("settings-form");
+      let formData = Object.fromEntries(new FormData(form));
+      console.log(formData);
+    
+      document.cookie = `count=${formData['count']};path=/;max-age=${60*60*24*30};SameSite=Strict`;
+      removeLoading(caller);
+    }
+
+    function addEntry() {
+      const caller = "add-entry-button";
+      let form = document.getElementById("add-entry-form");
+      let formData = Object.fromEntries(new FormData(form));
+      console.log(formData);
+
+      addLoading(caller);
+      fetch("/api/stats", {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+          "timestamp": formData["datestamp"],
+          "value": formData["value"],
+        }),
+      }).then((response) => {
+        if (!response.ok)
+          return Promise.reject(response);
+        form.reset();
+        window.location.reload();
+      }).catch((response) => response.json().then((msg) => {
+        alert(`${response.status} ${response.statusText} => ${msg.details}`);
+      })).finally(() => removeLoading(caller));
+    }
+
+    function removeEntry() {
+      const caller = "add-entry-button";
+      let form = document.getElementById("remove-entry-form");
+      let formData = Object.fromEntries(new FormData(form));
+      console.log(formData);
+
+      addLoading(caller);
+      fetch("/api/stats", {
+        method: "DELETE",
+        headers: headers,
+        body: JSON.stringify({
+          "timestamp": formData["datestamp"],
+        }),
+      }).then((response) => {
+        if (!response.ok)
+          return Promise.reject(response);
+        form.reset();
+        window.location.reload();
+      }).catch((response) => response.json().then((msg) => {
+        alert(`${response.status} ${response.statusText} => ${msg.details}`);
+      })).finally(() => removeLoading(caller));
+    }
+  </script>
+</body>

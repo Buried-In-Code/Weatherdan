@@ -1,4 +1,3 @@
-{% from "components/forms.jinja" import input, input_date, input_number %}
 {% from "components/chart.jinja" import chart %}
 <!DOCTYPE html>
 <html lang="en-GB">
@@ -17,54 +16,9 @@
   <main class="section">
     <div class="container">
       <header class="block has-text-centered">
-        <h1 class="title is-1">Current Readings</h1>
+        <h1 class="title is-1">Current</h1>
       </header>
       <div class="columns">
-        <div class="column is-one-quarter-tablet is-one-fifth-fullhd">
-          <div class="box">
-            <h5 class="title is-5 has-text-info-light">Settings</h5>
-            <form accept-charset="UTF-8" action="/current" method="GET">
-              {{ input_number(label="Count", name="count", value=count) }}
-              <div class="buttons is-centered">
-                <button class="button is-info">
-                  <span class="icon">
-                    <i class="fa-solid fa-filter"></i>
-                  </span>
-                  <span>Filter</span>
-                </button>
-              </div>
-            </form>
-          </div>
-          <div class="box">
-            <h5 class="title is-5 has-text-info-light">Add Entry</h5>
-            <form id="add-entry-form" onsubmit="return false;">
-              {{ input_date(label="Datestamp", name="datestamp") }}
-              {{ input(label="Rainfall (mm)", name="value") }}
-              <div class="buttons is-centered">
-                <button class="button is-success" id="add-entry-button" onclick="addEntry()" type="button">
-                  <span class="icon">
-                    <i class="fa-solid fa-add"></i>
-                  </span>
-                  <span>Add</span>
-                </button>
-              </div>
-            </form>
-          </div>
-          <div class="box">
-            <h5 class="title is-5 has-text-info-light">Remove Entry</h5>
-            <form id="remove-entry-form" onsubmit="return false;">
-              {{ input_date(label="Datestamp", name="datestamp") }}
-              <div class="buttons is-centered">
-                <button class="button is-danger" id="remove-entry-button" onclick="removeEntry()" type="button">
-                  <span class="icon">
-                    <i class="fa-solid fa-minus"></i>
-                  </span>
-                  <span>Remove</span>
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
         <div class="column">
           {{ chart(label="Daily Stats", id="daily-stats") }}
           {{ chart(label="Weekly Stats", id="weekly-stats") }}
@@ -91,8 +45,9 @@
         element.value = `${yyyy}-${mm}-${dd}`
       });
     });
+
     ready(function() {
-      let caller = "loading"
+      let caller = "loading";
 
       addLoading(caller);
       fetch("/api/stats", {

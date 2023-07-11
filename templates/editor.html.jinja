@@ -87,7 +87,7 @@
       let form = document.getElementById("settings-form");
       let formData = Object.fromEntries(new FormData(form));
       console.log(formData);
-    
+
       document.cookie = `count=${formData['count']};path=/;max-age=${60*60*24*30};SameSite=Strict`;
       removeLoading(caller);
     }

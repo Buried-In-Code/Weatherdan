@@ -37,16 +37,6 @@
   <script src="/static/js/scripts.js" type="text/javascript"></script>
   <script type="text/javascript">
     ready(function() {
-      let today = new Date();
-      let dd = String(today.getDate()).padStart(2, '0');
-      let mm = String(today.getMonth() + 1).padStart(2, '0');
-      let yyyy = today.getFullYear();
-      document.getElementsByName("datestamp").forEach(function(element) {
-        element.value = `${yyyy}-${mm}-${dd}`
-      });
-    });
-
-    ready(function() {
       let caller = "loading";
 
       addLoading(caller);

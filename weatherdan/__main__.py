@@ -44,20 +44,15 @@ async def startup_event() -> None:
 
 @app.middleware(middleware_type="http")
 async def logger_middleware(request: Request, call_next):  # noqa: ANN001, ANN201
-    LOGGER.info(
-        f"{request.method.upper():<7} {request.scope['path']} - {request.headers['user-agent']}",
-    )
+    LOGGER.debug(f"{request.method.upper():<7} {request.scope['path']}")
     response = await call_next(request)
+    log_message = f"{request.method.upper():<7} {request.scope['path']} - {response.status_code}"
     if response.status_code < 400:
-        LOGGER.info(f"{request.method.upper():<7} {request.scope['path']} - {response.status_code}")
+        LOGGER.info(log_message)
     elif response.status_code < 500:
-        LOGGER.warning(
-            f"{request.method.upper():<7} {request.scope['path']} - {response.status_code}",
-        )
+        LOGGER.warning(log_message)
     else:
-        LOGGER.error(
-            f"{request.method.upper():<7} {request.scope['path']} - {response.status_code}",
-        )
+        LOGGER.error(log_message)
     return response
 
 

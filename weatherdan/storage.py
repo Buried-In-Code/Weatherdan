@@ -14,8 +14,8 @@ def add_entry(entry: Reading) -> None:
     entries = read_from_file()
     if entry in entries:
         entries.remove(entry)
-    entries.add(entry)
-    write_to_file(entries=entries)
+    entries.append(entry)
+    write_to_file(entries=set(entries))
 
 
 def remove_entry(timestamp: date) -> None:
@@ -23,18 +23,18 @@ def remove_entry(timestamp: date) -> None:
     entries = read_from_file()
     if temp in entries:
         entries.remove(temp)
-    write_to_file(entries=entries)
+    write_to_file(entries=set(entries))
 
 
 def write_to_file(entries: set[Reading]) -> None:
     with DATA_FILE.open("w", encoding="UTF-8", newline="") as stream:
         writer = csv.writer(stream)
         writer.writerow(["Timestamp", "Value"])
-        for entry in sorted(entries, key=lambda x: x.timestamp, reverse=True):
+        for entry in sorted(entries, reverse=True):
             writer.writerow([entry.timestamp.isoformat(), entry.value])
 
 
-def read_from_file() -> set[Reading]:
+def read_from_file() -> list[Reading]:
     output = set()
     if DATA_FILE.exists():
         with DATA_FILE.open("r", encoding="UTF-8") as stream:
@@ -46,4 +46,4 @@ def read_from_file() -> set[Reading]:
                         value=Decimal(entry["Value"]),
                     ),
                 )
-    return output
+    return sorted(output, reverse=True)

@@ -24,9 +24,9 @@ dependencies = [
   "requests >= 2.31.0",
   "rich >= 13.4.2",
   "tomli-w >= 1.0.0",
-  "uvicorn >= 0.22.0"
+  "uvicorn >= 0.23.0"
 ]
-description = ""
+description = "Rainfall tracking system using Ecowitt."
 dynamic = ["version"]
 keywords = []
 license = {text = "MIT"}

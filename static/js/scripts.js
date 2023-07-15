@@ -5,20 +5,20 @@ const headers = {
 };
 
 function ready(fn) {
-  if (document.readyState !== 'loading') {
+  if (document.readyState !== "loading") {
     fn();
     return;
   }
-  document.addEventListener('DOMContentLoaded', fn);
+  document.addEventListener("DOMContentLoaded", fn);
 }
 
 function getCookie(cname) {
   let name = cname + "=";
   let decodedCookie = decodeURIComponent(document.cookie);
-  let ca = decodedCookie.split(';');
+  let ca = decodedCookie.split(";");
   for(let i = 0; i <ca.length; i++) {
     let c = ca[i];
-    while (c.charAt(0) == ' ') {
+    while (c.charAt(0) == " ") {
       c = c.substring(1);
     }
     if (c.indexOf(name) == 0) {
@@ -68,44 +68,49 @@ function createGraph(elementId, labelList, entryData) {
     data: {
       labels: labelList,
       datasets: [{
-        label: "Label",
-        fill: true,
         backgroundColor: "rgba(65,105,225,0.1)",
         borderColor: "rgba(65,105,225,1)",
         data: entryData,
-        steppedLine: false
+        steppedLine: false,
+        fill: true,
       }]
     },
     options: {
+      interaction: {
+        intersect: false,
+        mode: "nearest",
+      },
       plugins: {
         legend: {
-          labels: {
-            fontColor: '#D0D0D0',
-            fontSize: 14
-          },
-          display: false
-        }
+          display: false,
+        },
+        tooltip: {
+          enabled: true,
+          callbacks: {
+            label: function (context) {
+              return context.formattedValue + "mm";
+            }
+          }
+        },
       },
       responsive: true,
       maintainAspectRatio: false,
       scales: {
         x: {
-          ticks: {
-            maxRotation: 90,
-            minRotation: 90
-          },
           title: {
             display: true,
-            text: 'Timestamp'
-          }
+            text: "Timestamp",
+          },
+          position: "bottom",
         },
         y: {
           title: {
             display: true,
-            text: 'Rainfall (mm)'
-          }
+            text: "Rainfall (mm)",
+          },
+          position: "left",
         }
-      }
+      },
     }
   });
 }

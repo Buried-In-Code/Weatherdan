@@ -56,7 +56,7 @@ def get_daily_readings(
         entries = [x for x in entries if x.timestamp.year == year]
     if month:
         entries = [x for x in entries if x.timestamp.month == month]
-    return sorted(entries, reverse=True)[:count]
+    return reversed(entries[:count])
 
 
 def to_week_readings(entries: set[Reading]) -> list[WeekReading]:
@@ -93,7 +93,7 @@ def get_weekly_readings(
         entries = [
             x for x in entries if x.start_timestamp.month == month or x.end_timestamp.month == month
         ]
-    return sorted(entries, reverse=True)[:count]
+    return reversed(entries[:count])
 
 
 def to_month_readings(entries: set[Reading]) -> list[MonthReading]:
@@ -111,7 +111,7 @@ def get_monthly_readings(year: int | None = None, count: int = 1000) -> list[Mon
     entries = to_month_readings(entries=read_from_file())
     if year:
         entries = [x for x in entries if x.timestamp.year == year]
-    return sorted(entries, reverse=True)[:count]
+    return reversed(entries[:count])
 
 
 def to_year_readings(entries: set[Reading]) -> list[YearReading]:
@@ -127,7 +127,7 @@ def to_year_readings(entries: set[Reading]) -> list[YearReading]:
 @stat_router.get(path="/yearly")
 def get_yearly_readings(count: int = 1000) -> list[YearReading]:
     entries = to_year_readings(entries=read_from_file())
-    return sorted(entries, reverse=True)[:count]
+    return reversed(entries[:count])
 
 
 router.include_router(stat_router)

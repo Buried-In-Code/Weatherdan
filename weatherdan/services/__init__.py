@@ -1,7 +1,7 @@
 __all__ = ["update_data"]
 
 import logging
-from datetime import datetime
+from datetime import UTC, datetime
 from decimal import Decimal
 
 from weatherdan.models import Reading
@@ -14,7 +14,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 def _retrieve_live_readings(ecowitt: Ecowitt, device: tuple[str, str]) -> None:
-    LOGGER.info(f"Pulling live readings for device '{device[1]}'")
+    LOGGER.info("Pulling live readings for device '%s'", device[1])
     timestamp, rainfall = ecowitt.get_device_reading(mac=device[0], category=Category.RAINFALL)
     add_entry(entry=Reading(timestamp=timestamp.date(), value=Decimal(rainfall)))
 
@@ -24,7 +24,7 @@ def _retrieve_historical_readings(
     device: tuple[str, str],
     last_updated: datetime,
 ) -> None:
-    LOGGER.info(f"Pulling historical readings for device '{device[1]}'")
+    LOGGER.info("Pulling historical readings for device '%s'", device[1])
     if history := ecowitt.list_device_history(
         mac=device[0],
         last_updated=last_updated,
@@ -44,7 +44,7 @@ def update_data(ecowitt: Ecowitt) -> bool:
                 last_updated=settings.ecowitt.last_updated,
             )
             _retrieve_live_readings(ecowitt=ecowitt, device=device)
-            settings.ecowitt.last_updated = datetime.now()
+            settings.ecowitt.last_updated = datetime.now(tz=UTC).astimezone()
             settings.save()
             return True
         except (ServiceError, TypeError):

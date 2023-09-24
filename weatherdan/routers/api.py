@@ -1,7 +1,7 @@
 __all__ = ["router"]
 
 import logging
-from datetime import date, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from decimal import Decimal
 
 from fastapi import APIRouter, Body
@@ -34,7 +34,7 @@ def remove_reading(timestamp: date = Body(embed=True)) -> None:
 @stat_router.put(path="", status_code=204)
 def refresh_readings() -> None:
     settings = Settings()
-    if settings.ecowitt.last_updated >= datetime.now() - timedelta(hours=3):
+    if settings.ecowitt.last_updated >= datetime.now(tz=UTC).astimezone() - timedelta(hours=3):
         return
 
     LOGGER.info("Refreshing data")
@@ -87,11 +87,15 @@ def get_weekly_readings(
     entries = to_week_readings(entries=read_from_file())
     if year:
         entries = [
-            x for x in entries if x.start_timestamp.year == year or x.end_timestamp.year == year
+            x
+            for x in entries
+            if x.start_timestamp.year == year or x.end_timestamp.year == year  # noqa: PLR1714
         ]
     if month:
         entries = [
-            x for x in entries if x.start_timestamp.month == month or x.end_timestamp.month == month
+            x
+            for x in entries
+            if x.start_timestamp.month == month or x.end_timestamp.month == month  # noqa: PLR1714
         ]
     return reversed(entries[:count])
 

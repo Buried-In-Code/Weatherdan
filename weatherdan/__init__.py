@@ -5,19 +5,22 @@ __all__ = [
     "get_config_root",
     "get_data_root",
     "setup_logging",
+    "elapsed_timer",
 ]
 
 import logging
 import os
+from contextlib import contextmanager
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
+from timeit import default_timer
 
 from rich.logging import RichHandler
 from rich.traceback import install
 
 from weatherdan.console import CONSOLE
 
-__version__ = "0.4.2"
+__version__ = "0.5.0"
 
 
 def get_cache_root() -> Path:
@@ -75,3 +78,17 @@ def setup_logging(debug: bool = False) -> None:
     logging.getLogger("uvicorn").setLevel(logging.WARNING)
     logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
     logging.getLogger("uvicorn.error").setLevel(logging.WARNING)
+
+
+@contextmanager
+def elapsed_timer() -> float:
+    start = default_timer()
+
+    def elapser() -> float:
+        return default_timer() - start
+
+    yield lambda: elapser()
+    end = default_timer()
+
+    def elapser() -> float:  # noqa: F811
+        return end - start

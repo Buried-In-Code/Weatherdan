@@ -20,7 +20,8 @@ classifiers = [
 dependencies = [
   "fastapi >= 0.103.1",
   "jinja2 >= 3.1.2",
-  "pydantic >= 2.3.0",
+  "pony >= 0.7.17",
+  "pydantic >= 2.4.0",
   "ratelimit >= 2.2.1",
   "requests >= 2.31.0",
   "rich >= 13.5.3",
@@ -39,6 +40,9 @@ requires-python = ">= 3.11"
 dev = [
   "pre-commit >= 3.4.0"
 ]
+
+[project.scripts]
+Weatherdan = "run:main"
 
 [project.urls]
 Documentation = "https://github.com/Buried-In-Code/Weatherdan#readme"

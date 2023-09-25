@@ -1,8 +1,19 @@
+{% macro input(label, name, value="") %}
+  <div class="field">
+    <label class="label has-text-info">{{ label }}</label>
+    <div class="control is-expanded">
+      <input class="input" name="{{ name }}" placeholder="{{ label }}" type="text" value="{{ value }}">
+    </div>
+  </div>
+{% endmacro %}
+
+
+
 {% macro input_date(label, name, value="") %}
   <div class="field">
     <label class="label has-text-info">{{ label }}</label>
     <div class="control is-expanded">
-      <input class="input" name="{{ name }}" placeholder="{{ label }} (yyyy-mm-dd)" type="text" value="{{ value }}">
+      <input class="input" name="{{ name }}" placeholder="{{ label }}" type="date" value="{{ value }}">
     </div>
   </div>
 {% endmacro %}

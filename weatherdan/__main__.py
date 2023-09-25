@@ -4,7 +4,7 @@ from http import HTTPStatus
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import HTTPException, RequestValidationError
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from weatherdan import __version__, elapsed_timer, get_project_root, setup_logging
@@ -26,15 +26,10 @@ def create_app() -> FastAPI:
 app = create_app()
 
 
-@app.get(path="/")
-def redirect() -> RedirectResponse:
-    return RedirectResponse(url="/current")
-
-
 @app.on_event(event_type="startup")
 async def startup_event() -> None:
     setup_logging()
-    settings = Settings()
+    settings = Settings.load()
 
     LOGGER.info("Listening on %s:%s", settings.website.host, settings.website.port)
     LOGGER.info("%s v%s started", app.title, app.version)

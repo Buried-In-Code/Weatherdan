@@ -1,12 +1,12 @@
 __all__ = ["Settings"]
 
 import tomllib as tomlreader
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import ClassVar, Self
 
 import tomli_w as tomlwriter
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel
 
 from weatherdan import get_config_root
 
@@ -23,25 +23,25 @@ class SettingsModel(
 
 
 class WebsiteSettings(SettingsModel):
-    host: str = "localhost"
-    port: int = 3326
+    host: str = "127.0.0.1"
+    port: int = 25710
     reload: bool = False
 
 
 class EcowittSettings(SettingsModel):
     application_key: str = ""
     api_key: str = ""
-    last_updated: datetime = datetime.now(tz=UTC).astimezone() - timedelta(days=365)
 
-    @field_validator("last_updated")
-    def validate_last_updated(cls: Self, v: datetime) -> datetime:
-        year_ago = datetime.now(tz=UTC).astimezone() - timedelta(days=365)
-        return year_ago if v < year_ago else v
+
+class UpdateSettings(SettingsModel):
+    rainfall: datetime = datetime.now() - timedelta(days=365)  # noqa: DTZ005
+    temperature: datetime = datetime.now() - timedelta(days=365)  # noqa: DTZ005
 
 
 class Settings(SettingsModel):
     _filepath: ClassVar[Path] = get_config_root() / "settings.toml"
     ecowitt: EcowittSettings = EcowittSettings()
+    last_updated: UpdateSettings = UpdateSettings()
     website: WebsiteSettings = WebsiteSettings()
 
     @classmethod

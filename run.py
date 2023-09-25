@@ -4,7 +4,7 @@ from weatherdan.settings import Settings
 
 
 def main() -> None:
-    settings = Settings().save()
+    settings = Settings.load()
 
     uvicorn.run(
         "weatherdan.__main__:app",

@@ -1,4 +1,4 @@
-__all__ = ["Reading", "WeekReading", "MonthReading", "YearReading"]
+__all__ = ["Reading", "WeekReading", "RangeReading", "WeekRangeReading"]
 
 from datetime import date
 from decimal import Decimal
@@ -8,73 +8,84 @@ from pydantic import BaseModel
 
 
 class Reading(BaseModel):
-    timestamp: date
-    value: Decimal
+    datestamp: date
+    value: Decimal = Decimal(0)
 
     def __lt__(self: Self, other) -> int:  # noqa: ANN001
         if not isinstance(other, Reading):
             raise NotImplementedError
-        return self.timestamp < other.timestamp
+        return self.datestamp < other.datestamp
 
     def __eq__(self: Self, other) -> bool:  # noqa: ANN001
         if not isinstance(other, Reading):
             raise NotImplementedError
-        return self.timestamp == other.timestamp
+        return self.datestamp == other.datestamp
 
     def __hash__(self: Self) -> int:
-        return hash((type(self), self.timestamp))
+        return hash((type(self), self.datestamp))
 
 
 class WeekReading(BaseModel):
-    start_timestamp: date
-    end_timestamp: date
-    value: Decimal
+    start_datestamp: date
+    end_datestamp: date
+    value: Decimal = Decimal(0)
 
     def __lt__(self: Self, other) -> int:  # noqa: ANN001
         if not isinstance(other, WeekReading):
             raise NotImplementedError
-        return self.start_timestamp < other.start_timestamp
+        if self.start_datestamp != other.start_datestamp:
+            return self.start_datestamp < other.start_datestamp
+        return self.end_datestamp < other.end_datestamp
 
     def __eq__(self: Self, other) -> bool:  # noqa: ANN001
         if not isinstance(other, WeekReading):
             raise NotImplementedError
-        return self.start_timestamp == other.start_timestamp
+        if self.start_datestamp != other.start_datestamp:
+            return self.start_datestamp == other.start_datestamp
+        return self.end_datestamp == other.end_datestamp
 
     def __hash__(self: Self) -> int:
-        return hash((type(self), self.start_timestamp))
+        return hash((type(self), self.start_datestamp, self.end_datestamp))
 
 
-class MonthReading(BaseModel):
-    timestamp: date
-    value: Decimal
+class RangeReading(BaseModel):
+    datestamp: date
+    high: Decimal
+    low: Decimal
 
     def __lt__(self: Self, other) -> int:  # noqa: ANN001
-        if not isinstance(other, MonthReading):
+        if not isinstance(other, RangeReading):
             raise NotImplementedError
-        return self.timestamp < other.timestamp
+        return self.datestamp < other.datestamp
 
     def __eq__(self: Self, other) -> bool:  # noqa: ANN001
-        if not isinstance(other, MonthReading):
+        if not isinstance(other, RangeReading):
             raise NotImplementedError
-        return self.timestamp == other.timestamp
+        return self.datestamp == other.datestamp
 
     def __hash__(self: Self) -> int:
-        return hash((type(self), self.timestamp))
+        return hash((type(self), self.datestamp))
 
 
-class YearReading(BaseModel):
-    timestamp: date
-    value: Decimal
+class WeekRangeReading(BaseModel):
+    start_datestamp: date
+    end_datestamp: date
+    high: Decimal
+    low: Decimal
 
     def __lt__(self: Self, other) -> int:  # noqa: ANN001
-        if not isinstance(other, YearReading):
+        if not isinstance(other, WeekRangeReading):
             raise NotImplementedError
-        return self.timestamp < other.timestamp
+        if self.start_datestamp != other.start_datestamp:
+            return self.start_datestamp < other.start_datestamp
+        return self.end_datestamp < other.end_datestamp
 
     def __eq__(self: Self, other) -> bool:  # noqa: ANN001
-        if not isinstance(other, YearReading):
+        if not isinstance(other, WeekRangeReading):
             raise NotImplementedError
-        return self.timestamp == other.timestamp
+        if self.start_datestamp != other.start_datestamp:
+            return self.start_datestamp == other.start_datestamp
+        return self.end_datestamp == other.end_datestamp
 
     def __hash__(self: Self) -> int:
-        return hash((type(self), self.timestamp))
+        return hash((type(self), self.start_datestamp, self.end_datestamp))

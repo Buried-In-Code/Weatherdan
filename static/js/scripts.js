@@ -71,7 +71,7 @@ function createGraph(elementId, labelList, entryData, yLabel, unit, chartType = 
           callbacks: {
             label: function(context) {
               if (context.formattedValue.includes("[") && context.formattedValue.includes("]"))
-                return JSON.parse(context.formattedValue).join(" - ") + unit;
+                return JSON.parse(context.formattedValue).reverse().join(" - ") + unit;
               return context.formattedValue + unit
             }
           }

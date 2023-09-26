@@ -157,22 +157,21 @@ def refresh_readings(*, force: bool = False) -> None:
             start_date=settings.last_updated.rainfall,
         )
         for timestamp, value in history_readings.items():
-            reading = RainfallReading.get(
-                datestamp=timestamp.date(),
-            ) or RainfallReading(
-                datestamp=timestamp.date(),
-            )
-            reading.total = value
+            if reading := RainfallReading.get(datestamp=timestamp.date()):
+                reading.total = value
+            else:
+                reading = RainfallReading(datestamp=timestamp.date(), total=value)
         # endregion
         # region Live reading
         live_reading = ecowitt.get_live_reading(device=device.mac, category=Category.RAINFALL)
         if live_reading:
-            reading = RainfallReading.get(
-                datestamp=live_reading.time.date(),
-            ) or RainfallReading(
-                datestamp=live_reading.time.date(),
-            )
-            reading.total = live_reading.value
+            if reading := RainfallReading.get(datestamp=live_reading.time.date()):
+                reading.total = live_reading.value
+            else:
+                reading = RainfallReading(
+                    datestamp=live_reading.time.date(),
+                    total=live_reading.value,
+                )
         # endregion
     settings.last_updated.rainfall = datetime.now()  # noqa: DTZ005
     settings.save()

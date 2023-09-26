@@ -4,6 +4,8 @@ __all__ = [
     "RainfallReading",
     "SolarReading",
     "TemperatureReading",
+    "UVIndexReading",
+    "WindReading",
 ]
 
 from datetime import date
@@ -90,6 +92,19 @@ class TemperatureReading(db.Entity):
 
 class UVIndexReading(db.Entity):
     _table_ = "uv_index"
+
+    datestamp: date = PrimaryKey(date)
+    high: Decimal = Required(Decimal)
+
+    def to_model(self: Self) -> HighReading:
+        return HighReading(
+            datestamp=self.datestamp,
+            high=self.high,
+        )
+
+
+class WindReading(db.Entity):
+    _table_ = "wind"
 
     datestamp: date = PrimaryKey(date)
     high: Decimal = Required(Decimal)

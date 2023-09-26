@@ -40,6 +40,7 @@ class UpdateSettings(SettingsModel):
     solar: datetime = datetime.now() - timedelta(days=365)  # noqa: DTZ005
     temperature: datetime = datetime.now() - timedelta(days=365)  # noqa: DTZ005
     uv_index: datetime = datetime.now() - timedelta(days=365)  # noqa: DTZ005
+    wind: datetime = datetime.now() - timedelta(days=365)  # noqa: DTZ005
 
 
 class Settings(SettingsModel):

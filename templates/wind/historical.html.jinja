@@ -1,0 +1,109 @@
+{% from "components/forms.jinja" import select_number %}
+{% from "components/chart.jinja" import chart %}
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1" name="viewport">
+  <title>Weatherdan</title>
+  <link href="https://use.fontawesome.com/releases/v6.3.0/css/all.css" rel="stylesheet">
+  <link href="https://cdn.rawgit.com/jenil/bulmaswatch/gh-pages/darkly/bulmaswatch.min.css" rel="stylesheet">
+  <link href="/static/css/styles.css" rel="stylesheet">
+  <link href="/static/img/favicon.ico" id="favicon" rel="icon" type="image/x-icon">
+</head>
+<body class="has-navbar-fixed-top">
+{% include "components/navbar.jinja" %}
+<main class="section">
+  <div class="container">
+    <header class="block has-text-centered">
+      <h1 class="title is-1">Historical Wind</h1>
+    </header>
+    <section class="section">
+      <div class="columns is-centered">
+        <div class="column is-one-quarter-tablet is-one-fifth-fullhd">
+          <div class="box">
+            <h5 class="title is-5 has-text-info-light">Filter</h5>
+            <form accept-charset="UTF-8" action="/wind/historical" method="GET">
+              {{ select_number(label="Select Year", name="year", value=year, options=year_list) }}
+              {% if year %}
+                {{ select_number(label="Select Month", name="month", value=month, options=month_list) }}
+              {% endif %}
+              <div class="buttons is-centered">
+                <button class="button is-info">
+                  <span class="icon">
+                    <i class="fa-solid fa-filter"></i>
+                  </span>
+                  <span>Filter</span>
+                </button>
+                <button class="button is-warning" onclick="resetForm('/wind/historical')" type="button">
+                  <span class="icon">
+                    <i class="fa-solid fa-rotate"></i>
+                  </span>
+                  <span>Reset</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="column">
+          <div class="columns is-centered is-multiline">
+            {% if month %}
+              <div class="column is-full">
+                {{ chart(label="Daily Stats", id="daily-stats") }}
+              </div>
+              <div class="column is-full">
+                {{ chart(label="Weekly Stats", id="weekly-stats") }}
+              </div>
+            {% endif %}
+            {% if year %}
+              <div class="column is-full">
+                {{ chart(label="Monthly Stats", id="monthly-stats") }}
+              </div>
+            {% endif %}
+            <div class="column is-full">
+              {{ chart(label="Yearly Stats", id="yearly-stats") }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+{% include "components/footer.jinja" %}
+<script src="https://cdn.jsdelivr.net/npm/jquery@^3.6" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@^4.2" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@^2.29" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@^1.0" type="text/javascript"></script>
+<script src="/static/js/bulma-navbar.js" type="text/javascript"></script>
+<script src="/static/js/scripts.js" type="text/javascript"></script>
+<script src="/static/js/wind.js" type="text/javascript"></script>
+<script type="text/javascript">
+  ready(function() {
+    {% if month %}
+      loadStats("Daily", "daily-stats");
+      loadStats("Weekly", "weekly-stats");
+    {% endif %}
+    {% if year %}
+      loadStats("Monthly", "monthly-stats");
+    {% endif %}
+    loadStats("Yearly", "yearly-stats");
+  });
+  ready(function() {
+    let caller = "loading";
+
+    addLoading(caller);
+    fetch("/api/wind", {
+      method: "PUT",
+      headers: headers,
+    }).then((response) => {
+      if (!response.ok)
+        return Promise.reject(response);
+      window.location.reload();
+    }).catch((response) => response.json().then((msg) => {
+      if (response.status != 508)
+        alert(`${response.status} ${response.statusText} => ${msg.details}`);
+    })).finally(() => removeLoading(caller));
+  });
+</script>
+</body>
+</html>

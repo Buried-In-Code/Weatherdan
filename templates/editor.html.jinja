@@ -72,6 +72,12 @@
         <div class="column is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen">
           {{ remove_high("UV Index", "/api/uv-index") }}
         </div>
+        <div class="column is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen">
+          {{ add_high("Wind", "km/h", "/api/wind") }}
+        </div>
+        <div class="column is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen">
+          {{ remove_high("Wind", "/api/wind") }}
+        </div>
       </div>
     </section>
   </div>

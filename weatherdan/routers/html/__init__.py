@@ -10,6 +10,7 @@ from weatherdan.routers.html.pressure import router as pressure_router
 from weatherdan.routers.html.rainfall import router as rainfall_router
 from weatherdan.routers.html.solar import router as solar_router
 from weatherdan.routers.html.temperature import router as temperature_router
+from weatherdan.routers.html.uv_index import router as uv_index_router
 
 router = APIRouter(tags=["WebInterface"], include_in_schema=False)
 templates = Jinja2Templates(directory=get_project_root() / "templates")
@@ -30,3 +31,4 @@ router.include_router(pressure_router)
 router.include_router(rainfall_router)
 router.include_router(solar_router)
 router.include_router(temperature_router)
+router.include_router(uv_index_router)

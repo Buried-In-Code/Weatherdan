@@ -86,3 +86,16 @@ class TemperatureReading(db.Entity):
             high=self.high,
             low=self.low,
         )
+
+
+class UVIndexReading(db.Entity):
+    _table_ = "uv_index"
+
+    datestamp: date = PrimaryKey(date)
+    high: Decimal = Required(Decimal)
+
+    def to_model(self: Self) -> HighReading:
+        return HighReading(
+            datestamp=self.datestamp,
+            high=self.high,
+        )

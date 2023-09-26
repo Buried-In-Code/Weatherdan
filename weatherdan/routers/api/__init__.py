@@ -8,6 +8,7 @@ from weatherdan.routers.api.pressure import router as pressure_router
 from weatherdan.routers.api.rainfall import router as rainfall_router
 from weatherdan.routers.api.solar import router as solar_router
 from weatherdan.routers.api.temperature import router as temperature_router
+from weatherdan.routers.api.uv_index import router as uv_index_router
 
 router = APIRouter(
     prefix="/api",
@@ -18,3 +19,4 @@ router.include_router(pressure_router)
 router.include_router(rainfall_router)
 router.include_router(solar_router)
 router.include_router(temperature_router)
+router.include_router(uv_index_router)

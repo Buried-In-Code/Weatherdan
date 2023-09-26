@@ -107,8 +107,8 @@
             <h5 class="title is-5 has-text-info-light">Add Humidity</h5>
             <form id="add-humidity-form" onsubmit="return false;">
               {{ input_date(label="Datestamp", name="datestamp") }}
-              {{ input_number(label="High (°C)", name="high") }}
-              {{ input_number(label="Low (°C)", name="low") }}
+              {{ input_number(label="High (%)", name="high") }}
+              {{ input_number(label="Low (%)", name="low") }}
               <div class="buttons is-centered">
                 <button class="button is-success" id="add-humidity-button" onclick="addHumidity()" type="button">
                   <span class="icon">
@@ -127,6 +127,40 @@
               {{ input_date(label="Datestamp", name="datestamp") }}
               <div class="buttons is-centered">
                 <button class="button is-danger" id="remove-humidity-button" onclick="removeHumidity()" type="button">
+                  <span class="icon">
+                    <i class="fa-solid fa-minus"></i>
+                  </span>
+                  <span>Remove</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="column is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen">
+          <div class="box">
+            <h5 class="title is-5 has-text-info-light">Add Pressure</h5>
+            <form id="add-pressure-form" onsubmit="return false;">
+              {{ input_date(label="Datestamp", name="datestamp") }}
+              {{ input_number(label="High (hPa)", name="high") }}
+              {{ input_number(label="Low (hPa)", name="low") }}
+              <div class="buttons is-centered">
+                <button class="button is-success" id="add-pressure-button" onclick="addPressure()" type="button">
+                  <span class="icon">
+                    <i class="fa-solid fa-add"></i>
+                  </span>
+                  <span>Add</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="column is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen">
+          <div class="box">
+            <h5 class="title is-5 has-text-info-light">Remove Pressure</h5>
+            <form id="remove-pressure-form" onsubmit="return false;">
+              {{ input_date(label="Datestamp", name="datestamp") }}
+              <div class="buttons is-centered">
+                <button class="button is-danger" id="remove-pressure-button" onclick="removePressure()" type="button">
                   <span class="icon">
                     <i class="fa-solid fa-minus"></i>
                   </span>
@@ -287,6 +321,52 @@
 
     addLoading(caller);
     fetch("/api/humidity", {
+      method: "DELETE",
+      headers: headers,
+      body: JSON.stringify({
+        "datestamp": formData["datestamp"],
+      }),
+    }).then((response) => {
+      if (!response.ok)
+        return Promise.reject(response);
+      form.reset();
+      window.location.reload();
+    }).catch((response) => response.json().then((msg) => {
+      alert(`${response.status} ${response.statusText} => ${msg.details}`);
+    })).finally(() => removeLoading(caller));
+  }
+  function addPressure() {
+    const caller = "add-pressure-button";
+    let form = document.getElementById("add-pressure-form");
+    let formData = Object.fromEntries(new FormData(form));
+    console.log(formData);
+
+    addLoading(caller);
+    fetch("/api/pressure", {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify({
+        "datestamp": formData["datestamp"],
+        "high": formData["high"],
+        "low": formData["low"],
+      }),
+    }).then((response) => {
+      if (!response.ok)
+        return Promise.reject(response);
+      form.reset();
+      window.location.reload();
+    }).catch((response) => response.json().then((msg) => {
+      alert(`${response.status} ${response.statusText} => ${msg.details}`);
+    })).finally(() => removeLoading(caller));
+  }
+  function removePressure() {
+    const caller = "remove-pressure-button";
+    let form = document.getElementById("remove-pressure-form");
+    let formData = Object.fromEntries(new FormData(form));
+    console.log(formData);
+
+    addLoading(caller);
+    fetch("/api/pressure", {
       method: "DELETE",
       headers: headers,
       body: JSON.stringify({

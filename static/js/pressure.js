@@ -1,6 +1,6 @@
 function loadStats(timeframe, graphId) {
   let params = new URLSearchParams(window.location.search);
-  fetch("/api/temperature?" + new URLSearchParams({
+  fetch("/api/pressure?" + new URLSearchParams({
     timeframe: timeframe,
     year: params.get("year") || 0,
     month: params.get("month") || 0,
@@ -24,7 +24,7 @@ function loadStats(timeframe, graphId) {
           labelList.push(moment(reading.datestamp).format("YYYY"));
         entryData.push([reading.high, reading.low]);
       });
-      createGraph(graphId, labelList, entryData, "Temperature", "°C");
+      createGraph(graphId, labelList, entryData, "Pressure", "hPa");
     });
   }).catch((response) => response.json().then((msg) => {
     alert(`${response.status} ${response.statusText} => ${msg.details}`);

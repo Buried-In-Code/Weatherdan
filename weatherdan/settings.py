@@ -35,6 +35,7 @@ class EcowittSettings(SettingsModel):
 
 class UpdateSettings(SettingsModel):
     humidity: datetime = datetime.now() - timedelta(days=365)  # noqa: DTZ005
+    pressure: datetime = datetime.now() - timedelta(days=365)  # noqa: DTZ005
     rainfall: datetime = datetime.now() - timedelta(days=365)  # noqa: DTZ005
     temperature: datetime = datetime.now() - timedelta(days=365)  # noqa: DTZ005
 

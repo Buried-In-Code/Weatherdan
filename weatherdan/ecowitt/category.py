@@ -5,9 +5,13 @@ from typing import Self
 
 
 class Category(Enum):
-    RAINFALL = "rainfall.daily"
-    TEMPERATURE = "indoor.temperature"
     HUMIDITY = "indoor.humidity"
+    PRESSURE = "pressure.relative"
+    RAINFALL = "rainfall.daily"
+    SOLAR = "solar_and_uvi.solar"
+    TEMPERATURE = "indoor.temperature"
+    UV_INDEX = "solar_and_uvi.uvi"
+    WIND = "wind.wind_speed"
 
     @property
     def group_1(self: Self) -> str:

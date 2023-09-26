@@ -41,3 +41,63 @@ function removeLoading(caller){
 function resetForm(page) {
   window.location = page;
 }
+
+function createGraph(elementId, labelList, entryData, yLabel, unit, chartType = "bar") {
+  var config = {
+    type: chartType,
+    data: {
+      labels: labelList,
+      datasets: [
+        {
+          backgroundColor: "rgba(65,105,225,0.1)",
+          borderColor: "rgba(65,105,225,1)",
+          borderWidth: 2,
+          borderSkipped: false,
+          data: entryData,
+          yAxisID: "y",
+        }
+      ]
+    },
+    options: {
+      interaction: {
+        intersect: false,
+        mode: "nearest",
+      },
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              if (context.formattedValue.includes("[") && context.formattedValue.includes("]"))
+                return JSON.parse(context.formattedValue).join(" - ") + unit;
+              return context.formattedValue + unit
+            }
+          }
+        }
+      },
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: "Timestamp",
+          },
+          position: "bottom",
+        },
+        y: {
+          title: {
+            display: true,
+            text: yLabel
+          },
+          position: "left",
+          beginAtZero: false,
+        }
+      }
+    }
+  }
+  let ctx = document.getElementById(elementId);
+  new Chart(ctx, config);
+}

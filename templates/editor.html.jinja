@@ -42,7 +42,7 @@
               {{ input_date(label="Datestamp", name="datestamp") }}
               {{ input_number(label="Rainfall (mm)", name="value") }}
               <div class="buttons is-centered">
-                <button class="button is-success" id="add-entry-button" onclick="addRainfall()" type="button">
+                <button class="button is-success" id="add-rainfall-button" onclick="addRainfall()" type="button">
                   <span class="icon">
                     <i class="fa-solid fa-add"></i>
                   </span>
@@ -58,7 +58,7 @@
             <form id="remove-rainfall-form" onsubmit="return false;">
               {{ input_date(label="Datestamp", name="datestamp") }}
               <div class="buttons is-centered">
-                <button class="button is-danger" id="remove-entry-button" onclick="removeRainfall()" type="button">
+                <button class="button is-danger" id="remove-rainfall-button" onclick="removeRainfall()" type="button">
                   <span class="icon">
                     <i class="fa-solid fa-minus"></i>
                   </span>
@@ -76,7 +76,7 @@
               {{ input_number(label="High (°C)", name="high") }}
               {{ input_number(label="Low (°C)", name="low") }}
               <div class="buttons is-centered">
-                <button class="button is-success" id="add-entry-button" onclick="addTemperature()" type="button">
+                <button class="button is-success" id="add-temperature-button" onclick="addTemperature()" type="button">
                   <span class="icon">
                     <i class="fa-solid fa-add"></i>
                   </span>
@@ -92,7 +92,41 @@
             <form id="remove-temperature-form" onsubmit="return false;">
               {{ input_date(label="Datestamp", name="datestamp") }}
               <div class="buttons is-centered">
-                <button class="button is-danger" id="remove-entry-button" onclick="removeTemperature()" type="button">
+                <button class="button is-danger" id="remove-temperature-button" onclick="removeTemperature()" type="button">
+                  <span class="icon">
+                    <i class="fa-solid fa-minus"></i>
+                  </span>
+                  <span>Remove</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="column is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen">
+          <div class="box">
+            <h5 class="title is-5 has-text-info-light">Add Humidity</h5>
+            <form id="add-humidity-form" onsubmit="return false;">
+              {{ input_date(label="Datestamp", name="datestamp") }}
+              {{ input_number(label="High (°C)", name="high") }}
+              {{ input_number(label="Low (°C)", name="low") }}
+              <div class="buttons is-centered">
+                <button class="button is-success" id="add-humidity-button" onclick="addHumidity()" type="button">
+                  <span class="icon">
+                    <i class="fa-solid fa-add"></i>
+                  </span>
+                  <span>Add</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="column is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen">
+          <div class="box">
+            <h5 class="title is-5 has-text-info-light">Remove Humidity</h5>
+            <form id="remove-humidity-form" onsubmit="return false;">
+              {{ input_date(label="Datestamp", name="datestamp") }}
+              <div class="buttons is-centered">
+                <button class="button is-danger" id="remove-humidity-button" onclick="removeHumidity()" type="button">
                   <span class="icon">
                     <i class="fa-solid fa-minus"></i>
                   </span>
@@ -131,8 +165,8 @@
     window.location.reload();
   }
   function addRainfall() {
-    const caller = "add-entry-button";
-    let form = document.getElementById("add-entry-form");
+    const caller = "add-rainfall-button";
+    let form = document.getElementById("add-rainfall-form");
     let formData = Object.fromEntries(new FormData(form));
     console.log(formData);
 
@@ -154,8 +188,8 @@
     })).finally(() => removeLoading(caller));
   }
   function removeRainfall() {
-    const caller = "add-entry-button";
-    let form = document.getElementById("remove-entry-form");
+    const caller = "remove-rainfall-button";
+    let form = document.getElementById("remove-rainfall-form");
     let formData = Object.fromEntries(new FormData(form));
     console.log(formData);
 
@@ -176,7 +210,7 @@
     })).finally(() => removeLoading(caller));
   }
   function addTemperature() {
-    const caller = "add-entry-button";
+    const caller = "add-temperature-button";
     let form = document.getElementById("add-temperature-form");
     let formData = Object.fromEntries(new FormData(form));
     console.log(formData);
@@ -200,13 +234,59 @@
     })).finally(() => removeLoading(caller));
   }
   function removeTemperature() {
-    const caller = "add-entry-button";
+    const caller = "remove-temperature-button";
     let form = document.getElementById("remove-temperature-form");
     let formData = Object.fromEntries(new FormData(form));
     console.log(formData);
 
     addLoading(caller);
     fetch("/api/temperature", {
+      method: "DELETE",
+      headers: headers,
+      body: JSON.stringify({
+        "datestamp": formData["datestamp"],
+      }),
+    }).then((response) => {
+      if (!response.ok)
+        return Promise.reject(response);
+      form.reset();
+      window.location.reload();
+    }).catch((response) => response.json().then((msg) => {
+      alert(`${response.status} ${response.statusText} => ${msg.details}`);
+    })).finally(() => removeLoading(caller));
+  }
+  function addHumidity() {
+    const caller = "add-humidity-button";
+    let form = document.getElementById("add-humidity-form");
+    let formData = Object.fromEntries(new FormData(form));
+    console.log(formData);
+
+    addLoading(caller);
+    fetch("/api/humidity", {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify({
+        "datestamp": formData["datestamp"],
+        "high": formData["high"],
+        "low": formData["low"],
+      }),
+    }).then((response) => {
+      if (!response.ok)
+        return Promise.reject(response);
+      form.reset();
+      window.location.reload();
+    }).catch((response) => response.json().then((msg) => {
+      alert(`${response.status} ${response.statusText} => ${msg.details}`);
+    })).finally(() => removeLoading(caller));
+  }
+  function removeHumidity() {
+    const caller = "remove-humidity-button";
+    let form = document.getElementById("remove-humidity-form");
+    let formData = Object.fromEntries(new FormData(form));
+    console.log(formData);
+
+    addLoading(caller);
+    fetch("/api/humidity", {
       method: "DELETE",
       headers: headers,
       body: JSON.stringify({

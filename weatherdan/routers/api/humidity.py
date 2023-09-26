@@ -8,7 +8,7 @@ from fastapi import APIRouter, Body, Cookie
 from fastapi.exceptions import HTTPException
 from pony.orm import db_session
 
-from weatherdan.database.tables import TemperatureReading
+from weatherdan.database.tables import HumidityReading
 from weatherdan.ecowitt.category import Category
 from weatherdan.ecowitt.service import Ecowitt
 from weatherdan.models import RangeReading, WeekRangeReading
@@ -16,8 +16,8 @@ from weatherdan.responses import ErrorResponse
 from weatherdan.settings import Settings
 
 router = APIRouter(
-    prefix="/temperature",
-    tags=["Temperature"],
+    prefix="/humidity",
+    tags=["Humidity"],
     responses={422: {"description": "Validation error", "model": ErrorResponse}},
 )
 LOGGER = logging.getLogger(__name__)
@@ -32,7 +32,7 @@ class Timeframe(Enum):
 
 def get_daily_readings(year: int | None = None, month: int | None = None) -> list[RangeReading]:
     with db_session:
-        entries = sorted([x.to_model() for x in TemperatureReading.select()])
+        entries = sorted([x.to_model() for x in HumidityReading.select()])
         if year:
             entries = [x for x in entries if x.datestamp.year == year]
         if month:
@@ -51,7 +51,7 @@ def get_weekly_readings(
 
     with db_session:
         weekly = {}
-        for entry in sorted(TemperatureReading.select(), key=lambda x: x.datestamp):
+        for entry in sorted(HumidityReading.select(), key=lambda x: x.datestamp):
             key = get_week_ends(datestamp=entry.datestamp)
             if key not in weekly:
                 weekly[key] = WeekRangeReading(
@@ -84,7 +84,7 @@ def get_weekly_readings(
 def get_monthly_readings(year: int | None = None) -> list[RangeReading]:
     with db_session:
         monthly = {}
-        for entry in sorted(TemperatureReading.select(), key=lambda x: x.datestamp):
+        for entry in sorted(HumidityReading.select(), key=lambda x: x.datestamp):
             key = entry.datestamp.replace(day=1)
             if key not in monthly:
                 monthly[key] = RangeReading(datestamp=key, high=entry.high, low=entry.low)
@@ -101,7 +101,7 @@ def get_monthly_readings(year: int | None = None) -> list[RangeReading]:
 def get_yearly_readings() -> list[RangeReading]:
     with db_session:
         yearly = {}
-        for entry in sorted(TemperatureReading.select(), key=lambda x: x.datestamp):
+        for entry in sorted(HumidityReading.select(), key=lambda x: x.datestamp):
             key = entry.datestamp.replace(day=1, month=1)
             if key not in yearly:
                 yearly[key] = RangeReading(datestamp=key, high=entry.high, low=entry.low)
@@ -132,18 +132,18 @@ def list_readings(
 @router.post(path="", status_code=201)
 def add_reading(*, input: RangeReading) -> RangeReading:  # noqa: A002
     with db_session:
-        if reading := TemperatureReading.get(datestamp=input.datestamp):
+        if reading := HumidityReading.get(datestamp=input.datestamp):
             reading.high = input.high
             reading.low = input.low
         else:
-            reading = TemperatureReading(datestamp=input.datestamp, high=input.high, low=input.low)
+            reading = HumidityReading(datestamp=input.datestamp, high=input.high, low=input.low)
         return reading.to_model()
 
 
 @router.delete(path="", status_code=204)
 def remove_reading(*, datestamp: date = Body(embed=True)) -> None:
     with db_session:
-        reading = TemperatureReading.get(datestamp=datestamp)
+        reading = HumidityReading.get(datestamp=datestamp)
         if not reading:
             raise HTTPException(status_code=404, detail="Reading doesn't exist")
         reading.delete()
@@ -153,7 +153,7 @@ def remove_reading(*, datestamp: date = Body(embed=True)) -> None:
 def refresh_readings(*, force: bool = False) -> None:
     settings = Settings.load()
     temp_time = datetime.now() - timedelta(hours=3)  # noqa: DTZ005
-    if not force and settings.last_updated.temperature >= temp_time:
+    if not force and settings.last_updated.humidity >= temp_time:
         raise HTTPException(status_code=508, detail="No update needed")
     ecowitt = Ecowitt(
         application_key=settings.ecowitt.application_key,
@@ -166,32 +166,32 @@ def refresh_readings(*, force: bool = False) -> None:
         # region History readings
         history_readings = ecowitt.get_history_readings(
             device=device.mac,
-            category=Category.TEMPERATURE,
-            start_date=settings.last_updated.temperature,
+            category=Category.HUMIDITY,
+            start_date=settings.last_updated.humidity,
         )
         for timestamp, value in history_readings.items():
-            if reading := TemperatureReading.get(datestamp=timestamp.date()):
+            if reading := HumidityReading.get(datestamp=timestamp.date()):
                 if value > reading.high:
                     reading.high = value
                 if value < reading.low:
                     reading.low = value
             else:
-                reading = TemperatureReading(datestamp=timestamp.date(), high=value, low=value)
+                reading = HumidityReading(datestamp=timestamp.date(), high=value, low=value)
         # endregion
         # region Live reading
-        live_reading = ecowitt.get_live_reading(device=device.mac, category=Category.TEMPERATURE)
+        live_reading = ecowitt.get_live_reading(device=device.mac, category=Category.HUMIDITY)
         if live_reading:
-            if reading := TemperatureReading.get(datestamp=live_reading.time.date()):
+            if reading := HumidityReading.get(datestamp=live_reading.time.date()):
                 if live_reading.value > reading.high:
                     reading.high = live_reading.value
                 if live_reading.value < reading.low:
                     reading.low = live_reading.value
             else:
-                reading = TemperatureReading(
+                reading = HumidityReading(
                     datestamp=live_reading.time.date(),
                     high=live_reading.value,
                     low=live_reading.value,
                 )
         # endregion
-    settings.last_updated.temperature = datetime.now()  # noqa: DTZ005
+    settings.last_updated.humidity = datetime.now()  # noqa: DTZ005
     settings.save()

@@ -5,6 +5,7 @@ from fastapi.responses import HTMLResponse, Response
 from fastapi.templating import Jinja2Templates
 
 from weatherdan import get_project_root
+from weatherdan.routers.html.humidity import router as humidity_router
 from weatherdan.routers.html.rainfall import router as rainfall_router
 from weatherdan.routers.html.temperature import router as temperature_router
 
@@ -22,5 +23,6 @@ def editor(request: Request, count: int = Cookie(alias="weatherdan_count", defau
     return templates.TemplateResponse("editor.html.jinja", {"request": request, "count": count})
 
 
+router.include_router(humidity_router)
 router.include_router(rainfall_router)
 router.include_router(temperature_router)

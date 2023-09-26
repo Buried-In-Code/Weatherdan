@@ -1,4 +1,4 @@
-__all__ = ["RainfallReading", "TemperatureReading"]
+__all__ = ["HumidityReading", "RainfallReading", "TemperatureReading"]
 
 from datetime import date
 from decimal import Decimal
@@ -26,6 +26,21 @@ class RainfallReading(db.Entity):
 
 class TemperatureReading(db.Entity):
     _table_ = "temperature"
+
+    datestamp: date = PrimaryKey(date)
+    high: Decimal = Required(Decimal)
+    low: Decimal = Required(Decimal)
+
+    def to_model(self: Self) -> RangeReading:
+        return RangeReading(
+            datestamp=self.datestamp,
+            high=self.high,
+            low=self.low,
+        )
+
+
+class HumidityReading(db.Entity):
+    _table_ = "humidity"
 
     datestamp: date = PrimaryKey(date)
     high: Decimal = Required(Decimal)

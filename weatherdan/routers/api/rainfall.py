@@ -55,7 +55,7 @@ def get_weekly_readings(
             key = get_week_ends(datestamp=entry.datestamp)
             if key not in weekly:
                 weekly[key] = WeekTotalReading(start_datestamp=key[0], end_datestamp=key[1])
-            weekly[key].value += entry.value
+            weekly[key].total += entry.total
         entries = sorted(weekly.values())
         if year:
             entries = [
@@ -80,7 +80,7 @@ def get_monthly_readings(year: int | None = None) -> list[TotalReading]:
             key = entry.datestamp.replace(day=1)
             if key not in monthly:
                 monthly[key] = TotalReading(datestamp=key)
-            monthly[key].value += entry.value
+            monthly[key].total += entry.total
         entries = sorted(monthly.values())
         if year:
             entries = [x for x in entries if x.datestamp.year == year]
@@ -94,7 +94,7 @@ def get_yearly_readings() -> list[TotalReading]:
             key = entry.datestamp.replace(day=1, month=1)
             if key not in yearly:
                 yearly[key] = TotalReading(datestamp=key)
-            yearly[key].value += entry.value
+            yearly[key].total += entry.total
         return sorted(yearly.values())
 
 

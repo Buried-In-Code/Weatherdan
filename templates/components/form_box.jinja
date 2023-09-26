@@ -1,0 +1,117 @@
+{% from "components/forms.jinja" import input_date, input_number %}
+
+{% macro add_high(title, unit, endpoint) %}
+  <div class="box">
+    <h5 class="title is-5 has-text-info-light">Add {{ title }}</h5>
+    <form id="add-{{ title|lower }}-form" onsubmit="return false;">
+      {{ input_date(label="Datestamp", name="datestamp") }}
+      {{ input_number(label="High (" + unit + ")", name="high") }}
+      <div class="buttons is-centered">
+        <button class="button is-success" id="add-{{ title|lower }}-button" onclick="addHighEntry('{{ title|lower }}', '{{ endpoint }}')" type="button">
+          <span class="icon">
+            <i class="fa-solid fa-add"></i>
+          </span>
+          <span>Add</span>
+        </button>
+      </div>
+    </form>
+  </div>
+{% endmacro %}
+
+
+
+{% macro remove_high(title, endpoint) %}
+  <div class="box">
+    <h5 class="title is-5 has-text-info-light">Remove {{ title }}</h5>
+    <form id="remove-{{ title|lower }}-form" onsubmit="return false;">
+      {{ input_date(label="Datestamp", name="datestamp") }}
+      <div class="buttons is-centered">
+        <button class="button is-danger" id="remove-{{ title|lower }}-button" onclick="removeHighEntry('{{ title|lower }}', '{{ endpoint }}')" type="button">
+          <span class="icon">
+            <i class="fa-solid fa-minus"></i>
+          </span>
+          <span>Remove</span>
+        </button>
+      </div>
+    </form>
+  </div>
+{% endmacro %}
+
+
+
+{% macro add_range(title, unit, endpoint) %}
+  <div class="box">
+    <h5 class="title is-5 has-text-info-light">Add {{ title }}</h5>
+    <form id="add-{{ title|lower }}-form" onsubmit="return false;">
+      {{ input_date(label="Datestamp", name="datestamp") }}
+      {{ input_number(label="High (" + unit + ")", name="high") }}
+      {{ input_number(label="Low (" + unit + ")", name="low") }}
+      <div class="buttons is-centered">
+        <button class="button is-success" id="add-{{ title|lower }}-button" onclick="addRangeEntry('{{ title|lower }}', '{{ endpoint }}')" type="button">
+          <span class="icon">
+            <i class="fa-solid fa-add"></i>
+          </span>
+          <span>Add</span>
+        </button>
+      </div>
+    </form>
+  </div>
+{% endmacro %}
+
+
+
+{% macro remove_range(title, endpoint) %}
+  <div class="box">
+    <h5 class="title is-5 has-text-info-light">Remove {{ title }}</h5>
+    <form id="remove-{{ title|lower }}-form" onsubmit="return false;">
+      {{ input_date(label="Datestamp", name="datestamp") }}
+      <div class="buttons is-centered">
+        <button class="button is-danger" id="remove-{{ title|lower }}-button" onclick="removeRangeEntry('{{ title|lower }}', '{{ endpoint }}')" type="button">
+          <span class="icon">
+            <i class="fa-solid fa-minus"></i>
+          </span>
+          <span>Remove</span>
+        </button>
+      </div>
+    </form>
+  </div>
+{% endmacro %}
+
+
+
+{% macro add_total(title, unit, endpoint) %}
+  <div class="box">
+    <h5 class="title is-5 has-text-info-light">Add {{ title }}</h5>
+    <form id="add-{{ title|lower }}-form" onsubmit="return false;">
+      {{ input_date(label="Datestamp", name="datestamp") }}
+      {{ input_number(label="Total (" + unit + ")", name="total") }}
+      <div class="buttons is-centered">
+        <button class="button is-success" id="add-{{ title|lower }}-button" onclick="addTotalEntry('{{ title|lower }}', '{{ endpoint }}')" type="button">
+          <span class="icon">
+            <i class="fa-solid fa-add"></i>
+          </span>
+          <span>Add</span>
+        </button>
+      </div>
+    </form>
+  </div>
+{% endmacro %}
+
+
+
+{% macro remove_total(title, endpoint) %}
+  <div class="box">
+    <h5 class="title is-5 has-text-info-light">Remove {{ title }}</h5>
+    <form id="remove-{{ title|lower }}-form" onsubmit="return false;">
+      {{ input_date(label="Datestamp", name="datestamp") }}
+      <div class="buttons is-centered">
+        <button class="button is-danger" id="remove-{{ title|lower }}-button" onclick="removeTotalEntry('{{ title|lower }}', '{{ endpoint }}')" type="button">
+          <span class="icon">
+            <i class="fa-solid fa-minus"></i>
+          </span>
+          <span>Remove</span>
+        </button>
+      </div>
+    </form>
+  </div>
+{% endmacro %}

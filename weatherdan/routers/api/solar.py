@@ -8,16 +8,16 @@ from fastapi import APIRouter, Body, Cookie
 from fastapi.exceptions import HTTPException
 from pony.orm import db_session
 
-from weatherdan.database.tables import RainfallReading
+from weatherdan.database.tables import SolarReading
 from weatherdan.ecowitt.category import Category
 from weatherdan.ecowitt.service import Ecowitt
-from weatherdan.models import TotalReading, WeekTotalReading
+from weatherdan.models import HighReading, WeekHighReading
 from weatherdan.responses import ErrorResponse
 from weatherdan.settings import Settings
 
 router = APIRouter(
-    prefix="/rainfall",
-    tags=["Rainfall"],
+    prefix="/solar",
+    tags=["Solar"],
     responses={422: {"description": "Validation error", "model": ErrorResponse}},
 )
 LOGGER = logging.getLogger(__name__)
@@ -30,9 +30,9 @@ class Timeframe(Enum):
     YEARLY = "Yearly"
 
 
-def get_daily_readings(year: int | None = None, month: int | None = None) -> list[TotalReading]:
+def get_daily_readings(year: int | None = None, month: int | None = None) -> list[HighReading]:
     with db_session:
-        entries = sorted([x.to_model() for x in RainfallReading.select()])
+        entries = sorted([x.to_model() for x in SolarReading.select()])
         if year:
             entries = [x for x in entries if x.datestamp.year == year]
         if month:
@@ -43,7 +43,7 @@ def get_daily_readings(year: int | None = None, month: int | None = None) -> lis
 def get_weekly_readings(
     year: int | None = None,
     month: int | None = None,
-) -> list[WeekTotalReading]:
+) -> list[HighReading]:
     def get_week_ends(datestamp: date) -> tuple[date, date]:
         start = datestamp - timedelta(days=datestamp.isoweekday() - 1)
         end = start + timedelta(days=6)
@@ -51,11 +51,16 @@ def get_weekly_readings(
 
     with db_session:
         weekly = {}
-        for entry in sorted(RainfallReading.select(), key=lambda x: x.datestamp):
+        for entry in sorted(SolarReading.select(), key=lambda x: x.datestamp):
             key = get_week_ends(datestamp=entry.datestamp)
             if key not in weekly:
-                weekly[key] = WeekTotalReading(start_datestamp=key[0], end_datestamp=key[1])
-            weekly[key].value += entry.value
+                weekly[key] = WeekHighReading(
+                    start_datestamp=key[0],
+                    end_datestamp=key[1],
+                    high=entry.high,
+                )
+            if entry.high > weekly[key].high:
+                weekly[key].high = entry.high
         entries = sorted(weekly.values())
         if year:
             entries = [
@@ -73,28 +78,30 @@ def get_weekly_readings(
         return entries
 
 
-def get_monthly_readings(year: int | None = None) -> list[TotalReading]:
+def get_monthly_readings(year: int | None = None) -> list[HighReading]:
     with db_session:
         monthly = {}
-        for entry in sorted(RainfallReading.select(), key=lambda x: x.datestamp):
+        for entry in sorted(SolarReading.select(), key=lambda x: x.datestamp):
             key = entry.datestamp.replace(day=1)
             if key not in monthly:
-                monthly[key] = TotalReading(datestamp=key)
-            monthly[key].value += entry.value
+                monthly[key] = HighReading(datestamp=key, high=entry.high)
+            if entry.high > monthly[key].high:
+                monthly[key].high = entry.high
         entries = sorted(monthly.values())
         if year:
             entries = [x for x in entries if x.datestamp.year == year]
         return entries
 
 
-def get_yearly_readings() -> list[TotalReading]:
+def get_yearly_readings() -> list[HighReading]:
     with db_session:
         yearly = {}
-        for entry in sorted(RainfallReading.select(), key=lambda x: x.datestamp):
+        for entry in sorted(SolarReading.select(), key=lambda x: x.datestamp):
             key = entry.datestamp.replace(day=1, month=1)
             if key not in yearly:
-                yearly[key] = TotalReading(datestamp=key)
-            yearly[key].value += entry.value
+                yearly[key] = HighReading(datestamp=key, high=entry.high)
+            if entry.high > yearly[key].high:
+                yearly[key].high = entry.high
         return sorted(yearly.values())
 
 
@@ -105,7 +112,7 @@ def list_readings(
     year: int | None = None,
     month: int | None = None,
     count: int = Cookie(alias="weatherdan_count", default=28),
-) -> list[TotalReading | WeekTotalReading]:
+) -> list[HighReading | WeekHighReading]:
     if timeframe == Timeframe.DAILY:
         return get_daily_readings(year=year, month=month)[-count:]
     if timeframe == Timeframe.WEEKLY:
@@ -116,21 +123,19 @@ def list_readings(
 
 
 @router.post(path="", status_code=201)
-def add_reading(*, input: TotalReading) -> TotalReading:  # noqa: A002
+def add_reading(*, input: HighReading) -> HighReading:  # noqa: A002
     with db_session:
-        reading = RainfallReading.get(
-            datestamp=input.datestamp,
-        ) or RainfallReading(
-            datestamp=input.datestamp,
-        )
-        reading.total = input.total
+        if reading := SolarReading.get(datestamp=input.datestamp):
+            reading.high = input.high
+        else:
+            reading = SolarReading(datestamp=input.datestamp, high=input.high)
         return reading.to_model()
 
 
 @router.delete(path="", status_code=204)
 def remove_reading(*, datestamp: date = Body(embed=True)) -> None:
     with db_session:
-        reading = RainfallReading.get(datestamp=datestamp)
+        reading = SolarReading.get(datestamp=datestamp)
         if not reading:
             raise HTTPException(status_code=404, detail="Reading doesn't exist")
         reading.delete()
@@ -140,7 +145,7 @@ def remove_reading(*, datestamp: date = Body(embed=True)) -> None:
 def refresh_readings(*, force: bool = False) -> None:
     settings = Settings.load()
     temp_time = datetime.now() - timedelta(hours=3)  # noqa: DTZ005
-    if not force and settings.last_updated.rainfall >= temp_time:
+    if not force and settings.last_updated.solar >= temp_time:
         raise HTTPException(status_code=508, detail="No update needed")
     ecowitt = Ecowitt(
         application_key=settings.ecowitt.application_key,
@@ -153,26 +158,27 @@ def refresh_readings(*, force: bool = False) -> None:
         # region History readings
         history_readings = ecowitt.get_history_readings(
             device=device.mac,
-            category=Category.RAINFALL,
-            start_date=settings.last_updated.rainfall,
+            category=Category.SOLAR,
+            start_date=settings.last_updated.solar,
         )
         for timestamp, value in history_readings.items():
-            reading = RainfallReading.get(
-                datestamp=timestamp.date(),
-            ) or RainfallReading(
-                datestamp=timestamp.date(),
-            )
-            reading.total = value
+            if reading := SolarReading.get(datestamp=timestamp.date()):
+                if value > reading.high:
+                    reading.high = value
+            else:
+                reading = SolarReading(datestamp=timestamp.date(), high=value)
         # endregion
         # region Live reading
-        live_reading = ecowitt.get_live_reading(device=device.mac, category=Category.RAINFALL)
+        live_reading = ecowitt.get_live_reading(device=device.mac, category=Category.SOLAR)
         if live_reading:
-            reading = RainfallReading.get(
-                datestamp=live_reading.time.date(),
-            ) or RainfallReading(
-                datestamp=live_reading.time.date(),
-            )
-            reading.total = live_reading.value
+            if reading := SolarReading.get(datestamp=live_reading.time.date()):
+                if live_reading.value > reading.high:
+                    reading.high = live_reading.value
+            else:
+                reading = SolarReading(
+                    datestamp=live_reading.time.date(),
+                    high=live_reading.value,
+                )
         # endregion
-    settings.last_updated.rainfall = datetime.now()  # noqa: DTZ005
+    settings.last_updated.solar = datetime.now()  # noqa: DTZ005
     settings.save()

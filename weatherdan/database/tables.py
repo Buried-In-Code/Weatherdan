@@ -1,12 +1,18 @@
-__all__ = ["HumidityReading", "PressureReading", "RainfallReading", "TemperatureReading"]
+__all__ = [
+    "HumidityReading",
+    "PressureReading",
+    "RainfallReading",
+    "SolarReading",
+    "TemperatureReading",
+]
 
 from datetime import date
 from decimal import Decimal
 from typing import Self
 
-from pony.orm import Database, Optional, PrimaryKey, Required
+from pony.orm import Database, PrimaryKey, Required
 
-from weatherdan.models import RangeReading, Reading
+from weatherdan.models import HighReading, RangeReading, TotalReading
 
 db = Database()
 
@@ -45,12 +51,25 @@ class RainfallReading(db.Entity):
     _table_ = "rainfall"
 
     datestamp: date = PrimaryKey(date)
-    value: Decimal = Optional(Decimal, default=Decimal(0), sql_default=0)
+    total: Decimal = Required(Decimal)
 
-    def to_model(self: Self) -> Reading:
-        return Reading(
+    def to_model(self: Self) -> TotalReading:
+        return TotalReading(
             datestamp=self.datestamp,
-            value=self.value,
+            total=self.total,
+        )
+
+
+class SolarReading(db.Entity):
+    _table_ = "solar"
+
+    datestamp: date = PrimaryKey(date)
+    high: Decimal = Required(Decimal)
+
+    def to_model(self: Self) -> HighReading:
+        return HighReading(
+            datestamp=self.datestamp,
+            high=self.high,
         )
 
 

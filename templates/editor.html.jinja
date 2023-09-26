@@ -1,4 +1,5 @@
-{% from "components/forms.jinja" import input_date, input_number %}
+{% from "components/forms.jinja" import input_number %}
+{% from "components/form_box.jinja" import add_high, remove_high, add_range, remove_range, add_total, remove_total %}
 <!DOCTYPE html>
 <html lang="en-GB">
 <head>
@@ -36,139 +37,34 @@
           </div>
         </div>
         <div class="column is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen">
-          <div class="box">
-            <h5 class="title is-5 has-text-info-light">Add Rainfall</h5>
-            <form id="add-rainfall-form" onsubmit="return false;">
-              {{ input_date(label="Datestamp", name="datestamp") }}
-              {{ input_number(label="Rainfall (mm)", name="value") }}
-              <div class="buttons is-centered">
-                <button class="button is-success" id="add-rainfall-button" onclick="addRainfall()" type="button">
-                  <span class="icon">
-                    <i class="fa-solid fa-add"></i>
-                  </span>
-                  <span>Add</span>
-                </button>
-              </div>
-            </form>
-          </div>
+          {{ add_range("Humidity", "%", "/api/humidity") }}
         </div>
         <div class="column is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen">
-          <div class="box">
-            <h5 class="title is-5 has-text-info-light">Remove Rainfall</h5>
-            <form id="remove-rainfall-form" onsubmit="return false;">
-              {{ input_date(label="Datestamp", name="datestamp") }}
-              <div class="buttons is-centered">
-                <button class="button is-danger" id="remove-rainfall-button" onclick="removeRainfall()" type="button">
-                  <span class="icon">
-                    <i class="fa-solid fa-minus"></i>
-                  </span>
-                  <span>Remove</span>
-                </button>
-              </div>
-            </form>
-          </div>
+          {{ remove_range("Humidity", "/api/humidity") }}
         </div>
         <div class="column is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen">
-          <div class="box">
-            <h5 class="title is-5 has-text-info-light">Add Temperature</h5>
-            <form id="add-temperature-form" onsubmit="return false;">
-              {{ input_date(label="Datestamp", name="datestamp") }}
-              {{ input_number(label="High (°C)", name="high") }}
-              {{ input_number(label="Low (°C)", name="low") }}
-              <div class="buttons is-centered">
-                <button class="button is-success" id="add-temperature-button" onclick="addTemperature()" type="button">
-                  <span class="icon">
-                    <i class="fa-solid fa-add"></i>
-                  </span>
-                  <span>Add</span>
-                </button>
-              </div>
-            </form>
-          </div>
+          {{ add_range("Pressure", "hPa", "/api/pressure") }}
         </div>
         <div class="column is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen">
-          <div class="box">
-            <h5 class="title is-5 has-text-info-light">Remove Temperature</h5>
-            <form id="remove-temperature-form" onsubmit="return false;">
-              {{ input_date(label="Datestamp", name="datestamp") }}
-              <div class="buttons is-centered">
-                <button class="button is-danger" id="remove-temperature-button" onclick="removeTemperature()" type="button">
-                  <span class="icon">
-                    <i class="fa-solid fa-minus"></i>
-                  </span>
-                  <span>Remove</span>
-                </button>
-              </div>
-            </form>
-          </div>
+          {{ remove_range("Pressure", "/api/pressure") }}
         </div>
         <div class="column is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen">
-          <div class="box">
-            <h5 class="title is-5 has-text-info-light">Add Humidity</h5>
-            <form id="add-humidity-form" onsubmit="return false;">
-              {{ input_date(label="Datestamp", name="datestamp") }}
-              {{ input_number(label="High (%)", name="high") }}
-              {{ input_number(label="Low (%)", name="low") }}
-              <div class="buttons is-centered">
-                <button class="button is-success" id="add-humidity-button" onclick="addHumidity()" type="button">
-                  <span class="icon">
-                    <i class="fa-solid fa-add"></i>
-                  </span>
-                  <span>Add</span>
-                </button>
-              </div>
-            </form>
-          </div>
+          {{ add_total("Rainfall", "mm", "/api/rainfall") }}
         </div>
         <div class="column is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen">
-          <div class="box">
-            <h5 class="title is-5 has-text-info-light">Remove Humidity</h5>
-            <form id="remove-humidity-form" onsubmit="return false;">
-              {{ input_date(label="Datestamp", name="datestamp") }}
-              <div class="buttons is-centered">
-                <button class="button is-danger" id="remove-humidity-button" onclick="removeHumidity()" type="button">
-                  <span class="icon">
-                    <i class="fa-solid fa-minus"></i>
-                  </span>
-                  <span>Remove</span>
-                </button>
-              </div>
-            </form>
-          </div>
+          {{ remove_total("Rainfall", "/api/rainfall") }}
         </div>
         <div class="column is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen">
-          <div class="box">
-            <h5 class="title is-5 has-text-info-light">Add Pressure</h5>
-            <form id="add-pressure-form" onsubmit="return false;">
-              {{ input_date(label="Datestamp", name="datestamp") }}
-              {{ input_number(label="High (hPa)", name="high") }}
-              {{ input_number(label="Low (hPa)", name="low") }}
-              <div class="buttons is-centered">
-                <button class="button is-success" id="add-pressure-button" onclick="addPressure()" type="button">
-                  <span class="icon">
-                    <i class="fa-solid fa-add"></i>
-                  </span>
-                  <span>Add</span>
-                </button>
-              </div>
-            </form>
-          </div>
+          {{ add_high("Solar", "lx", "/api/solar") }}
         </div>
         <div class="column is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen">
-          <div class="box">
-            <h5 class="title is-5 has-text-info-light">Remove Pressure</h5>
-            <form id="remove-pressure-form" onsubmit="return false;">
-              {{ input_date(label="Datestamp", name="datestamp") }}
-              <div class="buttons is-centered">
-                <button class="button is-danger" id="remove-pressure-button" onclick="removePressure()" type="button">
-                  <span class="icon">
-                    <i class="fa-solid fa-minus"></i>
-                  </span>
-                  <span>Remove</span>
-                </button>
-              </div>
-            </form>
-          </div>
+          {{ remove_high("Solar", "/api/solar") }}
+        </div>
+        <div class="column is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen">
+          {{ add_range("Temperature", "°C", "/api/temperature") }}
+        </div>
+        <div class="column is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen">
+          {{ remove_range("Temperature", "/api/temperature") }}
         </div>
       </div>
     </section>
@@ -198,19 +94,19 @@
     removeLoading(caller);
     window.location.reload();
   }
-  function addRainfall() {
-    const caller = "add-rainfall-button";
-    let form = document.getElementById("add-rainfall-form");
+  function addHighEntry(prefix, endpoint) {
+    const caller = `add-${prefix}-button`
+    let form = document.getElementById(`add-${prefix}-form`);
     let formData = Object.fromEntries(new FormData(form));
     console.log(formData);
 
     addLoading(caller);
-    fetch("/api/rainfall", {
+    fetch(endpoint, {
       method: "POST",
       headers: headers,
       body: JSON.stringify({
         "datestamp": formData["datestamp"],
-        "value": formData["value"],
+        "high": formData["high"],
       }),
     }).then((response) => {
       if (!response.ok)
@@ -221,14 +117,14 @@
       alert(`${response.status} ${response.statusText} => ${msg.details}`);
     })).finally(() => removeLoading(caller));
   }
-  function removeRainfall() {
-    const caller = "remove-rainfall-button";
-    let form = document.getElementById("remove-rainfall-form");
+  function removeHighEntry(prefix, endpoint) {
+    const caller = `remove-${prefix}-button`
+    let form = document.getElementById(`remove-${prefix}-form`);
     let formData = Object.fromEntries(new FormData(form));
     console.log(formData);
 
     addLoading(caller);
-    fetch("/api/rainfall", {
+    fetch(endpoint, {
       method: "DELETE",
       headers: headers,
       body: JSON.stringify({
@@ -243,14 +139,14 @@
       alert(`${response.status} ${response.statusText} => ${msg.details}`);
     })).finally(() => removeLoading(caller));
   }
-  function addTemperature() {
-    const caller = "add-temperature-button";
-    let form = document.getElementById("add-temperature-form");
+  function addRangeEntry(prefix, endpoint) {
+    const caller = `add-${prefix}-button`
+    let form = document.getElementById(`add-${prefix}-form`);
     let formData = Object.fromEntries(new FormData(form));
     console.log(formData);
 
     addLoading(caller);
-    fetch("/api/temperature", {
+    fetch(endpoint, {
       method: "POST",
       headers: headers,
       body: JSON.stringify({
@@ -267,14 +163,14 @@
       alert(`${response.status} ${response.statusText} => ${msg.details}`);
     })).finally(() => removeLoading(caller));
   }
-  function removeTemperature() {
-    const caller = "remove-temperature-button";
-    let form = document.getElementById("remove-temperature-form");
+  function removeRangeEntry(prefix, endpoint) {
+    const caller = `remove-${prefix}-button`
+    let form = document.getElementById(`remove-${prefix}-form`);
     let formData = Object.fromEntries(new FormData(form));
     console.log(formData);
 
     addLoading(caller);
-    fetch("/api/temperature", {
+    fetch(endpoint, {
       method: "DELETE",
       headers: headers,
       body: JSON.stringify({
@@ -289,20 +185,19 @@
       alert(`${response.status} ${response.statusText} => ${msg.details}`);
     })).finally(() => removeLoading(caller));
   }
-  function addHumidity() {
-    const caller = "add-humidity-button";
-    let form = document.getElementById("add-humidity-form");
+  function addTotalEntry(prefix, endpoint) {
+    const caller = `add-${prefix}-button`
+    let form = document.getElementById(`add-${prefix}-form`);
     let formData = Object.fromEntries(new FormData(form));
     console.log(formData);
 
     addLoading(caller);
-    fetch("/api/humidity", {
+    fetch(endpoint, {
       method: "POST",
       headers: headers,
       body: JSON.stringify({
         "datestamp": formData["datestamp"],
-        "high": formData["high"],
-        "low": formData["low"],
+        "total": formData["total"],
       }),
     }).then((response) => {
       if (!response.ok)
@@ -313,60 +208,14 @@
       alert(`${response.status} ${response.statusText} => ${msg.details}`);
     })).finally(() => removeLoading(caller));
   }
-  function removeHumidity() {
-    const caller = "remove-humidity-button";
-    let form = document.getElementById("remove-humidity-form");
+  function removeTotalEntry(prefix, endpoint) {
+    const caller = `remove-${prefix}-button`
+    let form = document.getElementById(`remove-${prefix}-form`);
     let formData = Object.fromEntries(new FormData(form));
     console.log(formData);
 
     addLoading(caller);
-    fetch("/api/humidity", {
-      method: "DELETE",
-      headers: headers,
-      body: JSON.stringify({
-        "datestamp": formData["datestamp"],
-      }),
-    }).then((response) => {
-      if (!response.ok)
-        return Promise.reject(response);
-      form.reset();
-      window.location.reload();
-    }).catch((response) => response.json().then((msg) => {
-      alert(`${response.status} ${response.statusText} => ${msg.details}`);
-    })).finally(() => removeLoading(caller));
-  }
-  function addPressure() {
-    const caller = "add-pressure-button";
-    let form = document.getElementById("add-pressure-form");
-    let formData = Object.fromEntries(new FormData(form));
-    console.log(formData);
-
-    addLoading(caller);
-    fetch("/api/pressure", {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify({
-        "datestamp": formData["datestamp"],
-        "high": formData["high"],
-        "low": formData["low"],
-      }),
-    }).then((response) => {
-      if (!response.ok)
-        return Promise.reject(response);
-      form.reset();
-      window.location.reload();
-    }).catch((response) => response.json().then((msg) => {
-      alert(`${response.status} ${response.statusText} => ${msg.details}`);
-    })).finally(() => removeLoading(caller));
-  }
-  function removePressure() {
-    const caller = "remove-pressure-button";
-    let form = document.getElementById("remove-pressure-form");
-    let formData = Object.fromEntries(new FormData(form));
-    console.log(formData);
-
-    addLoading(caller);
-    fetch("/api/pressure", {
+    fetch(endpoint, {
       method: "DELETE",
       headers: headers,
       body: JSON.stringify({

@@ -5,11 +5,9 @@ from typing import Self
 
 
 class Category(Enum):
-    HUMIDITY = "indoor.humidity"
     PRESSURE = "pressure.relative"
     RAINFALL = "rainfall.daily"
     SOLAR = "solar_and_uvi.solar"
-    TEMPERATURE = "indoor.temperature"
     UV_INDEX = "solar_and_uvi.uvi"
     WIND = "wind.wind_speed"
 

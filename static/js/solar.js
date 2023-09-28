@@ -1,4 +1,4 @@
-function loadStats(timeframe, graphId) {
+function loadSolarStats(timeframe, graphId, count = null) {
   let params = new URLSearchParams(window.location.search);
   fetch("/api/solar?" + new URLSearchParams({
     timeframe: timeframe,
@@ -13,7 +13,9 @@ function loadStats(timeframe, graphId) {
     response.json().then((data) => {
       let labelList = [];
       let entryData = [];
-      data.forEach((reading) => {
+      data.forEach(function (reading, index) {
+        if (count != null && index >= count)
+          return;
         if (timeframe == "Daily")
           labelList.push(moment(reading.datestamp).format("Do MMM YYYY"));
         else if (timeframe == "Weekly")

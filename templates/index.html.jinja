@@ -23,9 +23,6 @@
     <section class="section">
       <div class="columns is-centered is-multiline">
         <div class="column is-full">
-          {{ chart(label="Pressure Stats", id="pressure-stats") }}
-        </div>
-        <div class="column is-full">
           {{ chart(label="Rainfall Stats", id="rainfall-stats") }}
         </div>
         <div class="column is-full">
@@ -48,14 +45,12 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@^1.0" type="text/javascript"></script>
 <script src="/static/js/bulma-navbar.js" type="text/javascript"></script>
 <script src="/static/js/scripts.js" type="text/javascript"></script>
-<script src="/static/js/pressure.js" type="text/javascript"></script>
 <script src="/static/js/rainfall.js" type="text/javascript"></script>
 <script src="/static/js/solar.js" type="text/javascript"></script>
 <script src="/static/js/uv-index.js" type="text/javascript"></script>
 <script src="/static/js/wind.js" type="text/javascript"></script>
 <script type="text/javascript">
   ready(function() {
-    loadPressureStats("Daily", "pressure-stats", 7);
     loadRainfallStats("Daily", "rainfall-stats", 7);
     loadSolarStats("Daily", "solar-stats", 7);
     loadUVIndexStats("Daily", "uv-index-stats", 7);
@@ -65,17 +60,9 @@
     let caller = "loading";
 
     addLoading(caller);
-    fetch("/api/pressure", {
+    fetch("/api/rainfall", {
       method: "PUT",
       headers: headers,
-    }).then((response) => {
-      if (!response.ok)
-        return Promise.reject(response);
-    }).then(() => {
-      fetch("/api/rainfall", {
-        method: "PUT",
-        headers: headers,
-      })
     }).then((response) => {
       if (!response.ok)
         return Promise.reject(response);

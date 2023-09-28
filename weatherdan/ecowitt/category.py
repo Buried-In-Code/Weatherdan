@@ -5,7 +5,6 @@ from typing import Self
 
 
 class Category(Enum):
-    PRESSURE = "pressure.relative"
     RAINFALL = "rainfall.daily"
     SOLAR = "solar_and_uvi.solar"
     UV_INDEX = "solar_and_uvi.uvi"

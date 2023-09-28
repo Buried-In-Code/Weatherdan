@@ -13,8 +13,9 @@ function loadRainfallStats(timeframe, graphId, count = null) {
     response.json().then((data) => {
       let labelList = [];
       let entryData = [];
+      let temp = data.length - count;
       data.forEach(function (reading, index) {
-        if (count != null && index >= count)
+        if (count != null && index < temp)
           return;
         if (timeframe == "Daily")
           labelList.push(moment(reading.datestamp).format("Do MMM YYYY"));

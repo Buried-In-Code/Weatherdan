@@ -56,43 +56,35 @@
     loadUVIndexStats("Daily", "uv-index-stats", 7);
     loadWindStats("Daily", "wind-stats", 7);
   });
-  ready(function() {
-    let caller = "loading";
-
-    addLoading(caller);
-    fetch("/api/rainfall", {
+  function refreshReadings(endpoint) {
+    fetch(endpoint, {
       method: "PUT",
       headers: headers,
     }).then((response) => {
       if (!response.ok)
         return Promise.reject(response);
-    }).then(() => {
-      fetch("/api/solar", {
-        method: "PUT",
-        headers: headers,
-      })
-    }).then((response) => {
-      if (!response.ok)
-        return Promise.reject(response);
-    }).then(() => {
-      fetch("/api/uv-index", {
-        method: "PUT",
-        headers: headers,
-      })
-    }).then((response) => {
-      if (!response.ok)
-        return Promise.reject(response);
-    }).then(() => {
-      fetch("/api/wind", {
-        method: "PUT",
-        headers: headers,
-      })
-    }).then((response) => {
-      if (!response.ok)
-        return Promise.reject(response);
+      if (response.status != 208)
+        return Promise.resolve(true);
+      return Promise.resolve(false);
+    })
+  }
+  ready(function() {
+    let caller = "loading";
+
+    addLoading(caller);
+    Promise.all([
+      refreshReadings("/api/rainfall"),
+      refreshReadings("/api/solar"),
+      refreshReadings("/api/uv-index"),
+      refreshReadings("/api/wind"),
+    ]).then((results) => {
+      let reload = results.some(function(x) => {
+        return x == true;
+      });
+      if (reload == true)
+        window.location.reload();
     }).catch((response) => response.json().then((msg) => {
-      if (response.status != 508)
-        alert(`${response.status} ${response.statusText} => ${msg.details}`);
+      alert(`${response.status} ${response.statusText} => ${msg.details}`);
     })).finally(() => removeLoading(caller));
   });
 </script>

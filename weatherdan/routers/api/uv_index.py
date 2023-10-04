@@ -146,13 +146,11 @@ def refresh_readings(*, force: bool = False) -> None:
     settings = Settings.load()
     temp_time = datetime.now() - timedelta(hours=3)  # noqa: DTZ005
     if not force and settings.last_updated.uv_index >= temp_time:
-        raise HTTPException(status_code=508, detail="No update needed")
+        raise HTTPException(status_code=208, detail="No update needed")
     ecowitt = Ecowitt(
         application_key=settings.ecowitt.application_key,
         api_key=settings.ecowitt.api_key,
     )
-    if not ecowitt.test_credentials():
-        raise HTTPException(status_code=401, detail="Missing Ecowitt authentication")
     with db_session:
         device = ecowitt.list_devices()[0]
         # region History readings

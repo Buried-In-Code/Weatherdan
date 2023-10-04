@@ -11,7 +11,7 @@ from typing import Self
 
 from pony.orm import Database, PrimaryKey, Required
 
-from weatherdan.models import HighReading, RangeReading, TotalReading
+from weatherdan.models import HighReading, TotalReading
 
 db = Database()
 

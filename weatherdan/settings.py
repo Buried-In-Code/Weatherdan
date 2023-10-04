@@ -47,7 +47,7 @@ class Settings(SettingsModel):
     website: WebsiteSettings = WebsiteSettings()
 
     @classmethod
-    def load(cls: Self) -> Self:
+    def load(cls: type[Self]) -> Self:
         if not cls._filepath.exists():
             Settings().save()
         with cls._filepath.open("rb") as stream:

@@ -83,12 +83,7 @@ def setup_logging(debug: bool = False) -> None:
 @contextmanager
 def elapsed_timer() -> float:
     start = default_timer()
-
-    def elapser() -> float:
-        return default_timer() - start
-
+    elapser = lambda: default_timer() - start  # noqa: E731
     yield lambda: elapser()
     end = default_timer()
-
-    def elapser() -> float:  # noqa: F811
-        return end - start
+    elapser = lambda: end - start  # noqa: E731

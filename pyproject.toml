@@ -14,17 +14,17 @@ classifiers = [
   "Operating System :: MacOS",
   "Operating System :: Microsoft :: Windows",
   "Operating System :: POSIX :: Linux",
-  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
   "Typing :: Typed"
 ]
 dependencies = [
-  "fastapi >= 0.103.1",
+  "fastapi >= 0.103.2",
   "jinja2 >= 3.1.2",
   "pony >= 0.7.17",
-  "pydantic >= 2.4.1",
+  "pydantic >= 2.4.2",
   "ratelimit >= 2.2.1",
   "requests >= 2.31.0",
-  "rich >= 13.5.3",
+  "rich >= 13.6.0",
   "tomli-w >= 1.0.0",
   "uvicorn >= 0.23.2"
 ]
@@ -34,7 +34,7 @@ keywords = []
 license = {text = "MIT"}
 name = "weatherdan"
 readme = "README.md"
-requires-python = ">= 3.11"
+requires-python = ">= 3.12"
 
 [project.optional-dependencies]
 dev = [
@@ -51,7 +51,7 @@ Source = "https://github.com/Buried-In-Code/Weatherdan"
 
 [tool.black]
 line-length = 100
-target-version = ["py311"]
+target-version = ["py312"]
 
 [tool.hatch.version]
 path = "weatherdan/__init__.py"
@@ -70,7 +70,7 @@ line-length = 100
 output-format = "grouped"
 select = ["ALL"]
 show-fixes = true
-target-version = "py311"
+target-version = "py312"
 
 [tool.ruff.flake8-annotations]
 allow-star-arg-any = true

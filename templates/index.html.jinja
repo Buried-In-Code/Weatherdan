@@ -15,10 +15,7 @@
 <main class="section">
   <div class="container">
     <header class="block has-text-centered">
-      <figure class="image is-128x128 is-inline-block">
-        <img class="profile" loading="lazy" src="/static/img/logo.png" alt="Weatherdan Logo"/>
-      </figure>
-      <h1 class="title is-1">Weatherdan</h1>
+      <h1 class="title is-1">Dashboard</h1>
     </header>
     <section class="section">
       <div class="columns is-centered is-multiline">
@@ -56,36 +53,39 @@
     loadUVIndexStats("Daily", "uv-index-stats", 7);
     loadWindStats("Daily", "wind-stats", 7);
   });
-  function refreshReadings(endpoint) {
-    fetch(endpoint, {
+  function refreshReadings(endpoint, previous = []) {
+    return fetch(endpoint, {
       method: "PUT",
       headers: headers,
     }).then((response) => {
       if (!response.ok)
         return Promise.reject(response);
       if (response.status != 208)
-        return Promise.resolve(true);
-      return Promise.resolve(false);
-    })
+        previous.push(true);
+      else
+        previous.push(false);
+      return Promise.resolve(previous);
+    });
   }
   ready(function() {
     let caller = "loading";
 
     addLoading(caller);
-    Promise.all([
-      refreshReadings("/api/rainfall"),
-      refreshReadings("/api/solar"),
-      refreshReadings("/api/uv-index"),
-      refreshReadings("/api/wind"),
-    ]).then((results) => {
-      let reload = results.some(function(x) => {
+    refreshReadings("/api/rainfall")
+    .then((results) => refreshReadings("/api/solar", results))
+    .then((results) => refreshReadings("/api/uv-index", results))
+    .then((results) => refreshReadings("/api/wind", results))
+    .then((results) => {
+      let reload = results.some((x) => {
         return x == true;
       });
       if (reload == true)
         window.location.reload();
-    }).catch((response) => response.json().then((msg) => {
-      alert(`${response.status} ${response.statusText} => ${msg.details}`);
-    })).finally(() => removeLoading(caller));
+    }).catch((response) => {
+      response.json().then((msg) => {
+        alert(`${response.status} ${response.statusText} => ${msg.details}`);
+      });
+    }).finally(() => removeLoading(caller));
   });
 </script>
 </body>

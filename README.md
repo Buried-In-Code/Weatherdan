@@ -2,7 +2,7 @@
 
 # Weatherdan
 
-![Python](https://img.shields.io/badge/Python-3.11-green?style=flat-square)
+![Python](https://img.shields.io/badge/Python-3.12-green?style=flat-square)
 ![Status](https://img.shields.io/badge/Status-Beta-yellowgreen?style=flat-square)
 
 [![Hatch](https://img.shields.io/badge/Packaging-Hatch-4051b5?style=flat-square)](https://github.com/pypa/hatch)
@@ -14,17 +14,15 @@
 [![Github - License](https://img.shields.io/github/license/Buried-In-Code/Weatherdan?logo=Github&label=License&style=flat-square)](https://opensource.org/licenses/MIT)
 [![Github - Contributors](https://img.shields.io/github/contributors/Buried-In-Code/Weatherdan?logo=Github&label=Contributors&style=flat-square)](https://github.com/Buried-In-Code/Weatherdan/graphs/contributors)
 
-_TODO_
+Retrieve weather information from Ecowitt devices and allow for manual additions and updates.
+Currently, tracks total Rainfall, max Solar, max UV Index and max Wind readings.
 
-## Installation
+## Usage
 
 1. Make sure you have a supported version of [Python](https://www.python.org/) installed: `python --version`
 2. Clone the repo: `git clone https://github.com/Buried-In-Code/Weatherdan`
 3. Install the project: `pip install .`
-
-## Execution
-
-- `python run.py`
+4. Run using: `Weatherdan`
 
 ## Socials
 

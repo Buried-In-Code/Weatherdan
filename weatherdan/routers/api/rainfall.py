@@ -8,7 +8,7 @@ from fastapi import APIRouter, Body, Cookie
 from fastapi.exceptions import HTTPException
 from pony.orm import db_session
 
-from weatherdan.constants import Constants
+from weatherdan.constants import constants
 from weatherdan.database.tables import RainfallReading
 from weatherdan.ecowitt.category import Category
 from weatherdan.models import TotalReading, WeekTotalReading
@@ -138,15 +138,15 @@ def remove_reading(*, datestamp: date = Body(embed=True)) -> None:
 @router.put(path="", status_code=204)
 def refresh_readings(*, force: bool = False) -> None:
     temp_time = datetime.now() - timedelta(hours=3)  # noqa: DTZ005
-    if not force and Constants.settings.last_updated.rainfall >= temp_time:
+    if not force and constants.settings.last_updated.rainfall >= temp_time:
         raise HTTPException(status_code=208, detail="No update needed")
     with db_session:
-        device = Constants.ecowitt.list_devices()[0]
+        device = constants.ecowitt.list_devices()[0]
         # region History readings
-        history_readings = Constants.ecowitt.get_history_readings(
+        history_readings = constants.ecowitt.get_history_readings(
             device=device.mac,
             category=Category.RAINFALL,
-            start_date=Constants.settings.last_updated.rainfall,
+            start_date=constants.settings.last_updated.rainfall,
         )
         for timestamp, value in history_readings.items():
             if reading := RainfallReading.get(datestamp=timestamp.date()):
@@ -155,7 +155,7 @@ def refresh_readings(*, force: bool = False) -> None:
                 reading = RainfallReading(datestamp=timestamp.date(), total=value)
         # endregion
         # region Live reading
-        live_reading = Constants.ecowitt.get_live_reading(
+        live_reading = constants.ecowitt.get_live_reading(
             device=device.mac,
             category=Category.RAINFALL,
         )
@@ -168,5 +168,5 @@ def refresh_readings(*, force: bool = False) -> None:
                     total=live_reading.value,
                 )
         # endregion
-    Constants.settings.last_updated.rainfall = datetime.now()  # noqa: DTZ005
-    Constants.settings.save()
+    constants.settings.last_updated.rainfall = datetime.now()  # noqa: DTZ005
+    constants.settings.save()

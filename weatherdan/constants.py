@@ -1,4 +1,4 @@
-__all__ = ["Constants"]
+__all__ = ["constants"]
 
 import logging
 import sys
@@ -29,3 +29,6 @@ class Constants:
         if not ecowitt.test_credentials():
             sys.exit("Invalid Ecowitt credentials")
         return ecowitt
+
+
+constants = Constants()

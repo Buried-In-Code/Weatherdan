@@ -1,16 +1,16 @@
 import uvicorn
 
-from weatherdan.constants import Constants
+from weatherdan.constants import constants
 
 
 def main() -> None:
     uvicorn.run(
         "weatherdan.__main__:app",
-        host=Constants.settings.website.host,
-        port=Constants.settings.website.port,
+        host=constants.settings.website.host,
+        port=constants.settings.website.port,
         use_colors=True,
         server_header=False,
-        reload=Constants.settings.website.reload,
+        reload=constants.settings.website.reload,
         log_config=None,
     )
 

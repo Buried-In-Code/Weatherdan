@@ -8,7 +8,7 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from weatherdan import __version__, elapsed_timer, get_project_root, setup_logging
-from weatherdan.constants import Constants
+from weatherdan.constants import constants
 from weatherdan.routers.api import router as api_router
 from weatherdan.routers.html import router as html_router
 
@@ -32,8 +32,8 @@ async def startup_event() -> None:
 
     LOGGER.info(
         "Listening on %s:%s",
-        Constants.settings.website.host,
-        Constants.settings.website.port,
+        constants.settings.website.host,
+        constants.settings.website.port,
     )
     LOGGER.info("%s v%s started", app.title, app.version)
 

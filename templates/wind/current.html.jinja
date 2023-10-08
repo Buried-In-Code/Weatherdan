@@ -60,10 +60,10 @@
     }).then((response) => {
       if (!response.ok)
         return Promise.reject(response);
-      window.location.reload();
+      if (response.status != 208)
+        window.location.reload();
     }).catch((response) => response.json().then((msg) => {
-      if (response.status != 508)
-        alert(`${response.status} ${response.statusText} => ${msg.details}`);
+      alert(`${response.status} ${response.statusText} => ${msg.details}`);
     })).finally(() => removeLoading(caller));
   });
 </script>

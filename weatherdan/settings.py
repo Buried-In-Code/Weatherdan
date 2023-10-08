@@ -49,10 +49,10 @@ class Settings(SettingsModel):
     @classmethod
     def load(cls: type[Self]) -> Self:
         if not cls._filepath.exists():
-            Settings().save()
+            cls().save()
         with cls._filepath.open("rb") as stream:
             content = tomlreader.load(stream)
-        return Settings(**content)
+        return cls(**content)
 
     def save(self: Self) -> Self:
         with self._filepath.open("wb") as stream:

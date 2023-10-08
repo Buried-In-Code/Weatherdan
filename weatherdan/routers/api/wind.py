@@ -8,12 +8,11 @@ from fastapi import APIRouter, Body, Cookie
 from fastapi.exceptions import HTTPException
 from pony.orm import db_session
 
+from weatherdan.constants import Constants
 from weatherdan.database.tables import WindReading
 from weatherdan.ecowitt.category import Category
-from weatherdan.ecowitt.service import Ecowitt
 from weatherdan.models import HighReading, WeekHighReading
 from weatherdan.responses import ErrorResponse
-from weatherdan.settings import Settings
 
 router = APIRouter(
     prefix="/wind",
@@ -143,21 +142,16 @@ def remove_reading(*, datestamp: date = Body(embed=True)) -> None:
 
 @router.put(path="", status_code=204)
 def refresh_readings(*, force: bool = False) -> None:
-    settings = Settings.load()
     temp_time = datetime.now() - timedelta(hours=3)  # noqa: DTZ005
-    if not force and settings.last_updated.wind >= temp_time:
+    if not force and Constants.settings.last_updated.wind >= temp_time:
         raise HTTPException(status_code=208, detail="No update needed")
-    ecowitt = Ecowitt(
-        application_key=settings.ecowitt.application_key,
-        api_key=settings.ecowitt.api_key,
-    )
     with db_session:
-        device = ecowitt.list_devices()[0]
+        device = Constants.ecowitt.list_devices()[0]
         # region History readings
-        history_readings = ecowitt.get_history_readings(
+        history_readings = Constants.ecowitt.get_history_readings(
             device=device.mac,
             category=Category.WIND,
-            start_date=settings.last_updated.wind,
+            start_date=Constants.settings.last_updated.wind,
         )
         for timestamp, value in history_readings.items():
             if reading := WindReading.get(datestamp=timestamp.date()):
@@ -167,7 +161,7 @@ def refresh_readings(*, force: bool = False) -> None:
                 reading = WindReading(datestamp=timestamp.date(), high=value)
         # endregion
         # region Live reading
-        live_reading = ecowitt.get_live_reading(device=device.mac, category=Category.WIND)
+        live_reading = Constants.ecowitt.get_live_reading(device=device.mac, category=Category.WIND)
         if live_reading:
             if reading := WindReading.get(datestamp=live_reading.time.date()):
                 if live_reading.value > reading.high:
@@ -178,5 +172,5 @@ def refresh_readings(*, force: bool = False) -> None:
                     high=live_reading.value,
                 )
         # endregion
-    settings.last_updated.wind = datetime.now()  # noqa: DTZ005
-    settings.save()
+    Constants.settings.last_updated.wind = datetime.now()  # noqa: DTZ005
+    Constants.settings.save()

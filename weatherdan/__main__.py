@@ -8,10 +8,9 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from weatherdan import __version__, elapsed_timer, get_project_root, setup_logging
-from weatherdan.ecowitt.service import Ecowitt
+from weatherdan.constants import Constants
 from weatherdan.routers.api import router as api_router
 from weatherdan.routers.html import router as html_router
-from weatherdan.settings import Settings
 
 LOGGER = logging.getLogger("weatherdan")
 
@@ -30,23 +29,12 @@ app = create_app()
 @app.on_event(event_type="startup")
 async def startup_event() -> None:
     setup_logging()
-    settings = Settings.load()
 
-    if not settings.ecowitt.application_key:
-        LOGGER.critical("Missing Ecowitt credential: application_key")
-        return
-    if not settings.ecowitt.api_key:
-        LOGGER.critical("Missing Ecowitt credential: api_key")
-        return
-    ecowitt = Ecowitt(
-        application_key=settings.ecowitt.application_key,
-        api_key=settings.ecowitt.api_key,
+    LOGGER.info(
+        "Listening on %s:%s",
+        Constants.settings.website.host,
+        Constants.settings.website.port,
     )
-    if not ecowitt.test_credentials():
-        LOGGER.critical("Invalid Ecowitt credentials")
-        return
-
-    LOGGER.info("Listening on %s:%s", settings.website.host, settings.website.port)
     LOGGER.info("%s v%s started", app.title, app.version)
 
 

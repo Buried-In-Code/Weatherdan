@@ -14,14 +14,16 @@ repos:
           - --number
           - --wrap=keep
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v4.5.0
     hooks:
+      - id: check-added-large-files
       - id: check-ast
       - id: check-builtin-literals
       - id: check-case-conflict
       - id: check-docstring-first
       - id: check-merge-conflict
       - id: check-toml
+      - id: check-vcs-permalinks
       - id: check-yaml
         args:
           - --allow-multiple-documents
@@ -29,9 +31,11 @@ repos:
         exclude_types:
           - json
           - xml
+      - id: fix-byte-order-marker
       - id: fix-encoding-pragma
         args:
           - --remove
+      - id: forbid-submodules
       - id: mixed-line-ending
         args:
           - --fix=auto

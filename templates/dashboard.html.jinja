@@ -6,7 +6,7 @@
   <meta content="width=device-width, initial-scale=1" name="viewport">
   <title>Weatherdan</title>
   <link href="https://use.fontawesome.com/releases/v6.3.0/css/all.css" rel="stylesheet">
-  <link href="https://cdn.rawgit.com/jenil/bulmaswatch/gh-pages/darkly/bulmaswatch.min.css" rel="stylesheet">
+  <link href="/static/css/custom-bulma.css" rel="stylesheet">
   <link href="/static/css/styles.css" rel="stylesheet">
   <link href="/static/img/favicon.ico" id="favicon" rel="icon" type="image/x-icon">
 </head>
@@ -17,22 +17,20 @@
     <header class="block has-text-centered">
       <h1 class="title is-1">Dashboard</h1>
     </header>
-    <section class="section">
       <div class="columns is-centered is-multiline">
         <div class="column is-full">
-          {{ chart(label="Rainfall Stats", id="rainfall-stats") }}
+          {{ chart(label="Rainfall", id="rainfall-stats") }}
         </div>
         <div class="column is-full">
-          {{ chart(label="Solar Stats", id="solar-stats") }}
+          {{ chart(label="Solar", id="solar-stats") }}
         </div>
         <div class="column is-full">
-          {{ chart(label="UV Index Stats", id="uv-index-stats") }}
+          {{ chart(label="UV Index", id="uv-index-stats") }}
         </div>
         <div class="column is-full">
-          {{ chart(label="Wind Stats", id="wind-stats") }}
+          {{ chart(label="Wind", id="wind-stats") }}
         </div>
       </div>
-    </section>
   </div>
 </main>
 {% include "components/footer.jinja" %}

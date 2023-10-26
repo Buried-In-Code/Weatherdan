@@ -15,8 +15,8 @@ templates = Jinja2Templates(directory=get_project_root() / "templates")
 
 
 @router.get(path="/", response_class=HTMLResponse)
-def index(request: Request) -> Response:
-    return templates.TemplateResponse("index.html.jinja", {"request": request})
+def dashboard(request: Request) -> Response:
+    return templates.TemplateResponse("dashboard.html.jinja", {"request": request})
 
 
 @router.get("/editor", response_class=HTMLResponse)

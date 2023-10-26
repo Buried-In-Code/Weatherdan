@@ -28,9 +28,9 @@ function loadSolarStats(timeframe, graphId, count = null) {
         else if (timeframe == "Yearly")
           labels.push(moment(x.datestamp).format("YYYY"));
         if (data.low.length >= 1)
-          entryData.push([x.value, data.low[index].value]);
+          entryData.push([x.value / 1000, data.low[index].value / 1000]);
         else
-          entryData.push(x.value);
+          entryData.push(x.value / 1000);
       });
       datasets.push({
         data: entryData,
@@ -44,7 +44,7 @@ function loadSolarStats(timeframe, graphId, count = null) {
       if (data.average.length >= 1) {
         entryData = [];
         data.average.forEach(x => {
-          entryData.push(x.value);
+          entryData.push(x.value / 1000);
         });
         datasets.push({
           data: entryData,
@@ -56,7 +56,7 @@ function loadSolarStats(timeframe, graphId, count = null) {
           borderSkipped: false,
         });
       }
-      createGraph(graphId, labels, datasets, "lx", "Lux");
+      createGraph(graphId, labels, datasets, "lx", "Lux (1000s)");
     });
   }).catch((response) => response.json().then((msg) => {
     alert(`${response.status} ${response.statusText} => ${msg.details}`);

@@ -36,8 +36,8 @@
   </div>
 </main>
 {% include "components/footer.jinja" %}
-<script src="https://cdn.jsdelivr.net/npm/jquery@^3.6" type="text/javascript"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@^4.2" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@^3.7" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@^4.4" type="text/javascript"></script>
 <script src="https://cdn.jsdelivr.net/npm/moment@^2.29" type="text/javascript"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@^1.0" type="text/javascript"></script>
 <script src="/static/js/bulma-navbar.js" type="text/javascript"></script>
@@ -48,10 +48,10 @@
 <script src="/static/js/wind.js" type="text/javascript"></script>
 <script type="text/javascript">
   ready(function() {
-    loadRainfallStats("Daily", "rainfall-stats", 7);
-    loadSolarStats("Daily", "solar-stats", 7);
-    loadUVIndexStats("Daily", "uv-index-stats", 7);
-    loadWindStats("Daily", "wind-stats", 7);
+    loadRainfallStats("Daily", "rainfall-stats", count=7);
+    loadSolarStats("Daily", "solar-stats", count=7);
+    loadUVIndexStats("Daily", "uv-index-stats", count=7);
+    loadWindStats("Daily", "wind-stats", count=7);
   });
   function refreshReadings(endpoint, previous = []) {
     return fetch(endpoint, {

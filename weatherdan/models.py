@@ -1,21 +1,15 @@
-__all__ = [
-    "HighReading",
-    "WeekHighReading",
-    "RangeReading",
-    "WeekRangeReading",
-    "TotalReading",
-    "WeekTotalReading",
-]
+__all__ = ["GraphData", "WeekGraphData", "Reading", "WeekReading"]
 
 from datetime import date
 from decimal import Decimal
 from typing import Self
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class Reading(BaseModel):
     datestamp: date
+    value: Decimal
 
     def __lt__(self: Self, other) -> int:  # noqa: ANN001
         if not isinstance(other, Reading):
@@ -34,6 +28,7 @@ class Reading(BaseModel):
 class WeekReading(BaseModel):
     start_datestamp: date
     end_datestamp: date
+    value: Decimal
 
     def __lt__(self: Self, other) -> int:  # noqa: ANN001
         if not isinstance(other, WeekReading):
@@ -53,27 +48,13 @@ class WeekReading(BaseModel):
         return hash((type(self), self.start_datestamp, self.end_datestamp))
 
 
-class HighReading(Reading):
-    high: Decimal
+class GraphData(BaseModel):
+    high: list[Reading] = Field(default_factory=list)
+    average: list[Reading] = Field(default_factory=list)
+    low: list[Reading] = Field(default_factory=list)
 
 
-class WeekHighReading(WeekReading):
-    high: Decimal
-
-
-class RangeReading(Reading):
-    high: Decimal
-    low: Decimal
-
-
-class WeekRangeReading(WeekReading):
-    high: Decimal
-    low: Decimal
-
-
-class TotalReading(Reading):
-    total: Decimal = Decimal(0)
-
-
-class WeekTotalReading(WeekReading):
-    total: Decimal = Decimal(0)
+class WeekGraphData(BaseModel):
+    high: list[WeekReading] = Field(default_factory=list)
+    average: list[WeekReading] = Field(default_factory=list)
+    low: list[WeekReading] = Field(default_factory=list)

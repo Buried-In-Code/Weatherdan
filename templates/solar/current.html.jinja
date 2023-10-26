@@ -36,8 +36,8 @@
   </div>
 </main>
 {% include "components/footer.jinja" %}
-<script src="https://cdn.jsdelivr.net/npm/jquery@^3.6" type="text/javascript"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@^4.2" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@^3.7" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@^4.4" type="text/javascript"></script>
 <script src="https://cdn.jsdelivr.net/npm/moment@^2.29" type="text/javascript"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@^1.0" type="text/javascript"></script>
 <script src="/static/js/bulma-navbar.js" type="text/javascript"></script>
@@ -50,22 +50,7 @@
     loadSolarStats("Monthly", "monthly-stats");
     loadSolarStats("Yearly", "yearly-stats");
   });
-  ready(function() {
-    let caller = "loading";
-
-    addLoading(caller);
-    fetch("/api/solar", {
-      method: "PUT",
-      headers: headers,
-    }).then((response) => {
-      if (!response.ok)
-        return Promise.reject(response);
-      if (response.status != 208)
-        window.location.reload();
-    }).catch((response) => response.json().then((msg) => {
-      alert(`${response.status} ${response.statusText} => ${msg.details}`);
-    })).finally(() => removeLoading(caller));
-  });
+  ready(refreshData("/api/solar"));
 </script>
 </body>
 </html>

@@ -70,8 +70,8 @@
   </div>
 </main>
 {% include "components/footer.jinja" %}
-<script src="https://cdn.jsdelivr.net/npm/jquery@^3.6" type="text/javascript"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@^4.2" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@^3.7" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@^4.4" type="text/javascript"></script>
 <script src="https://cdn.jsdelivr.net/npm/moment@^2.29" type="text/javascript"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@^1.0" type="text/javascript"></script>
 <script src="/static/js/bulma-navbar.js" type="text/javascript"></script>
@@ -80,30 +80,15 @@
 <script type="text/javascript">
   ready(function() {
     {% if month %}
-      loadSolarStats("Daily", "daily-stats");
-      loadSolarStats("Weekly", "weekly-stats");
+      loadSolarStats("Daily", "daily-stats", count=100);
+      loadSolarStats("Weekly", "weekly-stats", count=100);
     {% endif %}
     {% if year %}
-      loadSolarStats("Monthly", "monthly-stats");
+      loadSolarStats("Monthly", "monthly-stats", count=100);
     {% endif %}
-    loadSolarStats("Yearly", "yearly-stats");
+    loadSolarStats("Yearly", "yearly-stats", count=100);
   });
-  ready(function() {
-    let caller = "loading";
-
-    addLoading(caller);
-    fetch("/api/solar", {
-      method: "PUT",
-      headers: headers,
-    }).then((response) => {
-      if (!response.ok)
-        return Promise.reject(response);
-      window.location.reload();
-    }).catch((response) => response.json().then((msg) => {
-      if (response.status != 508)
-        alert(`${response.status} ${response.statusText} => ${msg.details}`);
-    })).finally(() => removeLoading(caller));
-  });
+  ready(refreshData("/api/solar"));
 </script>
 </body>
 </html>

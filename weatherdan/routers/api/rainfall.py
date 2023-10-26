@@ -2,17 +2,19 @@ __all__ = ["router"]
 
 import logging
 from datetime import date, datetime, timedelta
+from decimal import Decimal
 from enum import Enum
 
-from fastapi import APIRouter, Body, Cookie
+from fastapi import APIRouter, Body, Cookie, Query
 from fastapi.exceptions import HTTPException
 from pony.orm import db_session
 
 from weatherdan.constants import constants
 from weatherdan.database.tables import RainfallReading
 from weatherdan.ecowitt.category import Category
-from weatherdan.models import TotalReading, WeekTotalReading
+from weatherdan.models import Reading, WeekReading
 from weatherdan.responses import ErrorResponse
+from weatherdan.utils import get_week_ends
 
 router = APIRouter(
     prefix="/rainfall",
@@ -29,7 +31,7 @@ class Timeframe(Enum):
     YEARLY = "Yearly"
 
 
-def get_daily_readings(year: int | None = None, month: int | None = None) -> list[TotalReading]:
+def get_daily_readings(year: int | None = None, month: int | None = None) -> list[Reading]:
     with db_session:
         entries = sorted([x.to_model() for x in RainfallReading.select()])
         if year:
@@ -42,58 +44,50 @@ def get_daily_readings(year: int | None = None, month: int | None = None) -> lis
 def get_weekly_readings(
     year: int | None = None,
     month: int | None = None,
-) -> list[WeekTotalReading]:
-    def get_week_ends(datestamp: date) -> tuple[date, date]:
-        start = datestamp - timedelta(days=datestamp.isoweekday() - 1)
-        end = start + timedelta(days=6)
-        return start, end
-
+) -> list[WeekReading]:
     with db_session:
         weekly = {}
         for entry in sorted(RainfallReading.select(), key=lambda x: x.datestamp):
-            key = get_week_ends(datestamp=entry.datestamp)
+            key = get_week_ends(value=entry.datestamp)
             if key not in weekly:
-                weekly[key] = WeekTotalReading(start_datestamp=key[0], end_datestamp=key[1])
-            weekly[key].total += entry.total
+                weekly[key] = WeekReading(
+                    start_datestamp=key[0],
+                    end_datestamp=key[1],
+                    value=Decimal(0),
+                )
+            weekly[key].value += entry.value
         entries = sorted(weekly.values())
         if year:
-            entries = [
-                x
-                for x in entries
-                if x.start_datestamp.year == year or x.end_datestamp.year == year  # noqa: PLR1714
-            ]
+            entries = [x for x in entries if year in (x.start_datestamp.year, x.end_datestamp.year)]
         if month:
             entries = [
-                x
-                for x in entries
-                if x.start_datestamp.month == month  # noqa: PLR1714
-                or x.end_datestamp.month == month
+                x for x in entries if month in (x.start_datestamp.month, x.end_datestamp.month)
             ]
         return entries
 
 
-def get_monthly_readings(year: int | None = None) -> list[TotalReading]:
+def get_monthly_readings(year: int | None = None) -> list[Reading]:
     with db_session:
         monthly = {}
         for entry in sorted(RainfallReading.select(), key=lambda x: x.datestamp):
             key = entry.datestamp.replace(day=1)
             if key not in monthly:
-                monthly[key] = TotalReading(datestamp=key)
-            monthly[key].total += entry.total
+                monthly[key] = Reading(datestamp=key, value=Decimal(0))
+            monthly[key].value += entry.value
         entries = sorted(monthly.values())
         if year:
             entries = [x for x in entries if x.datestamp.year == year]
         return entries
 
 
-def get_yearly_readings() -> list[TotalReading]:
+def get_yearly_readings() -> list[Reading]:
     with db_session:
         yearly = {}
         for entry in sorted(RainfallReading.select(), key=lambda x: x.datestamp):
             key = entry.datestamp.replace(day=1, month=1)
             if key not in yearly:
-                yearly[key] = TotalReading(datestamp=key)
-            yearly[key].total += entry.total
+                yearly[key] = Reading(datestamp=key, value=Decimal(0))
+            yearly[key].value += entry.value
         return sorted(yearly.values())
 
 
@@ -103,8 +97,11 @@ def list_readings(
     timeframe: Timeframe = Timeframe.DAILY,
     year: int | None = None,
     month: int | None = None,
+    all_results: bool = Query(alias="allResults", default=False),
     count: int = Cookie(alias="weatherdan_count", default=28),
-) -> list[TotalReading | WeekTotalReading]:
+) -> list[Reading | WeekReading]:
+    if all_results:
+        count = 100
     if timeframe == Timeframe.DAILY:
         return get_daily_readings(year=year, month=month)[-count:]
     if timeframe == Timeframe.WEEKLY:
@@ -115,14 +112,12 @@ def list_readings(
 
 
 @router.post(path="", status_code=201)
-def add_reading(*, input: TotalReading) -> TotalReading:  # noqa: A002
+def add_reading(*, input: Reading) -> Reading:  # noqa: A002
     with db_session:
-        reading = RainfallReading.get(
-            datestamp=input.datestamp,
-        ) or RainfallReading(
-            datestamp=input.datestamp,
-        )
-        reading.total = input.total
+        if reading := RainfallReading.get(datestamp=input.datestamp):
+            reading.value = input.value
+        else:
+            reading = RainfallReading(datestamp=input.datestamp, value=input.value)
         return reading.to_model()
 
 
@@ -150,9 +145,9 @@ def refresh_readings(*, force: bool = False) -> None:
         )
         for timestamp, value in history_readings.items():
             if reading := RainfallReading.get(datestamp=timestamp.date()):
-                reading.total = value
+                reading.value = value
             else:
-                reading = RainfallReading(datestamp=timestamp.date(), total=value)
+                reading = RainfallReading(datestamp=timestamp.date(), value=value)
         # endregion
         # region Live reading
         live_reading = constants.ecowitt.get_live_reading(
@@ -161,11 +156,11 @@ def refresh_readings(*, force: bool = False) -> None:
         )
         if live_reading:
             if reading := RainfallReading.get(datestamp=live_reading.time.date()):
-                reading.total = live_reading.value
+                reading.value = live_reading.value
             else:
                 reading = RainfallReading(
                     datestamp=live_reading.time.date(),
-                    total=live_reading.value,
+                    value=live_reading.value,
                 )
         # endregion
     constants.settings.last_updated.rainfall = datetime.now()  # noqa: DTZ005

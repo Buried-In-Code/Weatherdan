@@ -42,21 +42,23 @@ function resetForm(page) {
   window.location = page;
 }
 
-function createGraph(elementId, labelList, entryData, yLabel, unit, chartType = "bar") {
-  var config = {
-    type: chartType,
+const backgroundColours = [
+  "rgba(65,105,225,0.1)",
+  "rgba(255,65,105,0.1)",
+  "rgba(105,255,65,0.1)",
+];
+
+const borderColours = [
+  "rgba(65,105,225,1)",
+  "rgba(255,65,105,1)",
+  "rgba(105,255,65,1)",
+];
+
+function createGraph(elementId, labels, datasets, unit, unitLabel) {
+  let config = {
     data: {
-      labels: labelList,
-      datasets: [
-        {
-          backgroundColor: "rgba(65,105,225,0.1)",
-          borderColor: "rgba(65,105,225,1)",
-          borderWidth: 2,
-          borderSkipped: false,
-          data: entryData,
-          yAxisID: "y",
-        }
-      ]
+      labels: labels,
+      datasets: datasets,
     },
     options: {
       interaction: {
@@ -65,7 +67,7 @@ function createGraph(elementId, labelList, entryData, yLabel, unit, chartType = 
       },
       plugins: {
         legend: {
-          display: false
+          display: datasets.length > 1
         },
         tooltip: {
           callbacks: {
@@ -83,14 +85,14 @@ function createGraph(elementId, labelList, entryData, yLabel, unit, chartType = 
         x: {
           title: {
             display: true,
-            text: "Timestamp",
+            text: "Date",
           },
           position: "bottom",
         },
         y: {
           title: {
             display: true,
-            text: yLabel
+            text: unitLabel
           },
           position: "left",
           beginAtZero: false,
@@ -98,6 +100,23 @@ function createGraph(elementId, labelList, entryData, yLabel, unit, chartType = 
       }
     }
   }
-  let ctx = document.getElementById(elementId);
-  new Chart(ctx, config);
+  console.log(config);
+  new Chart(document.getElementById(elementId), config);
+}
+
+function refreshData(endpoint) {
+  let caller = "loading";
+
+  addLoading(caller);
+  fetch(endpoint, {
+    method: "PUT",
+    headers: headers,
+  }).then((response) => {
+    if (!response.ok)
+      return Promise.reject(response);
+    if (response.status != 208)
+      window.location.reload();
+  }).catch((response) => response.json().then((msg) => {
+    alert(`${response.status} ${response.statusText} => ${msg.details}`);
+  })).finally(() => removeLoading(caller));
 }

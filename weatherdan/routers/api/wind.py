@@ -4,15 +4,27 @@ import logging
 from datetime import date, datetime, timedelta
 from enum import Enum
 
-from fastapi import APIRouter, Body, Cookie
+from fastapi import APIRouter, Body, Cookie, Query
 from fastapi.exceptions import HTTPException
 from pony.orm import db_session
 
 from weatherdan.constants import constants
 from weatherdan.database.tables import WindReading
 from weatherdan.ecowitt.category import Category
-from weatherdan.models import HighReading, WeekHighReading
+from weatherdan.models import GraphData, Reading, WeekGraphData
 from weatherdan.responses import ErrorResponse
+from weatherdan.utils import (
+    get_daily_readings,
+    get_monthly_average_readings,
+    get_monthly_high_readings,
+    get_monthly_low_readings,
+    get_weekly_average_readings,
+    get_weekly_high_readings,
+    get_weekly_low_readings,
+    get_yearly_average_readings,
+    get_yearly_high_readings,
+    get_yearly_low_readings,
+)
 
 router = APIRouter(
     prefix="/wind",
@@ -29,105 +41,79 @@ class Timeframe(Enum):
     YEARLY = "Yearly"
 
 
-def get_daily_readings(year: int | None = None, month: int | None = None) -> list[HighReading]:
-    with db_session:
-        entries = sorted([x.to_model() for x in WindReading.select()])
-        if year:
-            entries = [x for x in entries if x.datestamp.year == year]
-        if month:
-            entries = [x for x in entries if x.datestamp.month == month]
-        return entries
-
-
-def get_weekly_readings(
-    year: int | None = None,
-    month: int | None = None,
-) -> list[HighReading]:
-    def get_week_ends(datestamp: date) -> tuple[date, date]:
-        start = datestamp - timedelta(days=datestamp.isoweekday() - 1)
-        end = start + timedelta(days=6)
-        return start, end
-
-    with db_session:
-        weekly = {}
-        for entry in sorted(WindReading.select(), key=lambda x: x.datestamp):
-            key = get_week_ends(datestamp=entry.datestamp)
-            if key not in weekly:
-                weekly[key] = WeekHighReading(
-                    start_datestamp=key[0],
-                    end_datestamp=key[1],
-                    high=entry.high,
-                )
-            if entry.high > weekly[key].high:
-                weekly[key].high = entry.high
-        entries = sorted(weekly.values())
-        if year:
-            entries = [
-                x
-                for x in entries
-                if x.start_datestamp.year == year or x.end_datestamp.year == year  # noqa: PLR1714
-            ]
-        if month:
-            entries = [
-                x
-                for x in entries
-                if x.start_datestamp.month == month  # noqa: PLR1714
-                or x.end_datestamp.month == month
-            ]
-        return entries
-
-
-def get_monthly_readings(year: int | None = None) -> list[HighReading]:
-    with db_session:
-        monthly = {}
-        for entry in sorted(WindReading.select(), key=lambda x: x.datestamp):
-            key = entry.datestamp.replace(day=1)
-            if key not in monthly:
-                monthly[key] = HighReading(datestamp=key, high=entry.high)
-            if entry.high > monthly[key].high:
-                monthly[key].high = entry.high
-        entries = sorted(monthly.values())
-        if year:
-            entries = [x for x in entries if x.datestamp.year == year]
-        return entries
-
-
-def get_yearly_readings() -> list[HighReading]:
-    with db_session:
-        yearly = {}
-        for entry in sorted(WindReading.select(), key=lambda x: x.datestamp):
-            key = entry.datestamp.replace(day=1, month=1)
-            if key not in yearly:
-                yearly[key] = HighReading(datestamp=key, high=entry.high)
-            if entry.high > yearly[key].high:
-                yearly[key].high = entry.high
-        return sorted(yearly.values())
-
-
 @router.get(path="")
 def list_readings(
     *,
     timeframe: Timeframe = Timeframe.DAILY,
     year: int | None = None,
     month: int | None = None,
+    all_results: bool = Query(alias="allResults", default=False),
     count: int = Cookie(alias="weatherdan_count", default=28),
-) -> list[HighReading | WeekHighReading]:
-    if timeframe == Timeframe.DAILY:
-        return get_daily_readings(year=year, month=month)[-count:]
-    if timeframe == Timeframe.WEEKLY:
-        return get_weekly_readings(year=year, month=month)[-count:]
-    if timeframe == Timeframe.MONTHLY:
-        return get_monthly_readings(year=year)[-count:]
-    return get_yearly_readings()[-count:]
+) -> GraphData | WeekGraphData:
+    if all_results:
+        count = 100
+    with db_session:
+        if timeframe == Timeframe.DAILY:
+            return GraphData(
+                high=get_daily_readings(
+                    entries=sorted([x.to_model() for x in WindReading.select()]),
+                    year=year,
+                    month=month,
+                )[-count:],
+            )
+        if timeframe == Timeframe.WEEKLY:
+            return WeekGraphData(
+                high=get_weekly_high_readings(
+                    entries=sorted([x.to_model() for x in WindReading.select()]),
+                    year=year,
+                    month=month,
+                )[-count:],
+                average=get_weekly_average_readings(
+                    entries=sorted([x.to_model() for x in WindReading.select()]),
+                    year=year,
+                    month=month,
+                )[-count:],
+                low=get_weekly_low_readings(
+                    entries=sorted([x.to_model() for x in WindReading.select()]),
+                    year=year,
+                    month=month,
+                )[-count:],
+            )
+        if timeframe == Timeframe.MONTHLY:
+            return GraphData(
+                high=get_monthly_high_readings(
+                    entries=sorted([x.to_model() for x in WindReading.select()]),
+                    year=year,
+                )[-count:],
+                average=get_monthly_average_readings(
+                    entries=sorted([x.to_model() for x in WindReading.select()]),
+                    year=year,
+                )[-count:],
+                low=get_monthly_low_readings(
+                    entries=sorted([x.to_model() for x in WindReading.select()]),
+                    year=year,
+                )[-count:],
+            )
+        return GraphData(
+            high=get_yearly_high_readings(
+                entries=sorted([x.to_model() for x in WindReading.select()]),
+            )[-count:],
+            average=get_yearly_average_readings(
+                entries=sorted([x.to_model() for x in WindReading.select()]),
+            )[-count:],
+            low=get_yearly_low_readings(
+                entries=sorted([x.to_model() for x in WindReading.select()]),
+            )[-count:],
+        )
 
 
 @router.post(path="", status_code=201)
-def add_reading(*, input: HighReading) -> HighReading:  # noqa: A002
+def add_reading(*, input: Reading) -> Reading:  # noqa: A002
     with db_session:
         if reading := WindReading.get(datestamp=input.datestamp):
-            reading.high = input.high
+            reading.value = input.value
         else:
-            reading = WindReading(datestamp=input.datestamp, high=input.high)
+            reading = WindReading(datestamp=input.datestamp, value=input.value)
         return reading.to_model()
 
 
@@ -155,21 +141,21 @@ def refresh_readings(*, force: bool = False) -> None:
         )
         for timestamp, value in history_readings.items():
             if reading := WindReading.get(datestamp=timestamp.date()):
-                if value > reading.high:
-                    reading.high = value
+                if value > reading.value:
+                    reading.value = value
             else:
-                reading = WindReading(datestamp=timestamp.date(), high=value)
+                reading = WindReading(datestamp=timestamp.date(), value=value)
         # endregion
         # region Live reading
         live_reading = constants.ecowitt.get_live_reading(device=device.mac, category=Category.WIND)
         if live_reading:
             if reading := WindReading.get(datestamp=live_reading.time.date()):
-                if live_reading.value > reading.high:
-                    reading.high = live_reading.value
+                if live_reading.value > reading.value:
+                    reading.value = live_reading.value
             else:
                 reading = WindReading(
                     datestamp=live_reading.time.date(),
-                    high=live_reading.value,
+                    value=live_reading.value,
                 )
         # endregion
     constants.settings.last_updated.wind = datetime.now()  # noqa: DTZ005

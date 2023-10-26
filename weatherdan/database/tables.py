@@ -11,7 +11,7 @@ from typing import Self
 
 from pony.orm import Database, PrimaryKey, Required
 
-from weatherdan.models import HighReading, TotalReading
+from weatherdan.models import Reading
 
 db = Database()
 
@@ -20,12 +20,12 @@ class RainfallReading(db.Entity):
     _table_ = "rainfall"
 
     datestamp: date = PrimaryKey(date)
-    total: Decimal = Required(Decimal)
+    value: Decimal = Required(Decimal)
 
-    def to_model(self: Self) -> TotalReading:
-        return TotalReading(
+    def to_model(self: Self) -> Reading:
+        return Reading(
             datestamp=self.datestamp,
-            total=self.total,
+            value=self.value,
         )
 
 
@@ -33,12 +33,12 @@ class SolarReading(db.Entity):
     _table_ = "solar"
 
     datestamp: date = PrimaryKey(date)
-    high: Decimal = Required(Decimal)
+    value: Decimal = Required(Decimal)
 
-    def to_model(self: Self) -> HighReading:
-        return HighReading(
+    def to_model(self: Self) -> Reading:
+        return Reading(
             datestamp=self.datestamp,
-            high=self.high,
+            value=self.value,
         )
 
 
@@ -46,12 +46,12 @@ class UVIndexReading(db.Entity):
     _table_ = "uv_index"
 
     datestamp: date = PrimaryKey(date)
-    high: Decimal = Required(Decimal)
+    value: Decimal = Required(Decimal)
 
-    def to_model(self: Self) -> HighReading:
-        return HighReading(
+    def to_model(self: Self) -> Reading:
+        return Reading(
             datestamp=self.datestamp,
-            high=self.high,
+            value=self.value,
         )
 
 
@@ -59,10 +59,10 @@ class WindReading(db.Entity):
     _table_ = "wind"
 
     datestamp: date = PrimaryKey(date)
-    high: Decimal = Required(Decimal)
+    value: Decimal = Required(Decimal)
 
-    def to_model(self: Self) -> HighReading:
-        return HighReading(
+    def to_model(self: Self) -> Reading:
+        return Reading(
             datestamp=self.datestamp,
-            high=self.high,
+            value=self.value,
         )

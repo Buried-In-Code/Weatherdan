@@ -62,9 +62,11 @@ def list_readings(
         if timeframe == Timeframe.WEEKLY:
             return WeekGraphData(
                 high=get_weekly_high_readings(entries=entries, year=year, month=month)[-count:],
-                average=get_weekly_average_readings(entries=entries, year=year, month=month)[
-                    -count:
-                ],
+                average=get_weekly_average_readings(
+                    entries=entries,
+                    year=year,
+                    month=month,
+                )[-count:],
                 low=get_weekly_low_readings(entries=entries, year=year, month=month)[-count:],
             )
         if timeframe == Timeframe.MONTHLY:

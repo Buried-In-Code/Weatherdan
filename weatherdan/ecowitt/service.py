@@ -3,8 +3,10 @@ __all__ = ["Ecowitt"]
 import logging
 import platform
 import re
+import sys
 from datetime import UTC, datetime, timedelta
 from decimal import Decimal
+from functools import cached_property
 from typing import Any, Self
 from urllib.parse import urlencode
 
@@ -34,23 +36,27 @@ class Ecowitt:
         self.application_key = application_key
         self.api_key = api_key
 
+    @cached_property
+    def device(self: Self) -> Device:
+        if devices := self.list_devices():
+            return devices[0]
+        sys.exit("No Ecowitt device")
+
     @sleep_and_retry
     @limits(calls=10, period=MINUTE)
     def _perform_get_request(self: Self, url: str, params: dict[str, str]) -> dict[str, Any]:
         try:
             with elapsed_timer() as elapsed:
                 response = get(url, params=params, headers=self.headers, timeout=self.timeout)
+
             cache_params = f"?{urlencode({k: params[k] for k in sorted(params)})}"
-            if "application_key=" in cache_params:
-                cache_params = re.sub(r"(.+application_key=)(.+?)(&.+)", r"\1***\3", cache_params)
-            if "api_key=" in cache_params:
-                cache_params = re.sub(r"(.+api_key=)(.+?)(&.+)", r"\1***\3", cache_params)
-            if "mac=" in cache_params:
-                cache_params = re.sub(r"(.+mac=)(.+?)(&.+)", r"\1***\3", cache_params)
-            log_message = (
-                f"{'GET':<7} {url}{cache_params} - {response.status_code} => {elapsed():.2f}s"
-            )
-            LOGGER.info(log_message)
+            for x in ["application_key=", "api_key=", "mac="]:
+                if x in cache_params:
+                    cache_params = re.sub(rf"(.+{x})(.+?)(&.+)", r"\1***\3", cache_params)
+
+            msg = f"{'GET':<7} {url}{cache_params} - {response.status_code} => {elapsed():.2f}s"
+            LOGGER.info(msg)
+
             response.raise_for_status()
             return response.json()
         except ConnectionError as err:

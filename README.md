@@ -14,8 +14,8 @@
 [![Github - License](https://img.shields.io/github/license/Buried-In-Code/Weatherdan?logo=Github&label=License&style=flat-square)](https://opensource.org/licenses/MIT)
 [![Github - Contributors](https://img.shields.io/github/contributors/Buried-In-Code/Weatherdan?logo=Github&label=Contributors&style=flat-square)](https://github.com/Buried-In-Code/Weatherdan/graphs/contributors)
 
-Retrieve weather information from Ecowitt devices and allow for manual additions and updates.
-Currently, tracks total Rainfall, max Solar, max UV Index and max Wind readings.
+Retrieve weather information from Ecowitt devices and display in graphs, allows for manual additions and updates.\
+Currently, tracks total Rainfall and high, average and low for Solar, UV Index and Wind readings.
 
 ## Usage
 

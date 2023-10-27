@@ -2,6 +2,7 @@ __all__ = ["router"]
 
 import logging
 from datetime import date, datetime, timedelta
+from decimal import Decimal
 from enum import Enum
 
 from fastapi import APIRouter, Body, Cookie, Query
@@ -53,57 +54,29 @@ def list_readings(
     if all_results:
         count = 100
     with db_session:
+        entries = sorted(x.to_model() for x in SolarReading.select())
         if timeframe == Timeframe.DAILY:
             return GraphData(
-                high=get_daily_readings(
-                    entries=sorted([x.to_model() for x in SolarReading.select()]),
-                    year=year,
-                    month=month,
-                )[-count:],
+                high=get_daily_readings(entries=entries, year=year, month=month)[-count:],
             )
         if timeframe == Timeframe.WEEKLY:
             return WeekGraphData(
-                high=get_weekly_high_readings(
-                    entries=sorted([x.to_model() for x in SolarReading.select()]),
-                    year=year,
-                    month=month,
-                )[-count:],
-                average=get_weekly_average_readings(
-                    entries=sorted([x.to_model() for x in SolarReading.select()]),
-                    year=year,
-                    month=month,
-                )[-count:],
-                low=get_weekly_low_readings(
-                    entries=sorted([x.to_model() for x in SolarReading.select()]),
-                    year=year,
-                    month=month,
-                )[-count:],
+                high=get_weekly_high_readings(entries=entries, year=year, month=month)[-count:],
+                average=get_weekly_average_readings(entries=entries, year=year, month=month)[
+                    -count:
+                ],
+                low=get_weekly_low_readings(entries=entries, year=year, month=month)[-count:],
             )
         if timeframe == Timeframe.MONTHLY:
             return GraphData(
-                high=get_monthly_high_readings(
-                    entries=sorted([x.to_model() for x in SolarReading.select()]),
-                    year=year,
-                )[-count:],
-                average=get_monthly_average_readings(
-                    entries=sorted([x.to_model() for x in SolarReading.select()]),
-                    year=year,
-                )[-count:],
-                low=get_monthly_low_readings(
-                    entries=sorted([x.to_model() for x in SolarReading.select()]),
-                    year=year,
-                )[-count:],
+                high=get_monthly_high_readings(entries=entries, year=year)[-count:],
+                average=get_monthly_average_readings(entries=entries, year=year)[-count:],
+                low=get_monthly_low_readings(entries=entries, year=year)[-count:],
             )
         return GraphData(
-            high=get_yearly_high_readings(
-                entries=sorted([x.to_model() for x in SolarReading.select()]),
-            )[-count:],
-            average=get_yearly_average_readings(
-                entries=sorted([x.to_model() for x in SolarReading.select()]),
-            )[-count:],
-            low=get_yearly_low_readings(
-                entries=sorted([x.to_model() for x in SolarReading.select()]),
-            )[-count:],
+            high=get_yearly_high_readings(entries=entries)[-count:],
+            average=get_yearly_average_readings(entries=entries)[-count:],
+            low=get_yearly_low_readings(entries=entries)[-count:],
         )
 
 
@@ -128,38 +101,32 @@ def remove_reading(*, datestamp: date = Body(embed=True)) -> None:
 
 @router.put(path="", status_code=204)
 def refresh_readings(*, force: bool = False) -> None:
+    def update_reading(datestamp: date, value: Decimal) -> None:
+        if reading := SolarReading.get(datestamp=datestamp):
+            if value > reading.value:
+                reading.value = value
+        else:
+            reading = SolarReading(datestamp=datestamp, value=value)
+
     temp_time = datetime.now() - timedelta(hours=3)  # noqa: DTZ005
     if not force and constants.settings.last_updated.solar >= temp_time:
         raise HTTPException(status_code=208, detail="No update needed")
     with db_session:
-        device = constants.ecowitt.list_devices()[0]
         # region History readings
         history_readings = constants.ecowitt.get_history_readings(
-            device=device.mac,
+            device=constants.ecowitt.device.mac,
             category=Category.SOLAR,
             start_date=constants.settings.last_updated.solar,
         )
         for timestamp, value in history_readings.items():
-            if reading := SolarReading.get(datestamp=timestamp.date()):
-                if value > reading.value:
-                    reading.value = value
-            else:
-                reading = SolarReading(datestamp=timestamp.date(), value=value)
+            update_reading(datestamp=timestamp.date(), value=value)
         # endregion
         # region Live reading
-        live_reading = constants.ecowitt.get_live_reading(
-            device=device.mac,
+        if live_reading := constants.ecowitt.get_live_reading(
+            device=constants.ecowitt.device.mac,
             category=Category.SOLAR,
-        )
-        if live_reading:
-            if reading := SolarReading.get(datestamp=live_reading.time.date()):
-                if live_reading.value > reading.value:
-                    reading.value = live_reading.value
-            else:
-                reading = SolarReading(
-                    datestamp=live_reading.time.date(),
-                    value=live_reading.value,
-                )
+        ):
+            update_reading(datestamp=live_reading.time.date(), value=live_reading.value)
         # endregion
     constants.settings.last_updated.solar = datetime.now()  # noqa: DTZ005
     constants.settings.save()

@@ -28,6 +28,11 @@ class RainfallReading(db.Entity):
             value=self.value,
         )
 
+    def __lt__(self: Self, other) -> int:  # noqa: ANN001
+        if not isinstance(other, RainfallReading):
+            raise NotImplementedError
+        return self.datestamp < other.datestamp
+
 
 class SolarReading(db.Entity):
     _table_ = "solar"
@@ -40,6 +45,11 @@ class SolarReading(db.Entity):
             datestamp=self.datestamp,
             value=self.value,
         )
+
+    def __lt__(self: Self, other) -> int:  # noqa: ANN001
+        if not isinstance(other, SolarReading):
+            raise NotImplementedError
+        return self.datestamp < other.datestamp
 
 
 class UVIndexReading(db.Entity):
@@ -54,6 +64,11 @@ class UVIndexReading(db.Entity):
             value=self.value,
         )
 
+    def __lt__(self: Self, other) -> int:  # noqa: ANN001
+        if not isinstance(other, UVIndexReading):
+            raise NotImplementedError
+        return self.datestamp < other.datestamp
+
 
 class WindReading(db.Entity):
     _table_ = "wind"
@@ -66,3 +81,8 @@ class WindReading(db.Entity):
             datestamp=self.datestamp,
             value=self.value,
         )
+
+    def __lt__(self: Self, other) -> int:  # noqa: ANN001
+        if not isinstance(other, WindReading):
+            raise NotImplementedError
+        return self.datestamp < other.datestamp

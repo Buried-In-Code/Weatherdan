@@ -146,8 +146,8 @@ class Ecowitt:
         start_date: datetime,
     ) -> dict[datetime, Decimal]:
         all_readings = {}
-        while start_date < datetime.now():  # noqa: DTZ005
-            end_date = min(start_date + timedelta(days=31), datetime.now())  # noqa: DTZ005
+        while start_date < datetime.now():
+            end_date = min(start_date + timedelta(days=31), datetime.now())
             all_readings.update(
                 self._make_history_request(
                     device=device,

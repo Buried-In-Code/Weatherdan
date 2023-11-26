@@ -60,7 +60,7 @@ async def http_exception_handler(request: Request, exc) -> JSONResponse:  # noqa
     return JSONResponse(
         status_code=status,
         content={
-            "timestamp": datetime.now(tz=UTC).astimezone().isoformat(),
+            "timestamp": datetime.now().isoformat(),
             "status": f"{status.value}: {status.phrase}",
             "details": [exc.detail],
         },
@@ -81,8 +81,9 @@ async def validation_exception_handler(
     return JSONResponse(
         status_code=status,
         content={
-            "timestamp": datetime.now(tz=UTC).astimezone().isoformat(),
+            "timestamp": datetime.now().isoformat(),
             "status": f"{status.value}: {status.phrase}",
             "details": details,
         },
+        headers=exc.headers
     )

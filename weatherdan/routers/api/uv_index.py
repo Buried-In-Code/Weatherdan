@@ -110,7 +110,7 @@ def refresh_readings(*, force: bool = False) -> None:
         else:
             reading = UVIndexReading(datestamp=datestamp, value=value)
 
-    temp_time = datetime.now() - timedelta(hours=3)  # noqa: DTZ005
+    temp_time = datetime.now() - timedelta(hours=3)
     if not force and constants.settings.last_updated.uv_index >= temp_time:
         raise HTTPException(status_code=208, detail="No update needed")
     with db_session:
@@ -130,5 +130,5 @@ def refresh_readings(*, force: bool = False) -> None:
         ):
             update_reading(datestamp=live_reading.time.date(), value=live_reading.value)
         # endregion
-    constants.settings.last_updated.uv_index = datetime.now()  # noqa: DTZ005
+    constants.settings.last_updated.uv_index = datetime.now()
     constants.settings.save()

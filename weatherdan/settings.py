@@ -34,10 +34,10 @@ class EcowittSettings(SettingsModel):
 
 
 class UpdateSettings(SettingsModel):
-    rainfall: datetime = datetime.now() - timedelta(days=365)  # noqa: DTZ005
-    solar: datetime = datetime.now() - timedelta(days=365)  # noqa: DTZ005
-    uv_index: datetime = datetime.now() - timedelta(days=365)  # noqa: DTZ005
-    wind: datetime = datetime.now() - timedelta(days=365)  # noqa: DTZ005
+    rainfall: datetime = datetime.now() - timedelta(days=365)
+    solar: datetime = datetime.now() - timedelta(days=365)
+    uv_index: datetime = datetime.now() - timedelta(days=365)
+    wind: datetime = datetime.now() - timedelta(days=365)
 
 
 class Settings(SettingsModel):

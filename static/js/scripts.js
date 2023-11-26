@@ -1,45 +1,80 @@
-const unique = (arr) => [...new Set(arr)];
-const headers = {
+const HEADERS = {
   "Accept": "application/json; charset=UTF-8",
   "Content-Type": "application/json; charset=UTF-8",
 };
 
-function ready(fn) {
-  if (document.readyState !== "loading") {
-    fn();
-    return;
-  }
-  document.addEventListener("DOMContentLoaded", fn);
+function ready(callback) {
+  if (document.readyState === "loading")
+    document.addEventListener("DOMContentLoaded", callback);
+  else
+    callback();
 }
 
 function getCookie(cname) {
-  let name = cname + "=";
-  let decodedCookie = decodeURIComponent(document.cookie);
-  let ca = decodedCookie.split(";");
-  for(let i = 0; i < ca.length; i++) {
-    let c = ca[i];
-    while (c.charAt(0) == " ") {
-      c = c.substring(1);
-    }
-    if (c.indexOf(name) == 0) {
-      return c.substring(name.length, c.length);
-    }
+  const name = cname + "=";
+  const cookies = decodeURIComponent(document.cookie).split(";");
+
+  for (const cookie of cookies) {
+    let _cookie = cookie.trim();
+    if (_cookie.indexOf(name) == 0)
+      return _cookie.substring(name.length);
   }
   return "";
 }
 
-function addLoading(caller){
-  let element = document.getElementById(caller);
+function addLoading(caller) {
+  const element = document.getElementById(caller);
   element.classList.add("is-loading");
 }
 
-function removeLoading(caller){
-  let element = document.getElementById(caller);
+function removeLoading(caller) {
+  const element = document.getElementById(caller);
   element.classList.remove("is-loading");
 }
 
 function resetForm(page) {
   window.location = page;
+}
+
+function setTheme() {
+  const darkCss = document.getElementById("dark-theme");
+  const lightCss = document.getElementById("light-theme");
+  const theme = getCookie("weatherdan_theme");
+
+  if (darkCss !== null && lightCss !== null) {
+    darkCss.disabled = theme == "dark";
+    lightCss.disabled = theme == "light";
+  }
+}
+
+function toggleTheme() {
+  const currentTheme = getCookie("weatherdan_theme");
+  const newTheme = currentTheme === "dark" ? "light" : "dark";
+
+  document.cookie = `weatherdan_theme=${newTheme}; path=/; max-age=${60 * 60 * 24 * 30}; SameSite=Strict`;
+  setTheme();
+}
+
+ready(setTheme);
+
+async function submitRequest(endpoint, method, body = {}) {
+  try {
+    const options = {
+      method: method,
+      headers: HEADERS,
+    };
+    if (method !== "GET")
+      options.body = JSON.stringify(body);
+
+    const response = await fetch(endpoint, options);
+
+    if (!response.ok)
+      throw response;
+    return response.status !== 204 ? response.json() : "";
+  } catch(error) {
+    alert(`${error.status} ${error.statusText}: ${await error.text()}`);
+    return null;
+  }
 }
 
 const backgroundColours = [
@@ -104,19 +139,22 @@ function createGraph(elementId, labels, datasets, unit, unitLabel) {
   new Chart(document.getElementById(elementId), config);
 }
 
-function refreshData(endpoint) {
+async function refreshData(endpoint) {
   let caller = "loading";
 
   addLoading(caller);
-  fetch(endpoint, {
-    method: "PUT",
-    headers: headers,
-  }).then((response) => {
+  try {
+    const response = await fetch(endpoint, {
+        method: "PUT",
+        headers: HEADERS
+    });
+
     if (!response.ok)
-      return Promise.reject(response);
+      throw response;
     if (response.status != 208)
       window.location.reload();
-  }).catch((response) => response.json().then((msg) => {
-    alert(`${response.status} ${response.statusText} => ${msg.details}`);
-  })).finally(() => removeLoading(caller));
+  } catch(error) {
+    alert(`${error.status} ${error.statusText}: ${await error.text()}`);
+  }
+  removeLoading(caller);
 }

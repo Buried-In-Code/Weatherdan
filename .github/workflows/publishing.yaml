@@ -1,0 +1,66 @@
+name: Publish
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  ghcr:
+    name: Publish to GHCR
+    permissions:
+      packages: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup qemu
+        uses: docker/setup-qemu-action@v3.0.0
+      - name: Setup docker buildx
+        uses: docker/setup-buildx-action@v3.0.0
+      - name: Login to GHCR
+        uses: docker/login-action@v3.0.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Docker meta
+        uses: docker/metadata-action@v5.0.0
+        id: meta
+        with:
+          images: |
+            name=ghcr.io/buried-in-code/weatherdan
+          flavor: |
+            latest=true
+          tags: |
+            type=pep440,pattern={{version}}
+      - name: Build and Push
+        uses: docker/build-push-action@v5.1.0
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  pypi:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/freyr
+    permissions:
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Setup dependencies
+        run: pip install build
+      - name: Build project
+        run: python -m build
+      - name: Publish project
+        uses: pypa/gh-action-pypi-publish@v1.8.10

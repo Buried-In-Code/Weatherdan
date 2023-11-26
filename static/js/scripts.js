@@ -70,7 +70,8 @@ async function submitRequest(endpoint, method, body = {}) {
 
     if (!response.ok)
       throw response;
-    return response.status !== 204 ? response.json() : "";
+    const responseBody = await response.status !== 204 ? response.json() : "";
+    return { status: response.status, body: responseBody }
   } catch(error) {
     alert(`${error.status} ${error.statusText}: ${await error.text()}`);
     return null;
@@ -143,18 +144,10 @@ async function refreshData(endpoint) {
   let caller = "loading";
 
   addLoading(caller);
-  try {
-    const response = await fetch(endpoint, {
-        method: "PUT",
-        headers: HEADERS
-    });
-
-    if (!response.ok)
-      throw response;
+  const response = await submitRequest(endpoint, "PUT");
+  if (response !== null) {
     if (response.status != 208)
       window.location.reload();
-  } catch(error) {
-    alert(`${error.status} ${error.statusText}: ${await error.text()}`);
   }
   removeLoading(caller);
 }

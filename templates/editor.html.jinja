@@ -88,26 +88,21 @@
   }
   function addHighEntry(prefix, endpoint) {
     const caller = `add-${prefix}-button`
-    let form = document.getElementById(`add-${prefix}-form`);
-    let formData = Object.fromEntries(new FormData(form));
-    console.log(formData);
+    const form = document.getElementById(`add-${prefix}-form`);
+    const jsonData = Object.fromEntries(new FormData(form));
+    const body = {
+      datestamp: jsonData["datestamp"],
+      high: jsonData["high"],
+    };
+    console.log(body);
 
     addLoading(caller);
-    fetch(endpoint, {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify({
-        "datestamp": formData["datestamp"],
-        "high": formData["high"],
-      }),
-    }).then((response) => {
-      if (!response.ok)
-        return Promise.reject(response);
+    const response = await submitRequest(endpoint, "POST", body);
+    if (response !== null) {
       form.reset();
       window.location.reload();
-    }).catch((response) => response.json().then((msg) => {
-      alert(`${response.status} ${response.statusText} => ${msg.details}`);
-    })).finally(() => removeLoading(caller));
+    }
+    removeLoading(caller);
   }
   function removeHighEntry(prefix, endpoint) {
     const caller = `remove-${prefix}-button`

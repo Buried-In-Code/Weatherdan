@@ -42,25 +42,3 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-
-  pypi:
-    name: Publish to PyPI
-    runs-on: ubuntu-latest
-    environment:
-      name: pypi
-      url: https://pypi.org/p/freyr
-    permissions:
-      id-token: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Setup python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-      - name: Setup dependencies
-        run: pip install build
-      - name: Build project
-        run: python -m build
-      - name: Publish project
-        uses: pypa/gh-action-pypi-publish@v1.8.10

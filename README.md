@@ -20,21 +20,24 @@ Currently, tracks total Rainfall and high, average and low for Solar, UV Index a
 ## Usage
 
 ### via Github
+
 1. Make sure you have a supported version of [Python](https://www.python.org/) installed: `python --version`
 2. Clone the repo: `git clone https://github.com/Buried-In-Code/Weatherdan`
 3. Install the project: `pip install .`
 4. Run using: `Weatherdan`
 
 ### via Pipx
+
 1. Make sure you have [Pipx](https://github.com/pypa/pipx) installed: `pipx --version`
 2. Install the project `pipx install git+https://github.com/Buried-In-Code/Weatherdan.git`
 3. Run using: `Weatherdan`
 
 ### via Docker-Compose
+
 1. Make sure you have [Docker](https://www.docker.com/) installed: `docker --version`
 2. Make sure you have [Docker-Compose](https://github.com/docker/compose) installed: `docker-compose --version`
-3. Create a `docker-compose.yaml` file
-An example compose file:
+3. Create a `docker-compose.yaml` file, _an example:_
+
 ```yaml
 version: '3'
 
@@ -50,6 +53,7 @@ services:
       - './config:/app/config'
       - './data:/app/data'
 ```
+
 4. Run using: `docker-compose up -d`
 
 ## Socials

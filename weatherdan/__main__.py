@@ -1,5 +1,5 @@
 import logging
-from datetime import UTC, datetime
+from datetime import datetime
 from http import HTTPStatus
 
 from fastapi import FastAPI, Request
@@ -85,5 +85,5 @@ async def validation_exception_handler(
             "status": f"{status.value}: {status.phrase}",
             "details": details,
         },
-        headers=exc.headers
+        headers=exc.headers,
     )

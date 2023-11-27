@@ -1,8 +1,11 @@
 {% macro chart(label, id) %}
-  <div class="box has-text-centered">
+<div class="box has-text-centered">
     <h3 class="subtitle is-3">{{ label }}</h3>
-    <div class="chart-container">
-      <canvas height="500" id="{{ id }}" width="750"></canvas>
+    <div class="block">
+        <progress class="progress" id="{{ id }}-loading"></progress>
     </div>
-  </div>
+    <div class="chart-container" hidden>
+        <canvas height="500" id="{{ id }}" width="750"></canvas>
+    </div>
+</div>
 {% endmacro %}

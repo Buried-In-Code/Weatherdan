@@ -43,10 +43,14 @@
 <script src="/static/js/bulma-navbar.js" type="text/javascript"></script>
 <script type="text/javascript">
   ready(() => {
-    loadRainfallStats("Daily", "rainfall-stats", maxEntries=7);
-    loadSolarStats("Daily", "solar-stats", maxEntries=7);
-    loadUVIndexStats("Daily", "uv-index-stats", maxEntries=7);
-    loadWindStats("Daily", "wind-stats", maxEntries=7);
+    loadRainfallStats("Daily", "rainfall-stats", 7);
+    toggleChartLoading("rainfall-stats");
+    loadSolarStats("Daily", "solar-stats", 7);
+    toggleChartLoading("solar-stats");
+    loadUVIndexStats("Daily", "uv-index-stats", 7);
+    toggleChartLoading("uv-index-stats");
+    loadWindStats("Daily", "wind-stats", 7);
+    toggleChartLoading("wind-stats");
   });
 
   function refreshReadings(endpoint, previous = []) {
@@ -58,9 +62,6 @@
   }
 
   ready(async function() {
-    const caller = "loading";
-
-    addLoading(caller);
     const results = await refreshReadings("/api/rainfall");
     await refreshReadings("/api/solar", results);
     await refreshReadings("/api/uv-index", results);
@@ -68,7 +69,6 @@
 
     if (results.some(x => x))
       window.location.reload();
-    removeLoading(caller);
   });
 </script>
 </body>

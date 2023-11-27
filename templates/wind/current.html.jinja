@@ -44,9 +44,13 @@
 <script type="text/javascript">
   ready(() => {
     loadWindStats("Daily", "daily-stats");
+    toggleChartLoading("daily-stats");
     loadWindStats("Weekly", "weekly-stats");
+    toggleChartLoading("weekly-stats");
     loadWindStats("Monthly", "monthly-stats");
+    toggleChartLoading("monthly-stats");
     loadWindStats("Yearly", "yearly-stats");
+    toggleChartLoading("yearly-stats");
   });
 
   ready(refreshData("/api/wind"));

@@ -22,14 +22,16 @@ function getCookie(cname) {
   return "";
 }
 
-function addLoading(caller) {
+function toggleLoading(caller) {
   const element = document.getElementById(caller);
-  element.classList.add("is-loading");
+  element.classList.toggle("is-loading");
 }
 
-function removeLoading(caller) {
-  const element = document.getElementById(caller);
-  element.classList.remove("is-loading");
+function toggleChartLoading(id) {
+  const progress = document.getElementById(`${id}-loading`).parentElement;
+  const chart = document.getElementById(id).parentElement;
+  progress.hidden = !progress.hidden;
+  chart.hidden = !chart.hidden;
 }
 
 function resetForm(page) {
@@ -70,7 +72,7 @@ async function submitRequest(endpoint, method, body = {}) {
 
     if (!response.ok)
       throw response;
-    const responseBody = await response.status !== 204 ? response.json() : "";
+    const responseBody = response.status !== 204 ? await response.json() : "";
     return { status: response.status, body: responseBody }
   } catch(error) {
     alert(`${error.status} ${error.statusText}: ${await error.text()}`);
@@ -79,13 +81,9 @@ async function submitRequest(endpoint, method, body = {}) {
 }
 
 async function refreshData(endpoint) {
-  let caller = "loading";
-
-  addLoading(caller);
   const response = await submitRequest(endpoint, "PUT");
   if (response !== null && response.status != 208)
       window.location.reload();
-  removeLoading(caller);
 }
 
 const backgroundColours = [
@@ -102,8 +100,8 @@ const borderColours = [
 
 function createDataset(index, data, label, type, yAxisID = "y") {
   return {
-    backgroundColour: backgroundColour[index],
-    borderColour: borderColours[index],
+    backgroundColor: backgroundColours[index],
+    borderColor: borderColours[index],
     borderWidth: 2,
     borderSkipped: false,
     data: data,
@@ -162,8 +160,8 @@ function createGraph(elementId, labels, datasets, unit, unitLabel) {
   new Chart(document.getElementById(elementId), config);
 }
 
-async function loadRainfallStats(timeframe, graphId, maxEntries = getCookie("weatherdan_max-entries")) {
-  const currentParams = URLSearchParams(window.location.search);
+async function loadTotalStats(timeframe, graphId, endpoint, unit, unitLabel, maxEntries) {
+  const currentParams = new URLSearchParams(window.location.search);
   const params = {
     timeframe: timeframe,
     year: currentParams.get("year") || 0,
@@ -171,12 +169,11 @@ async function loadRainfallStats(timeframe, graphId, maxEntries = getCookie("wea
     "max-entries": maxEntries,
   };
 
-  const response = await submitRequest("/api/rainfall?" + new URLSearchParams(params), "GET");
+  const response = await submitRequest(endpoint + "?" + new URLSearchParams(params), "GET");
   if (response !== null) {
     const labels = [];
     const datasets = [];
     let entryData = [];
-    const entryCount = response.body.length - maxEntries;
     response.body.forEach((x, index) => {
       if (timeframe == "Yearly")
         labels.push(moment(x.datestamp).format("YYYY"));
@@ -189,12 +186,16 @@ async function loadRainfallStats(timeframe, graphId, maxEntries = getCookie("wea
       entryData.push(x.value);
     });
     datasets.push(createDataset(0, entryData, "Total", "line"));
-    createGraph(graphId, labels, datasets, "mm", "Millimeters");
+    createGraph(graphId, labels, datasets, unit, unitLabel);
   }
 }
 
-async function loadSolarStats(timeframe, graphId, maxEntries = getCookie("weatherdan_max-entries")) {
-  const currentParams = URLSearchParams(window.location.search);
+async function loadRainfallStats(timeframe, graphId, maxEntries = getCookie("weatherdan_max-entries") || 28) {
+  await loadTotalStats(timeframe, graphId, "/api/rainfall", "mm", "Millimetres", maxEntries);
+}
+
+async function loadHighLowStats(timeframe, graphId, endpoint, unit, unitLabel, maxEntries) {
+  const currentParams = new URLSearchParams(window.location.search);
   const params = {
     timeframe: timeframe,
     year: currentParams.get("year") || 0,
@@ -202,12 +203,11 @@ async function loadSolarStats(timeframe, graphId, maxEntries = getCookie("weathe
     "max-entries": maxEntries,
   };
 
-  const response = await submitRequest("/api/solar?" + new URLSearchParams(params), "GET");
+  const response = await submitRequest(endpoint + "?" + new URLSearchParams(params), "GET");
   if (response !== null) {
     const labels = [];
     const datasets = [];
     let entryData = [];
-    const entryCount = response.body.high.length - count;
     response.body.high.forEach((high, index) => {
       low = response.body.low[index];
       if (timeframe == "Yearly")
@@ -219,96 +219,28 @@ async function loadSolarStats(timeframe, graphId, maxEntries = getCookie("weathe
       else
         labels.push(moment(high.datestamp).format("Do MMM YYYY"));
       if (response.body.low.length >= 1)
-        entryData.push([high.value / 1000, low.value / 1000]);
+        entryData.push([high.value, low.value]);
       else
-        entryData.push([high.value / 1000]);
+        entryData.push(high.value);
     });
-    datasets.push(createDataset(0, entryData, "High/Low", (response.body.low.length > 1) ? "bar" : "line"));
-    if (response.body.average.length >= 1) {
+    datasets.push(createDataset(0, entryData, "High/Low", (response.body.low.length > 0) ? "bar" : "line"));
+    if (response.body.average.length > 0) {
       entryData = [];
-      response.body.average.forEach(x => entryData.push(x.value / 1000));
+      response.body.average.forEach(x => entryData.push(x.value));
       datasets.push(createDataset(1, entryData, "Average", "line"));
     }
-    createGraph(graphId, labels, datasets, "lx", "Lux (1000s)");
+    createGraph(graphId, labels, datasets, unit, unitLabel);
   }
 }
 
-async function loadUVIndexStats(timeframe, graphId, maxEntries = getCookie("weatherdan_max-entries")) {
-  const currentParams = URLSearchParams(window.location.search);
-  const params = {
-    timeframe: timeframe,
-    year: currentParams.get("year") || 0,
-    month: currentParams.get("month") || 0,
-    "max-entries": maxEntries,
-  };
-
-  const response = await submitRequest("/api/uv-index?" + new URLSearchParams(params), "GET");
-  if (response !== null) {
-    const labels = [];
-    const datasets = [];
-    let entryData = [];
-    const entryCount = response.body.high.length - count;
-    response.body.high.forEach((high, index) => {
-      low = response.body.low[index];
-      if (timeframe == "Yearly")
-        labels.push(moment(high.datestamp).format("YYYY"));
-      else if (timeframe == "Monthly")
-        labels.push(moment(high.datestamp).format("MMM YYYY"));
-      else if (timeframe == "Weekly")
-        labels.push(moment(high.start_datestamp).format("Do MMM YYYY"));
-      else
-        labels.push(moment(high.datestamp).format("Do MMM YYYY"));
-      if (response.body.low.length >= 1)
-        entryData.push([high.value / 1000, low.value / 1000]);
-      else
-        entryData.push([high.value / 1000]);
-    });
-    datasets.push(createDataset(0, entryData, "High/Low", (response.body.low.length > 1) ? "bar" : "line"));
-    if (response.body.average.length >= 1) {
-      entryData = [];
-      response.body.average.forEach(x => entryData.push(x.value / 1000));
-      datasets.push(createDataset(1, entryData, "Average", "line"));
-    }
-    createGraph(graphId, labels, datasets, "", "Index");
-  }
+async function loadSolarStats(timeframe, graphId, maxEntries = getCookie("weatherdan_max-entries") || 28) {
+  await loadHighLowStats(timeframe, graphId, "/api/solar", "lx", "Lux", maxEntries);
 }
 
-async function loadWindStats(timeframe, graphId, maxEntries = getCookie("weatherdan_max-entries")) {
-  const currentParams = URLSearchParams(window.location.search);
-  const params = {
-    timeframe: timeframe,
-    year: currentParams.get("year") || 0,
-    month: currentParams.get("month") || 0,
-    "max-entries": maxEntries,
-  };
+async function loadUVIndexStats(timeframe, graphId, maxEntries = getCookie("weatherdan_max-entries") || 28) {
+  await loadHighLowStats(timeframe, graphId, "/api/uv-index", "", "Index", maxEntries);
+}
 
-  const response = await submitRequest("/api/wind?" + new URLSearchParams(params), "GET");
-  if (response !== null) {
-    const labels = [];
-    const datasets = [];
-    let entryData = [];
-    const entryCount = response.body.high.length - count;
-    response.body.high.forEach((high, index) => {
-      low = response.body.low[index];
-      if (timeframe == "Yearly")
-        labels.push(moment(high.datestamp).format("YYYY"));
-      else if (timeframe == "Monthly")
-        labels.push(moment(high.datestamp).format("MMM YYYY"));
-      else if (timeframe == "Weekly")
-        labels.push(moment(high.start_datestamp).format("Do MMM YYYY"));
-      else
-        labels.push(moment(high.datestamp).format("Do MMM YYYY"));
-      if (response.body.low.length >= 1)
-        entryData.push([high.value / 1000, low.value / 1000]);
-      else
-        entryData.push([high.value / 1000]);
-    });
-    datasets.push(createDataset(0, entryData, "High/Low", (response.body.low.length > 1) ? "bar" : "line"));
-    if (response.body.average.length >= 1) {
-      entryData = [];
-      response.body.average.forEach(x => entryData.push(x.value / 1000));
-      datasets.push(createDataset(1, entryData, "Average", "line"));
-    }
-    createGraph(graphId, labels, datasets, "km/h", "Kilometers per Hour");
-  }
+async function loadWindStats(timeframe, graphId, maxEntries = getCookie("weatherdan_max-entries") || 28) {
+  await loadHighLowStats(timeframe, graphId, "/api/wind", "km/h", "Kilometers per Hour", maxEntries);
 }

@@ -85,5 +85,4 @@ async def validation_exception_handler(
             "status": f"{status.value}: {status.phrase}",
             "details": details,
         },
-        headers=exc.headers,
     )

@@ -5,7 +5,7 @@ from datetime import date, datetime, timedelta
 from decimal import Decimal
 from enum import Enum
 
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, Query
 from fastapi.exceptions import HTTPException
 from pony.orm import db_session
 
@@ -48,7 +48,7 @@ def list_readings(
     timeframe: Timeframe = Timeframe.DAILY,
     year: int | None = None,
     month: int | None = None,
-    max_entries: int = 28,
+    max_entries: int = Query(alias="max-entries", default=28),
 ) -> GraphData | WeekGraphData:
     with db_session:
         entries = sorted(x.to_model() for x in WindReading.select())

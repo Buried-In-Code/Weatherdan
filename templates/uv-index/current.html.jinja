@@ -44,9 +44,13 @@
 <script type="text/javascript">
   ready(() => {
     loadUVIndexStats("Daily", "daily-stats");
+    toggleChartLoading("daily-stats");
     loadUVIndexStats("Weekly", "weekly-stats");
+    toggleChartLoading("weekly-stats");
     loadUVIndexStats("Monthly", "monthly-stats");
+    toggleChartLoading("monthly-stats");
     loadUVIndexStats("Yearly", "yearly-stats");
+    toggleChartLoading("yearly-stats");
   });
 
   ready(refreshData("/api/uv-index"));

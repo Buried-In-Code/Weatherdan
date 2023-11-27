@@ -94,7 +94,7 @@ class Ecowitt:
     def test_credentials(self: Self) -> bool:
         try:
             self.list_devices()
-            return True
+            return True  # noqa: TRY300
         except AuthenticationError:
             pass
         return False

@@ -1,6 +1,5 @@
-{% from "components/adjustable_columns.jinja" import adjustable_columns %}
 {% from "components/forms.jinja" import input_number %}
-{% from "components/form_box.jinja" import add_high, remove_high, add_range, remove_range, add_total, remove_total %}
+{% from "components/form_box.jinja" import add_high, remove_high, add_total, remove_total %}
 <!DOCTYPE html>
 <html lang="en-GB">
 <head>
@@ -81,10 +80,10 @@
     const form = document.getElementById("settings-form");
     const formData = Object.fromEntries(new FormData(form));
 
-    addLoading(caller);
+    toggleLoading(caller);
     document.cookie = `weatherdan_max-entries=${formData["max-entries"]};path=/;max-age=${60*60*24*30};SameSite=Strict`;
     window.location.reload();
-    removeLoading(caller);
+    toggleLoading(caller);
   }
 
   async function addHighEntry(prefix, endpoint) {
@@ -95,15 +94,14 @@
       datestamp: formData["datestamp"],
       high: formData["high"],
     };
-    console.log(body);
 
-    addLoading(caller);
+    toggleLoading(caller);
     const response = await submitRequest(endpoint, "POST", body);
     if (response !== null) {
       form.reset();
       window.location.reload();
     }
-    removeLoading(caller);
+    toggleLoading(caller);
   }
 
   async function removeHighEntry(prefix, endpoint) {
@@ -113,53 +111,14 @@
     const body = {
       datestamp: formData["datestamp"],
     };
-    console.log(body);
 
-    addLoading(caller);
+    toggleLoading(caller);
     const response = await submitRequest(endpoint, "DELETE", body);
     if (response !== null) {
       form.reset();
       window.location.reload();
     }
-    removeLoading(caller);
-  }
-
-  async function addRangeEntry(prefix, endpoint) {
-    const caller = `add-${prefix}-button`
-    const form = document.getElementById(`add-${prefix}-form`);
-    const formData = Object.fromEntries(new FormData(form));
-    const body = {
-      datestamp: formData["datestamp"],
-      high: formData["high"],
-      low: formData["low"],
-    };
-    console.log(body);
-
-    addLoading(caller);
-    const response = await submitRequest(endpoint, "POST", body);
-    if (response !== null) {
-      form.reset();
-      window.location.reload();
-    }
-    removeLoading(caller);
-  }
-
-  async function removeRangeEntry(prefix, endpoint) {
-    const caller = `remove-${prefix}-button`
-    const form = document.getElementById(`remove-${prefix}-form`);
-    const formData = Object.fromEntries(new FormData(form));
-    const body = {
-      datestamp: formData["datestamp"],
-    };
-    console.log(body);
-
-    addLoading(caller);
-    const response = await submitRequest(endpoint, "DELETE", body);
-    if (response !== null) {
-      form.reset();
-      window.location.reload();
-    }
-    removeLoading(caller);
+    toggleLoading(caller);
   }
 
   async function addTotalEntry(prefix, endpoint) {
@@ -170,15 +129,14 @@
       datestamp: formData["datestamp"],
       total: formData["total"],
     };
-    console.log(body);
 
-    addLoading(caller);
+    toggleLoading(caller);
     const response = await submitRequest(endpoint, "POST", body);
     if (response !== null) {
       form.reset();
       window.location.reload();
     }
-    removeLoading(caller);
+    toggleLoading(caller);
   }
 
   async function removeTotalEntry(prefix, endpoint) {
@@ -188,15 +146,14 @@
     const body = {
       datestamp: formData["datestamp"],
     };
-    console.log(body);
 
-    addLoading(caller);
+    toggleLoading(caller);
     const response = await submitRequest(endpoint, "DELETE", body);
     if (response !== null) {
       form.reset();
       window.location.reload();
     }
-    removeLoading();
+    toggleLoading(caller);
   }
 </script>
 </body>

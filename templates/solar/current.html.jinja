@@ -44,9 +44,13 @@
 <script type="text/javascript">
   ready(function() {
     loadSolarStats("Daily", "daily-stats");
+    toggleChartLoading("daily-stats");
     loadSolarStats("Weekly", "weekly-stats");
+    toggleChartLoading("weekly-stats");
     loadSolarStats("Monthly", "monthly-stats");
+    toggleChartLoading("monthly-stats");
     loadSolarStats("Yearly", "yearly-stats");
+    toggleChartLoading("yearly-stats");
   });
 
   ready(refreshData("/api/solar"));

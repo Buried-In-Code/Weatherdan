@@ -5,7 +5,7 @@ from datetime import date, datetime, timedelta
 from decimal import Decimal
 from enum import Enum
 
-from fastapi import APIRouter, Body, Cookie, Query
+from fastapi import APIRouter, Body
 from fastapi.exceptions import HTTPException
 from pony.orm import db_session
 
@@ -58,7 +58,9 @@ def list_readings(
             )
         if timeframe == Timeframe.WEEKLY:
             return WeekGraphData(
-                high=get_weekly_high_readings(entries=entries, year=year, month=month)[-max_entries:],
+                high=get_weekly_high_readings(entries=entries, year=year, month=month)[
+                    -max_entries:
+                ],
                 average=get_weekly_average_readings(
                     entries=entries,
                     year=year,

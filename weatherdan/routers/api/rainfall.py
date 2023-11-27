@@ -5,7 +5,7 @@ from datetime import date, datetime, timedelta
 from decimal import Decimal
 from enum import Enum
 
-from fastapi import APIRouter, Body, Cookie, Query
+from fastapi import APIRouter, Body
 from fastapi.exceptions import HTTPException
 from pony.orm import db_session
 

@@ -42,20 +42,17 @@ def list_readings(
     timeframe: Timeframe = Timeframe.DAILY,
     year: int | None = None,
     month: int | None = None,
-    all_results: bool = Query(alias="allResults", default=False),
-    count: int = Cookie(alias="weatherdan_count", default=28),
+    max_entries: int = 28,
 ) -> list[Reading | WeekReading]:
-    if all_results:
-        count = 100
     with db_session:
         entries = sorted(x.to_model() for x in RainfallReading.select())
         if timeframe == Timeframe.DAILY:
-            return get_daily_readings(entries=entries, year=year, month=month)[-count:]
+            return get_daily_readings(entries=entries, year=year, month=month)[-max_entries:]
         if timeframe == Timeframe.WEEKLY:
-            return get_weekly_total_readings(entries=entries, year=year, month=month)[-count:]
+            return get_weekly_total_readings(entries=entries, year=year, month=month)[-max_entries:]
         if timeframe == Timeframe.MONTHLY:
-            return get_monthly_total_readings(entries=entries, year=year)[-count:]
-        return get_yearly_total_readings(entries=entries)[-count:]
+            return get_monthly_total_readings(entries=entries, year=year)[-max_entries:]
+        return get_yearly_total_readings(entries=entries)[-max_entries:]
 
 
 @router.post(path="", status_code=201)

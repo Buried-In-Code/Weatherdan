@@ -17,11 +17,11 @@ LOGGER = logging.getLogger(__name__)
 @router.get("", response_class=HTMLResponse)
 def current(
     request: Request,
-    count: int = Cookie(alias="weatherdan_count", default=28),
+    max_entries: int = Cookie(alias="weatherdan_max-entries", default=28),
 ) -> Response:
     return templates.TemplateResponse(
         "uv-index/current.html.jinja",
-        {"request": request, "count": count},
+        {"request": request, "max_entries": max_entries},
     )
 
 
@@ -30,7 +30,7 @@ def historical(
     request: Request,
     year: int = 0,
     month: int = 0,
-    count: int = Cookie(alias="weatherdan_count", default=28),
+    max_entries: int = Cookie(alias="weatherdan_max-entries", default=28),
 ) -> Response:
     def year_list() -> list[int]:
         with db_session:
@@ -46,7 +46,7 @@ def historical(
         "uv-index/historical.html.jinja",
         {
             "request": request,
-            "count": count,
+            "max_entries": max_entries,
             "year_list": year_list(),
             "month_list": month_list(year=year) if year else [],
             "year": year,

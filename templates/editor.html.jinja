@@ -1,98 +1,99 @@
+{% from "components/adjustable_columns.jinja" import adjustable_columns %}
 {% from "components/forms.jinja" import input_number %}
 {% from "components/form_box.jinja" import add_high, remove_high, add_range, remove_range, add_total, remove_total %}
 <!DOCTYPE html>
 <html lang="en-GB">
 <head>
-  <meta charset="utf-8">
-  <meta content="width=device-width, initial-scale=1" name="viewport">
-  <title>Weatherdan</title>
-  <link href="https://use.fontawesome.com/releases/v6.3.0/css/all.css" rel="stylesheet">
-  <link href="/static/css/custom-bulma.css" rel="stylesheet">
-  <link href="/static/css/styles.css" rel="stylesheet">
-  <link href="/static/img/favicon.ico" id="favicon" rel="icon" type="image/x-icon">
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <title>Weatherdan</title>
+    <link href="https://use.fontawesome.com/releases/v6.3.0/css/all.css" rel="stylesheet">
+    <link disabled href="https://unpkg.com/bulmaswatch/flatly/bulmaswatch.min.css" id="light-theme" rel="stylesheet">
+    <link href="https://unpkg.com/bulmaswatch/darkly/bulmaswatch.min.css" id="dark-theme" rel="stylesheet">
+    <link href="/static/css/styles.css" rel="stylesheet">
+    <link href="/static/img/favicon.ico" id="favicon" rel="icon" type="image/x-icon">
 </head>
 <body class="has-navbar-fixed-top">
 {% include "components/navbar.jinja" %}
 <main class="section">
-  <div class="container">
-    <header class="block has-text-centered">
-      <h1 class="title is-1">Editor</h1>
-    </header>
-      <div class="columns is-centered is-multiline">
-        <div class="column is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen">
-          <div class="box">
-            <h5 class="title is-5 has-text-info-light">Settings</h5>
-            <form id="settings-form" onsubmit="return false;">
-              {{ input_number(label="Max Entries", name="count", value=count) }}
-              <div class="buttons is-centered">
-                <button class="button is-info" id="save-settings-button" onclick="saveSettings()" type="button">
-                  <span class="icon">
-                    <i class="fa-solid fa-floppy-disk"></i>
-                  </span>
-                  <span>Save</span>
-                </button>
-              </div>
-            </form>
-          </div>
+    <div class="container">
+        <header class="block has-text-centered">
+            <h1 class="title is-1">Editor</h1>
+        </header>
+        <div class="columns is-centered is-multiline">
+            <div class="column is-one-quarter-tablet is-one-fifth-fullhd">
+                <div class="box">
+                    <h5 class="title is-5 has-text-info-light">Graph Points</h5>
+                    <form id="settings-form" onsubmit="return false;">
+                        {{ input_number(label="Max Entries", name="max-entries", value=max_entries) }}
+                        <div class="buttons is-centered">
+                            <button class="button is-success" id="save-button" onclick="saveSettings()" type="button">
+                                <span class="icon">
+                                    <i class="fa-solid fa-floppy-disk"></i>
+                                </span>
+                                <span>Save</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="column is-one-quarter-tablet is-one-fifth-fullhd">
+                {{ add_total("Rainfall", "mm", "/api/rainfall") }}
+            </div>
+            <div class="column is-one-quarter-tablet is-one-fifth-fullhd">
+                {{ remove_total("Rainfall", "/api/rainfall") }}
+            </div>
+            <div class="column is-one-quarter-tablet is-one-fifth-fullhd">
+                {{ add_high("Solar", "lx", "/api/solar") }}
+            </div>
+            <div class="column is-one-quarter-tablet is-one-fifth-fullhd">
+                {{ remove_high("Solar", "/api/solar") }}
+            </div>
+            <div class="column is-one-quarter-tablet is-one-fifth-fullhd">
+                {{ add_high("UV Index", "", "/api/uv-index") }}
+            </div>
+            <div class="column is-one-quarter-tablet is-one-fifth-fullhd">
+                {{ remove_high("UV Index", "/api/uv-index") }}
+            </div>
+            <div class="column is-one-quarter-tablet is-one-fifth-fullhd">
+                {{ add_high("Wind", "km/h", "/api/wind") }}
+            </div>
+            <div class="column is-one-quarter-tablet is-one-fifth-fullhd">
+                {{ remove_high("Wind", "/api/wind") }}
+            </div>
         </div>
-        <div class="column is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen">
-          {{ add_total("Rainfall", "mm", "/api/rainfall") }}
-        </div>
-        <div class="column is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen">
-          {{ remove_total("Rainfall", "/api/rainfall") }}
-        </div>
-        <div class="column is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen">
-          {{ add_high("Solar", "lx", "/api/solar") }}
-        </div>
-        <div class="column is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen">
-          {{ remove_high("Solar", "/api/solar") }}
-        </div>
-        <div class="column is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen">
-          {{ add_high("UV Index", "", "/api/uv-index") }}
-        </div>
-        <div class="column is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen">
-          {{ remove_high("UV Index", "/api/uv-index") }}
-        </div>
-        <div class="column is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen">
-          {{ add_high("Wind", "km/h", "/api/wind") }}
-        </div>
-        <div class="column is-one-third-tablet is-one-quarter-desktop is-one-fifth-widescreen">
-          {{ remove_high("Wind", "/api/wind") }}
-        </div>
-      </div>
-  </div>
+    </div>
 </main>
 {% include "components/footer.jinja" %}
-<script src="/static/js/bulma-navbar.js" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@^2.29" type="text/javascript"></script>
 <script src="/static/js/scripts.js" type="text/javascript"></script>
+<script src="/static/js/bulma-navbar.js" type="text/javascript"></script>
 <script type="text/javascript">
-  ready(function() {
-    let today = new Date();
-    let dd = String(today.getDate()).padStart(2, '0');
-    let mm = String(today.getMonth() + 1).padStart(2, '0');
-    let yyyy = today.getFullYear();
-    document.getElementsByName("datestamp").forEach(function(element) {
-      element.value = `${yyyy}-${mm}-${dd}`
+  ready(() => {
+    const today = moment().format("YYYY-MM-DD");
+    document.getElementsByName("datestamp").forEach(element => {
+      element.value = today;
     });
   });
-  function saveSettings() {
-    const caller = "save-settings-button";
-    addLoading(caller);
-    let form = document.getElementById("settings-form");
-    let formData = Object.fromEntries(new FormData(form));
-    console.log(formData);
 
-    document.cookie = `weatherdan_count=${formData['count']};path=/;max-age=${60*60*24*30};SameSite=Strict`;
-    removeLoading(caller);
+  function saveSettings() {
+    const caller = "save-button";
+    const form = document.getElementById("settings-form");
+    const formData = Object.fromEntries(new FormData(form));
+
+    addLoading(caller);
+    document.cookie = `weatherdan_max-entries=${formData["max-entries"]};path=/;max-age=${60*60*24*30};SameSite=Strict`;
     window.location.reload();
+    removeLoading(caller);
   }
-  function addHighEntry(prefix, endpoint) {
+
+  async function addHighEntry(prefix, endpoint) {
     const caller = `add-${prefix}-button`
     const form = document.getElementById(`add-${prefix}-form`);
-    const jsonData = Object.fromEntries(new FormData(form));
+    const formData = Object.fromEntries(new FormData(form));
     const body = {
-      datestamp: jsonData["datestamp"],
-      high: jsonData["high"],
+      datestamp: formData["datestamp"],
+      high: formData["high"],
     };
     console.log(body);
 
@@ -104,118 +105,98 @@
     }
     removeLoading(caller);
   }
-  function removeHighEntry(prefix, endpoint) {
+
+  async function removeHighEntry(prefix, endpoint) {
     const caller = `remove-${prefix}-button`
-    let form = document.getElementById(`remove-${prefix}-form`);
-    let formData = Object.fromEntries(new FormData(form));
-    console.log(formData);
+    const form = document.getElementById(`remove-${prefix}-form`);
+    const formData = Object.fromEntries(new FormData(form));
+    const body = {
+      datestamp: formData["datestamp"],
+    };
+    console.log(body);
 
     addLoading(caller);
-    fetch(endpoint, {
-      method: "DELETE",
-      headers: headers,
-      body: JSON.stringify({
-        "datestamp": formData["datestamp"],
-      }),
-    }).then((response) => {
-      if (!response.ok)
-        return Promise.reject(response);
+    const response = await submitRequest(endpoint, "DELETE", body);
+    if (response !== null) {
       form.reset();
       window.location.reload();
-    }).catch((response) => response.json().then((msg) => {
-      alert(`${response.status} ${response.statusText} => ${msg.details}`);
-    })).finally(() => removeLoading(caller));
+    }
+    removeLoading(caller);
   }
-  function addRangeEntry(prefix, endpoint) {
+
+  async function addRangeEntry(prefix, endpoint) {
     const caller = `add-${prefix}-button`
-    let form = document.getElementById(`add-${prefix}-form`);
-    let formData = Object.fromEntries(new FormData(form));
-    console.log(formData);
+    const form = document.getElementById(`add-${prefix}-form`);
+    const formData = Object.fromEntries(new FormData(form));
+    const body = {
+      datestamp: formData["datestamp"],
+      high: formData["high"],
+      low: formData["low"],
+    };
+    console.log(body);
 
     addLoading(caller);
-    fetch(endpoint, {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify({
-        "datestamp": formData["datestamp"],
-        "high": formData["high"],
-        "low": formData["low"],
-      }),
-    }).then((response) => {
-      if (!response.ok)
-        return Promise.reject(response);
+    const response = await submitRequest(endpoint, "POST", body);
+    if (response !== null) {
       form.reset();
       window.location.reload();
-    }).catch((response) => response.json().then((msg) => {
-      alert(`${response.status} ${response.statusText} => ${msg.details}`);
-    })).finally(() => removeLoading(caller));
+    }
+    removeLoading(caller);
   }
-  function removeRangeEntry(prefix, endpoint) {
+
+  async function removeRangeEntry(prefix, endpoint) {
     const caller = `remove-${prefix}-button`
-    let form = document.getElementById(`remove-${prefix}-form`);
-    let formData = Object.fromEntries(new FormData(form));
-    console.log(formData);
+    const form = document.getElementById(`remove-${prefix}-form`);
+    const formData = Object.fromEntries(new FormData(form));
+    const body = {
+      datestamp: formData["datestamp"],
+    };
+    console.log(body);
 
     addLoading(caller);
-    fetch(endpoint, {
-      method: "DELETE",
-      headers: headers,
-      body: JSON.stringify({
-        "datestamp": formData["datestamp"],
-      }),
-    }).then((response) => {
-      if (!response.ok)
-        return Promise.reject(response);
+    const response = await submitRequest(endpoint, "DELETE", body);
+    if (response !== null) {
       form.reset();
       window.location.reload();
-    }).catch((response) => response.json().then((msg) => {
-      alert(`${response.status} ${response.statusText} => ${msg.details}`);
-    })).finally(() => removeLoading(caller));
+    }
+    removeLoading(caller);
   }
-  function addTotalEntry(prefix, endpoint) {
+
+  async function addTotalEntry(prefix, endpoint) {
     const caller = `add-${prefix}-button`
-    let form = document.getElementById(`add-${prefix}-form`);
-    let formData = Object.fromEntries(new FormData(form));
-    console.log(formData);
+    const form = document.getElementById(`add-${prefix}-form`);
+    const formData = Object.fromEntries(new FormData(form));
+    const body = {
+      datestamp: formData["datestamp"],
+      total: formData["total"],
+    };
+    console.log(body);
 
     addLoading(caller);
-    fetch(endpoint, {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify({
-        "datestamp": formData["datestamp"],
-        "total": formData["total"],
-      }),
-    }).then((response) => {
-      if (!response.ok)
-        return Promise.reject(response);
+    const response = await submitRequest(endpoint, "POST", body);
+    if (response !== null) {
       form.reset();
       window.location.reload();
-    }).catch((response) => response.json().then((msg) => {
-      alert(`${response.status} ${response.statusText} => ${msg.details}`);
-    })).finally(() => removeLoading(caller));
+    }
+    removeLoading(caller);
   }
-  function removeTotalEntry(prefix, endpoint) {
+
+  async function removeTotalEntry(prefix, endpoint) {
     const caller = `remove-${prefix}-button`
-    let form = document.getElementById(`remove-${prefix}-form`);
-    let formData = Object.fromEntries(new FormData(form));
-    console.log(formData);
+    const form = document.getElementById(`remove-${prefix}-form`);
+    const formData = Object.fromEntries(new FormData(form));
+    const body = {
+      datestamp: formData["datestamp"],
+    };
+    console.log(body);
 
     addLoading(caller);
-    fetch(endpoint, {
-      method: "DELETE",
-      headers: headers,
-      body: JSON.stringify({
-        "datestamp": formData["datestamp"],
-      }),
-    }).then((response) => {
-      if (!response.ok)
-        return Promise.reject(response);
+    const response = await submitRequest(endpoint, "DELETE", body);
+    if (response !== null) {
       form.reset();
       window.location.reload();
-    }).catch((response) => response.json().then((msg) => {
-      alert(`${response.status} ${response.statusText} => ${msg.details}`);
-    })).finally(() => removeLoading(caller));
+    }
+    removeLoading();
   }
 </script>
 </body>

@@ -48,37 +48,34 @@ def list_readings(
     timeframe: Timeframe = Timeframe.DAILY,
     year: int | None = None,
     month: int | None = None,
-    all_results: bool = Query(alias="allResults", default=False),
-    count: int = Cookie(alias="weatherdan_count", default=28),
+    max_entries: int = 28,
 ) -> GraphData | WeekGraphData:
-    if all_results:
-        count = 100
     with db_session:
         entries = sorted(x.to_model() for x in UVIndexReading.select())
         if timeframe == Timeframe.DAILY:
             return GraphData(
-                high=get_daily_readings(entries=entries, year=year, month=month)[-count:],
+                high=get_daily_readings(entries=entries, year=year, month=month)[-max_entries:],
             )
         if timeframe == Timeframe.WEEKLY:
             return WeekGraphData(
-                high=get_weekly_high_readings(entries=entries, year=year, month=month)[-count:],
+                high=get_weekly_high_readings(entries=entries, year=year, month=month)[-max_entries:],
                 average=get_weekly_average_readings(
                     entries=entries,
                     year=year,
                     month=month,
-                )[-count:],
-                low=get_weekly_low_readings(entries=entries, year=year, month=month)[-count:],
+                )[-max_entries:],
+                low=get_weekly_low_readings(entries=entries, year=year, month=month)[-max_entries:],
             )
         if timeframe == Timeframe.MONTHLY:
             return GraphData(
-                high=get_monthly_high_readings(entries=entries, year=year)[-count:],
-                average=get_monthly_average_readings(entries=entries, year=year)[-count:],
-                low=get_monthly_low_readings(entries=entries, year=year)[-count:],
+                high=get_monthly_high_readings(entries=entries, year=year)[-max_entries:],
+                average=get_monthly_average_readings(entries=entries, year=year)[-max_entries:],
+                low=get_monthly_low_readings(entries=entries, year=year)[-max_entries:],
             )
         return GraphData(
-            high=get_yearly_high_readings(entries=entries)[-count:],
-            average=get_yearly_average_readings(entries=entries)[-count:],
-            low=get_yearly_low_readings(entries=entries)[-count:],
+            high=get_yearly_high_readings(entries=entries)[-max_entries:],
+            average=get_yearly_average_readings(entries=entries)[-max_entries:],
+            low=get_yearly_low_readings(entries=entries)[-max_entries:],
         )
 
 

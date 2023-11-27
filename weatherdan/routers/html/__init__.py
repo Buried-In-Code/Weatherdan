@@ -20,8 +20,8 @@ def dashboard(request: Request) -> Response:
 
 
 @router.get("/editor", response_class=HTMLResponse)
-def editor(request: Request, count: int = Cookie(alias="weatherdan_count", default=28)) -> Response:
-    return templates.TemplateResponse("editor.html.jinja", {"request": request, "count": count})
+def editor(request: Request, max_entries: int = Cookie(alias="weatherdan_max-entries", default=28)) -> Response:
+    return templates.TemplateResponse("editor.html.jinja", {"request": request, "max_entries": max_entries})
 
 
 router.include_router(rainfall_router)

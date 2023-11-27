@@ -78,6 +78,16 @@ async function submitRequest(endpoint, method, body = {}) {
   }
 }
 
+async function refreshData(endpoint) {
+  let caller = "loading";
+
+  addLoading(caller);
+  const response = await submitRequest(endpoint, "PUT");
+  if (response !== null && response.status != 208)
+      window.location.reload();
+  removeLoading(caller);
+}
+
 const backgroundColours = [
   "rgba(65,105,225,0.1)",
   "rgba(255,65,105,0.1)",
@@ -89,6 +99,19 @@ const borderColours = [
   "rgba(255,65,105,1)",
   "rgba(105,255,65,1)",
 ];
+
+function createDataset(index, data, label, type, yAxisID = "y") {
+  return {
+    backgroundColour: backgroundColour[index],
+    borderColour: borderColours[index],
+    borderWidth: 2,
+    borderSkipped: false,
+    data: data,
+    label: label,
+    type: type,
+    yAxisID: yAxisID
+  }
+}
 
 function createGraph(elementId, labels, datasets, unit, unitLabel) {
   let config = {
@@ -136,18 +159,156 @@ function createGraph(elementId, labels, datasets, unit, unitLabel) {
       }
     }
   }
-  console.log(config);
   new Chart(document.getElementById(elementId), config);
 }
 
-async function refreshData(endpoint) {
-  let caller = "loading";
+async function loadRainfallStats(timeframe, graphId, maxEntries = getCookie("weatherdan_max-entries")) {
+  const currentParams = URLSearchParams(window.location.search);
+  const params = {
+    timeframe: timeframe,
+    year: currentParams.get("year") || 0,
+    month: currentParams.get("month") || 0,
+    "max-entries": maxEntries,
+  };
 
-  addLoading(caller);
-  const response = await submitRequest(endpoint, "PUT");
+  const response = await submitRequest("/api/rainfall?" + new URLSearchParams(params), "GET");
   if (response !== null) {
-    if (response.status != 208)
-      window.location.reload();
+    const labels = [];
+    const datasets = [];
+    let entryData = [];
+    const entryCount = response.body.length - maxEntries;
+    response.body.forEach((x, index) => {
+      if (timeframe == "Yearly")
+        labels.push(moment(x.datestamp).format("YYYY"));
+      else if (timeframe == "Monthly")
+        labels.push(moment(x.datestamp).format("MMM YYYY"));
+      else if (timeframe == "Weekly")
+        labels.push(moment(x.start_datestamp).format("Do MMM YYYY"));
+      else
+        labels.push(moment(x.datestamp).format("Do MMM YYYY"));
+      entryData.push(x.value);
+    });
+    datasets.push(createDataset(0, entryData, "Total", "line"));
+    createGraph(graphId, labels, datasets, "mm", "Millimeters");
   }
-  removeLoading(caller);
+}
+
+async function loadSolarStats(timeframe, graphId, maxEntries = getCookie("weatherdan_max-entries")) {
+  const currentParams = URLSearchParams(window.location.search);
+  const params = {
+    timeframe: timeframe,
+    year: currentParams.get("year") || 0,
+    month: currentParams.get("month") || 0,
+    "max-entries": maxEntries,
+  };
+
+  const response = await submitRequest("/api/solar?" + new URLSearchParams(params), "GET");
+  if (response !== null) {
+    const labels = [];
+    const datasets = [];
+    let entryData = [];
+    const entryCount = response.body.high.length - count;
+    response.body.high.forEach((high, index) => {
+      low = response.body.low[index];
+      if (timeframe == "Yearly")
+        labels.push(moment(high.datestamp).format("YYYY"));
+      else if (timeframe == "Monthly")
+        labels.push(moment(high.datestamp).format("MMM YYYY"));
+      else if (timeframe == "Weekly")
+        labels.push(moment(high.start_datestamp).format("Do MMM YYYY"));
+      else
+        labels.push(moment(high.datestamp).format("Do MMM YYYY"));
+      if (response.body.low.length >= 1)
+        entryData.push([high.value / 1000, low.value / 1000]);
+      else
+        entryData.push([high.value / 1000]);
+    });
+    datasets.push(createDataset(0, entryData, "High/Low", (response.body.low.length > 1) ? "bar" : "line"));
+    if (response.body.average.length >= 1) {
+      entryData = [];
+      response.body.average.forEach(x => entryData.push(x.value / 1000));
+      datasets.push(createDataset(1, entryData, "Average", "line"));
+    }
+    createGraph(graphId, labels, datasets, "lx", "Lux (1000s)");
+  }
+}
+
+async function loadUVIndexStats(timeframe, graphId, maxEntries = getCookie("weatherdan_max-entries")) {
+  const currentParams = URLSearchParams(window.location.search);
+  const params = {
+    timeframe: timeframe,
+    year: currentParams.get("year") || 0,
+    month: currentParams.get("month") || 0,
+    "max-entries": maxEntries,
+  };
+
+  const response = await submitRequest("/api/uv-index?" + new URLSearchParams(params), "GET");
+  if (response !== null) {
+    const labels = [];
+    const datasets = [];
+    let entryData = [];
+    const entryCount = response.body.high.length - count;
+    response.body.high.forEach((high, index) => {
+      low = response.body.low[index];
+      if (timeframe == "Yearly")
+        labels.push(moment(high.datestamp).format("YYYY"));
+      else if (timeframe == "Monthly")
+        labels.push(moment(high.datestamp).format("MMM YYYY"));
+      else if (timeframe == "Weekly")
+        labels.push(moment(high.start_datestamp).format("Do MMM YYYY"));
+      else
+        labels.push(moment(high.datestamp).format("Do MMM YYYY"));
+      if (response.body.low.length >= 1)
+        entryData.push([high.value / 1000, low.value / 1000]);
+      else
+        entryData.push([high.value / 1000]);
+    });
+    datasets.push(createDataset(0, entryData, "High/Low", (response.body.low.length > 1) ? "bar" : "line"));
+    if (response.body.average.length >= 1) {
+      entryData = [];
+      response.body.average.forEach(x => entryData.push(x.value / 1000));
+      datasets.push(createDataset(1, entryData, "Average", "line"));
+    }
+    createGraph(graphId, labels, datasets, "", "Index");
+  }
+}
+
+async function loadWindStats(timeframe, graphId, maxEntries = getCookie("weatherdan_max-entries")) {
+  const currentParams = URLSearchParams(window.location.search);
+  const params = {
+    timeframe: timeframe,
+    year: currentParams.get("year") || 0,
+    month: currentParams.get("month") || 0,
+    "max-entries": maxEntries,
+  };
+
+  const response = await submitRequest("/api/wind?" + new URLSearchParams(params), "GET");
+  if (response !== null) {
+    const labels = [];
+    const datasets = [];
+    let entryData = [];
+    const entryCount = response.body.high.length - count;
+    response.body.high.forEach((high, index) => {
+      low = response.body.low[index];
+      if (timeframe == "Yearly")
+        labels.push(moment(high.datestamp).format("YYYY"));
+      else if (timeframe == "Monthly")
+        labels.push(moment(high.datestamp).format("MMM YYYY"));
+      else if (timeframe == "Weekly")
+        labels.push(moment(high.start_datestamp).format("Do MMM YYYY"));
+      else
+        labels.push(moment(high.datestamp).format("Do MMM YYYY"));
+      if (response.body.low.length >= 1)
+        entryData.push([high.value / 1000, low.value / 1000]);
+      else
+        entryData.push([high.value / 1000]);
+    });
+    datasets.push(createDataset(0, entryData, "High/Low", (response.body.low.length > 1) ? "bar" : "line"));
+    if (response.body.average.length >= 1) {
+      entryData = [];
+      response.body.average.forEach(x => entryData.push(x.value / 1000));
+      datasets.push(createDataset(1, entryData, "Average", "line"));
+    }
+    createGraph(graphId, labels, datasets, "km/h", "Kilometers per Hour");
+  }
 }

@@ -20,7 +20,7 @@ from rich.traceback import install
 
 from weatherdan.console import CONSOLE
 
-__version__ = "0.5.0"
+__version__ = "0.5.1"
 
 
 def get_cache_root() -> Path:

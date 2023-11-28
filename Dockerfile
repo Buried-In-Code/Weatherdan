@@ -7,7 +7,7 @@ COPY static /app/static
 COPY templates /app/templates
 COPY pyproject.toml README.md run.py /app/
 
-RUN pip install --no-cache-dir .
+RUN pip install --no-cache-dir .[postgres]
 
 ENV XDG_CACHE_HOME /app/cache
 ENV XDG_CONFIG_HOME /app/config
@@ -17,4 +17,4 @@ RUN mkdir -p $XDG_DATA_HOME/weatherdan
 
 EXPOSE 25710
 
-CMD ["python" "run.py"]
+CMD ["python", "run.py"]

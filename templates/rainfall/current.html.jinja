@@ -42,18 +42,20 @@
 <script src="/static/js/scripts.js" type="text/javascript"></script>
 <script src="/static/js/bulma-navbar.js" type="text/javascript"></script>
 <script type="text/javascript">
-  ready(function() {
-    loadRainfallStats("Daily", "daily-stats");
+  ready(() => {
+    refreshData("/api/rainfall");
     toggleChartLoading("daily-stats");
-    loadRainfallStats("Weekly", "weekly-stats");
     toggleChartLoading("weekly-stats");
-    loadRainfallStats("Monthly", "monthly-stats");
     toggleChartLoading("monthly-stats");
-    loadRainfallStats("Yearly", "yearly-stats");
     toggleChartLoading("yearly-stats");
   });
 
-  ready(refreshData("/api/rainfall"));
+  ready(() => {
+    loadRainfallStats("Daily", "daily-stats");
+    loadRainfallStats("Weekly", "weekly-stats");
+    loadRainfallStats("Monthly", "monthly-stats");
+    loadRainfallStats("Yearly", "yearly-stats");
+  });
 </script>
 </body>
 </html>

@@ -57,7 +57,7 @@ function toggleTheme() {
   setTheme();
 }
 
-ready(setTheme);
+ready(setTheme());
 
 async function submitRequest(endpoint, method, body = {}) {
   try {

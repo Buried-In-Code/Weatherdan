@@ -44,13 +44,9 @@
 <script type="text/javascript">
   ready(() => {
     loadRainfallStats("Daily", "rainfall-stats", 7);
-    toggleChartLoading("rainfall-stats");
     loadSolarStats("Daily", "solar-stats", 7);
-    toggleChartLoading("solar-stats");
     loadUVIndexStats("Daily", "uv-index-stats", 7);
-    toggleChartLoading("uv-index-stats");
     loadWindStats("Daily", "wind-stats", 7);
-    toggleChartLoading("wind-stats");
   });
 
   function refreshReadings(endpoint, previous = []) {
@@ -69,6 +65,10 @@
 
     if (results.some(x => x))
       window.location.reload();
+    toggleChartLoading("rainfall-stats");
+    toggleChartLoading("solar-stats");
+    toggleChartLoading("uv-index-stats");
+    toggleChartLoading("wind-stats");
   });
 </script>
 </body>

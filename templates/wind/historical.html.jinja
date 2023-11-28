@@ -29,12 +29,6 @@
                             {{ select_number(label="Select Month", name="month", value=month, options=month_list) }}
                         {% endif %}
                         <div class="buttons is-centered">
-                            <button class="button is-info">
-                                <span class="icon">
-                                    <i class="fa-solid fa-filter"></i>
-                                </span>
-                                <span>Filter</span>
-                            </button>
                             <button class="button is-warning" onclick="resetForm('/wind/historical')" type="button">
                                 <span class="icon">
                                     <i class="fa-solid fa-rotate"></i>
@@ -77,6 +71,18 @@
 <script src="/static/js/bulma-navbar.js" type="text/javascript"></script>
 <script type="text/javascript">
   ready(() => {
+    refreshData("/api/wind");
+    {% if month %}
+      toggleChartLoading("daily-stats");
+      toggleChartLoading("weekly-stats");
+    {% endif %}
+    {% if year %}
+      toggleChartLoading("monthly-stats");
+    {% endif %}
+    toggleChartLoading("yearly-stats");
+  });
+
+  ready(() => {
     {% if month %}
       loadWindStats("Daily", "daily-stats", maxEntries=100);
       loadWindStats("Weekly", "weekly-stats", maxEntries=100);
@@ -86,8 +92,6 @@
     {% endif %}
     loadWindStats("Yearly", "yearly-stats", maxEntries=100);
   });
-
-  ready(refreshData("/api/wind"));
 </script>
 </body>
 </html>

@@ -1,13 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
-  if ($navbarBurgers.length > 0) {
-    $navbarBurgers.forEach($el => {
-      $el.addEventListener('click', function () {
-        const target = $el.dataset.target;
-        const $target = document.getElementById(target);
-        $el.classList.toggle('is-active');
-        $target.classList.toggle('is-active');
-      });
+  const navbarBurgers = document.querySelectorAll('.navbar-burger');
+
+  navbarBurgers.forEach(burger => {
+    burger.addEventListener('click', () => {
+      const targetId = burger.dataset.target;
+      const targetElement = document.getElementById(targetId);
+
+      burger.classList.toggle('is-active');
+      targetElement.classList.toggle('is-active');
     });
-  }
+  });
 });

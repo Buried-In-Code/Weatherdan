@@ -1,79 +1,60 @@
-__all__ = ["Reading", "WeekReading", "MonthReading", "YearReading"]
+__all__ = ["GraphData", "WeekGraphData", "Reading", "WeekReading"]
 
 from datetime import date
 from decimal import Decimal
+from typing import Self
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class Reading(BaseModel):
-    timestamp: date
+    datestamp: date
     value: Decimal
 
-    def __lt__(self, other) -> int:  # noqa: ANN001
+    def __lt__(self: Self, other) -> int:  # noqa: ANN001
         if not isinstance(other, Reading):
             raise NotImplementedError
-        return self.timestamp < other.timestamp
+        return self.datestamp < other.datestamp
 
-    def __eq__(self, other) -> bool:  # noqa: ANN001
+    def __eq__(self: Self, other) -> bool:  # noqa: ANN001
         if not isinstance(other, Reading):
             raise NotImplementedError
-        return self.timestamp == other.timestamp
+        return self.datestamp == other.datestamp
 
-    def __hash__(self):
-        return hash((type(self), self.timestamp))
+    def __hash__(self: Self) -> int:
+        return hash((type(self), self.datestamp))
 
 
 class WeekReading(BaseModel):
-    start_timestamp: date
-    end_timestamp: date
+    start_datestamp: date
+    end_datestamp: date
     value: Decimal
 
-    def __lt__(self, other) -> int:  # noqa: ANN001
+    def __lt__(self: Self, other) -> int:  # noqa: ANN001
         if not isinstance(other, WeekReading):
             raise NotImplementedError
-        return self.start_timestamp < other.start_timestamp
+        if self.start_datestamp != other.start_datestamp:
+            return self.start_datestamp < other.start_datestamp
+        return self.end_datestamp < other.end_datestamp
 
-    def __eq__(self, other) -> bool:  # noqa: ANN001
+    def __eq__(self: Self, other) -> bool:  # noqa: ANN001
         if not isinstance(other, WeekReading):
             raise NotImplementedError
-        return self.start_timestamp == other.start_timestamp
+        if self.start_datestamp != other.start_datestamp:
+            return self.start_datestamp == other.start_datestamp
+        return self.end_datestamp == other.end_datestamp
 
-    def __hash__(self):
-        return hash((type(self), self.start_timestamp))
-
-
-class MonthReading(BaseModel):
-    timestamp: date
-    value: Decimal
-
-    def __lt__(self, other) -> int:  # noqa: ANN001
-        if not isinstance(other, MonthReading):
-            raise NotImplementedError
-        return self.timestamp < other.timestamp
-
-    def __eq__(self, other) -> bool:  # noqa: ANN001
-        if not isinstance(other, MonthReading):
-            raise NotImplementedError
-        return self.timestamp == other.timestamp
-
-    def __hash__(self):
-        return hash((type(self), self.timestamp))
+    def __hash__(self: Self) -> int:
+        return hash((type(self), self.start_datestamp, self.end_datestamp))
 
 
-class YearReading(BaseModel):
-    timestamp: date
-    value: Decimal
+class GraphData(BaseModel):
+    high: list[Reading] = Field(default_factory=list)
+    average: list[Reading] = Field(default_factory=list)
+    low: list[Reading] = Field(default_factory=list)
 
-    def __lt__(self, other) -> int:  # noqa: ANN001
-        if not isinstance(other, YearReading):
-            raise NotImplementedError
-        return self.timestamp < other.timestamp
 
-    def __eq__(self, other) -> bool:  # noqa: ANN001
-        if not isinstance(other, YearReading):
-            raise NotImplementedError
-        return self.timestamp == other.timestamp
-
-    def __hash__(self):
-        return hash((type(self), self.timestamp))
+class WeekGraphData(BaseModel):
+    high: list[WeekReading] = Field(default_factory=list)
+    average: list[WeekReading] = Field(default_factory=list)
+    low: list[WeekReading] = Field(default_factory=list)

@@ -1,8 +1,19 @@
+{% macro input(label, name, value="") %}
+  <div class="field">
+    <label class="label has-text-info">{{ label }}</label>
+    <div class="control is-expanded">
+      <input class="input" name="{{ name }}" placeholder="{{ label }}" type="text" value="{{ value }}">
+    </div>
+  </div>
+{% endmacro %}
+
+
+
 {% macro input_date(label, name, value="") %}
   <div class="field">
     <label class="label has-text-info">{{ label }}</label>
     <div class="control is-expanded">
-      <input class="input" name="{{ name }}" placeholder="{{ label }} (yyyy-mm-dd)" type="text" value="{{ value }}">
+      <input class="input" name="{{ name }}" placeholder="{{ label }}" type="date" value="{{ value }}">
     </div>
   </div>
 {% endmacro %}
@@ -25,7 +36,7 @@
     <label class="label has-text-info">{{ label }}</label>
     <div class="control is-expanded">
       <div class="select is-fullwidth">
-        <select name="{{ name }}">
+        <select name="{{ name }}" onchange="this.form.submit()">
           <option value="0"{% if not value %} selected{% endif %}>{{ label }}</option>
           {% for entry in options %}
             <option value="{{ entry }}"{% if entry == value %}selected{% endif %}>{{ entry }}</option>

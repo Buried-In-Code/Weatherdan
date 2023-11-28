@@ -3,16 +3,14 @@ from datetime import datetime
 from http import HTTPStatus
 
 from fastapi import FastAPI, Request
-from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.exceptions import HTTPException, RequestValidationError
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
-from jinja2.exceptions import TemplateNotFound
-from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from weatherdan import __version__, get_project_root, setup_logging
+from weatherdan import __version__, elapsed_timer, get_project_root, setup_logging
+from weatherdan.constants import constants
 from weatherdan.routers.api import router as api_router
 from weatherdan.routers.html import router as html_router
-from weatherdan.settings import Settings
 
 LOGGER = logging.getLogger("weatherdan")
 
@@ -28,25 +26,25 @@ def create_app() -> FastAPI:
 app = create_app()
 
 
-@app.get(path="/")
-def redirect() -> RedirectResponse:
-    return RedirectResponse(url="/current")
-
-
 @app.on_event(event_type="startup")
 async def startup_event() -> None:
     setup_logging()
-    settings = Settings()
 
-    LOGGER.info(f"Listening on {settings.website.host}:{settings.website.port}")
-    LOGGER.info(f"{app.title} v{app.version} started")
+    LOGGER.info(
+        "Listening on %s:%s",
+        constants.settings.website.host,
+        constants.settings.website.port,
+    )
+    LOGGER.info("%s v%s started", app.title, app.version)
 
 
 @app.middleware(middleware_type="http")
 async def logger_middleware(request: Request, call_next):  # noqa: ANN001, ANN201
-    LOGGER.debug(f"{request.method.upper():<7} {request.scope['path']}")
-    response = await call_next(request)
-    log_message = f"{request.method.upper():<7} {request.scope['path']} - {response.status_code}"
+    log_message = f"{request.method.upper():<7} {request.scope['path']}"
+    LOGGER.debug(log_message)
+    with elapsed_timer() as elapsed:
+        response = await call_next(request)
+    log_message += f" - {response.status_code} => {elapsed():.2f}s"
     if response.status_code < 400:
         LOGGER.info(log_message)
     elif response.status_code < 500:
@@ -56,13 +54,13 @@ async def logger_middleware(request: Request, call_next):  # noqa: ANN001, ANN20
     return response
 
 
-@app.exception_handler(exc_class_or_status_code=StarletteHTTPException)
+@app.exception_handler(exc_class_or_status_code=HTTPException)
 async def http_exception_handler(request: Request, exc) -> JSONResponse:  # noqa: ARG001, ANN001
     status = HTTPStatus(exc.status_code)
     return JSONResponse(
         status_code=status,
         content={
-            "timestamp": datetime.now().replace(microsecond=0).isoformat(),
+            "timestamp": datetime.now().isoformat(),
             "status": f"{status.value}: {status.phrase}",
             "details": [exc.detail],
         },
@@ -83,24 +81,8 @@ async def validation_exception_handler(
     return JSONResponse(
         status_code=status,
         content={
-            "timestamp": datetime.now().replace(microsecond=0).isoformat(),
+            "timestamp": datetime.now().isoformat(),
             "status": f"{status.value}: {status.phrase}",
             "details": details,
-        },
-    )
-
-
-@app.exception_handler(exc_class_or_status_code=TemplateNotFound)
-async def missing_template_exception_handler(
-    request: Request,  # noqa: ARG001
-    exc,  # noqa: ANN001
-) -> JSONResponse:
-    status = HTTPStatus(404)
-    return JSONResponse(
-        status_code=status,
-        content={
-            "timestamp": datetime.now().replace(microsecond=0).isoformat(),
-            "status": f"{status.value}: {status.phrase}",
-            "details": [f"{exc.message} not found."],
         },
     )

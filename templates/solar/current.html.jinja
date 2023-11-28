@@ -1,0 +1,61 @@
+{% from "components/chart.jinja" import chart %}
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+    <meta charset="utf-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <title>Weatherdan</title>
+    <link href="https://use.fontawesome.com/releases/v6.3.0/css/all.css" rel="stylesheet">
+    <link disabled href="https://unpkg.com/bulmaswatch/flatly/bulmaswatch.min.css" id="light-theme" rel="stylesheet">
+    <link href="https://unpkg.com/bulmaswatch/darkly/bulmaswatch.min.css" id="dark-theme" rel="stylesheet">
+    <link href="/static/css/styles.css" rel="stylesheet">
+    <link href="/static/img/favicon.ico" id="favicon" rel="icon" type="image/x-icon">
+</head>
+<body class="has-navbar-fixed-top">
+{% include "components/navbar.jinja" %}
+<main class="section">
+    <div class="container">
+        <header class="block has-text-centered">
+            <h1 class="title is-1">Current Solar</h1>
+        </header>
+        <div class="columns is-centered is-multiline">
+            <div class="column is-full">
+                {{ chart(label="Daily Stats", id="daily-stats") }}
+            </div>
+            <div class="column is-full">
+                {{ chart(label="Weekly Stats", id="weekly-stats") }}
+            </div>
+            <div class="column is-full">
+                {{ chart(label="Monthly Stats", id="monthly-stats") }}
+            </div>
+            <div class="column is-full">
+                {{ chart(label="Yearly Stats", id="yearly-stats") }}
+            </div>
+        </div>
+    </div>
+</main>
+{% include "components/footer.jinja" %}
+<script src="https://cdn.jsdelivr.net/npm/jquery@^3.7" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@^4.4" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@^2.29" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@^1.0" type="text/javascript"></script>
+<script src="/static/js/scripts.js" type="text/javascript"></script>
+<script src="/static/js/bulma-navbar.js" type="text/javascript"></script>
+<script type="text/javascript">
+  ready(() => {
+    refreshData("/api/solar");
+    toggleChartLoading("daily-stats");
+    toggleChartLoading("weekly-stats");
+    toggleChartLoading("monthly-stats");
+    toggleChartLoading("yearly-stats");
+  });
+
+  ready(() => {
+    loadSolarStats("Daily", "daily-stats");
+    loadSolarStats("Weekly", "weekly-stats");
+    loadSolarStats("Monthly", "monthly-stats");
+    loadSolarStats("Yearly", "yearly-stats");
+  });
+</script>
+</body>
+</html>

@@ -1,16 +1,10 @@
 repos:
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: v0.0.277
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.6
     hooks:
       - id: ruff
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.9.0
-    hooks:
-      - id: pyupgrade
-        args:
-          - --py311-plus
   - repo: https://github.com/executablebooks/mdformat
-    rev: 0.7.16
+    rev: 0.7.17
     hooks:
       - id: mdformat
         additional_dependencies:
@@ -20,16 +14,16 @@ repos:
           - --number
           - --wrap=keep
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v4.5.0
     hooks:
+      - id: check-added-large-files
       - id: check-ast
       - id: check-builtin-literals
       - id: check-case-conflict
       - id: check-docstring-first
-#      - id: check-json
       - id: check-merge-conflict
       - id: check-toml
-#      - id: check-xml
+      - id: check-vcs-permalinks
       - id: check-yaml
         args:
           - --allow-multiple-documents
@@ -37,21 +31,19 @@ repos:
         exclude_types:
           - json
           - xml
+      - id: fix-byte-order-marker
       - id: fix-encoding-pragma
         args:
           - --remove
+      - id: forbid-submodules
       - id: mixed-line-ending
         args:
           - --fix=auto
       - id: trailing-whitespace
         args:
           - --markdown-linebreak-ext=md
-#      - id: pretty-format-json
-#        args:
-#          - --autofix
-#          - --indent=2
   - repo: https://github.com/psf/black
-    rev: 23.7.0
+    rev: 23.11.0
     hooks:
       - id: black
   - repo: https://github.com/pappasam/toml-sort

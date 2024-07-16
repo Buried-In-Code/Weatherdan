@@ -27,26 +27,13 @@ function toggleLoading(caller) {
   element.classList.toggle("is-loading");
 }
 
-function toggleChartLoading(id) {
-  const progress = document.getElementById(`${id}-loading`).parentElement;
-  const chart = document.getElementById(id).parentElement;
-  progress.hidden = !progress.hidden;
-  chart.hidden = !chart.hidden;
-}
-
 function resetForm(page) {
   window.location = page;
 }
 
 function setTheme() {
-  const darkCss = document.getElementById("dark-theme");
-  const lightCss = document.getElementById("light-theme");
   const theme = getCookie("weatherdan_theme");
-
-  if (darkCss !== null && lightCss !== null) {
-    darkCss.disabled = theme == "dark";
-    lightCss.disabled = theme == "light";
-  }
+  document.documentElement.setAttribute("data-theme", theme === "dark" ? "villain" : "hero");
 }
 
 function toggleTheme() {
@@ -57,7 +44,9 @@ function toggleTheme() {
   setTheme();
 }
 
-ready(setTheme());
+ready(() => {
+    setTheme();
+});
 
 async function submitRequest(endpoint, method, body = {}) {
   try {
@@ -80,28 +69,37 @@ async function submitRequest(endpoint, method, body = {}) {
   }
 }
 
-async function refreshData(endpoint) {
-  const response = await submitRequest(endpoint, "PUT");
-  if (response !== null && response.status != 208)
-      window.location.reload();
+function getBulmaColour(name) {
+  const tempElement = document.createElement("div");
+  tempElement.className = `has-background-${name}`;
+  document.body.appendChild(tempElement);
+  const computedStyle = getComputedStyle(tempElement);
+  const color = computedStyle.backgroundColor;
+  document.body.removeChild(tempElement);
+  return color;
 }
 
-const backgroundColours = [
-  "rgba(65,105,225,0.1)",
-  "rgba(255,65,105,0.1)",
-  "rgba(105,255,65,0.1)",
-];
+function setAlpha(rgb, alpha) {
+  const rgbValues = rgb.match(/\d+/g).map(Number);
+  return `rgba(${rgbValues[0]}, ${rgbValues[1]}, ${rgbValues[2]}, ${alpha})`;
+}
 
-const borderColours = [
-  "rgba(65,105,225,1)",
-  "rgba(255,65,105,1)",
-  "rgba(105,255,65,1)",
-];
+function getColours(alpha) {
+  const colours = ["info", "danger", "success"];
+  return colours.map(colour => setAlpha(getBulmaColour(colour), alpha));
+}
+
+function toggleChartLoading(id) {
+  const progress = document.getElementById(`${id}-loading`).parentElement;
+  const chart = document.getElementById(id).parentElement;
+  progress.hidden = !progress.hidden;
+  chart.hidden = !chart.hidden;
+}
 
 function createDataset(index, data, label, type, yAxisID = "y") {
   return {
-    backgroundColor: backgroundColours[index],
-    borderColor: borderColours[index],
+    backgroundColor: getColours(0.5)[index],
+    borderColor: getColours(1)[index],
     borderWidth: 2,
     borderSkipped: false,
     data: data,
@@ -124,7 +122,10 @@ function createGraph(elementId, labels, datasets, unit, unitLabel) {
       },
       plugins: {
         legend: {
-          display: datasets.length > 1
+          display: datasets.length > 1,
+          labels: {
+            color: getBulmaColour("text")
+          }
         },
         tooltip: {
           callbacks: {
@@ -143,21 +144,42 @@ function createGraph(elementId, labels, datasets, unit, unitLabel) {
           title: {
             display: true,
             text: "Date",
+            color: getBulmaColour("text")
           },
           position: "bottom",
+          ticks: {
+            color: getBulmaColour("text")
+          },
+          grid: {
+            color: getBulmaColour("text-50")
+          }
         },
         y: {
           title: {
             display: true,
-            text: unitLabel
+            text: unitLabel,
+            color: getBulmaColour("text")
           },
           position: "left",
           beginAtZero: false,
+          ticks: {
+            color: getBulmaColour("text")
+          },
+          grid: {
+            color: getBulmaColour("text-50")
+          }
         }
       }
     }
   }
   new Chart(document.getElementById(elementId), config);
+  toggleChartLoading(elementId);
+}
+
+async function refreshData(endpoint) {
+  const response = await submitRequest(endpoint, "PUT");
+  if (response !== null && response.status != 208)
+      window.location.reload();
 }
 
 async function loadTotalStats(timeframe, graphId, endpoint, unit, unitLabel, maxEntries) {

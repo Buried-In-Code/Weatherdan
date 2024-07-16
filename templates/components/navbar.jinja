@@ -1,6 +1,6 @@
-<nav aria-label="main navigation" class="navbar is-fixed-top is-primary" role="navigation">
+<nav class="navbar is-primary is-fixed-top" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
-        <a class="navbar-item has-text-light" href="/">
+        <a class="navbar-item" href="/">
             <img src="/static/img/logo.png" width="32" height="32">
             Weatherdan
         </a>
@@ -12,70 +12,30 @@
     </div>
     <div class="navbar-menu" id="navMenu">
         <div class="navbar-start">
-            <div class="navbar-item has-dropdown is-hoverable">
-                <a class="navbar-link" href="/rainfall">
-                    <span class="icon">
-                        <i class="fa-solid fa-cloud-rain"></i>
-                    </span>
-                    <span>Rainfall</span>
-                </a>
-                <div class="navbar-dropdown">
-                    <a class="navbar-item" href="/rainfall/historical">
-                        <span class="icon">
-                            <i class="fa-solid fa-chart-line"></i>
-                        </span>
-                        <span>Historical</span>
-                    </a>
-                </div>
-            </div>
-            <div class="navbar-item has-dropdown is-hoverable">
-                <a class="navbar-link" href="/solar">
-                    <span class="icon">
-                        <i class="fa-solid fa-sun"></i>
-                    </span>
-                    <span>Solar</span>
-                </a>
-                <div class="navbar-dropdown">
-                    <a class="navbar-item" href="/solar/historical">
-                        <span class="icon">
-                            <i class="fa-solid fa-chart-line"></i>
-                        </span>
-                        <span>Historical</span>
-                    </a>
-                </div>
-            </div>
-            <div class="navbar-item has-dropdown is-hoverable">
-                <a class="navbar-link" href="/uv-index">
-                    <span class="icon">
-                        <i class="fa-solid fa-satellite-dish"></i>
-                    </span>
-                    <span>UV Index</span>
-                </a>
-                <div class="navbar-dropdown">
-                    <a class="navbar-item" href="/uv-index/historical">
-                        <span class="icon">
-                            <i class="fa-solid fa-chart-line"></i>
-                        </span>
-                        <span>Historical</span>
-                    </a>
-                </div>
-            </div>
-            <div class="navbar-item has-dropdown is-hoverable">
-                <a class="navbar-link" href="/wind">
-                    <span class="icon">
-                        <i class="fa-solid fa-wind"></i>
-                    </span>
-                    <span>Wind</span>
-                </a>
-                <div class="navbar-dropdown">
-                    <a class="navbar-item" href="/wind/historical">
-                        <span class="icon">
-                            <i class="fa-solid fa-chart-line"></i>
-                        </span>
-                        <span>Historical</span>
-                    </a>
-                </div>
-            </div>
+            <a class="navbar-item" href="/rainfall">
+                <span class="icon">
+                    <i class="fa-solid fa-cloud-rain"></i>
+                </span>
+                <span>Rainfall</span>
+            </a>
+            <a class="navbar-item" href="/solar">
+                <span class="icon">
+                    <i class="fa-solid fa-sun"></i>
+                </span>
+                <span>Solar</span>
+            </a>
+            <a class="navbar-item" href="/uv-index">
+                <span class="icon">
+                    <i class="fa-solid fa-satellite-dish"></i>
+                </span>
+                <span>UV Index</span>
+            </a>
+            <a class="navbar-item" href="/wind">
+                <span class="icon">
+                    <i class="fa-solid fa-wind"></i>
+                </span>
+                <span>Wind</span>
+            </a>
             <a class="navbar-item" href="/editor">
                 <span class="icon">
                     <i class="fa-solid fa-sliders"></i>

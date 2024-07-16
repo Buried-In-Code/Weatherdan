@@ -194,53 +194,14 @@ async function loadRainfallStats(timeframe, graphId, maxEntries = getCookie("wea
   await loadTotalStats(timeframe, graphId, "/api/rainfall", "mm", "Millimetres", maxEntries);
 }
 
-async function loadHighLowStats(timeframe, graphId, endpoint, unit, unitLabel, maxEntries) {
-  const currentParams = new URLSearchParams(window.location.search);
-  const params = {
-    timeframe: timeframe,
-    year: currentParams.get("year") || 0,
-    month: currentParams.get("month") || 0,
-    "max-entries": maxEntries,
-  };
-
-  const response = await submitRequest(endpoint + "?" + new URLSearchParams(params), "GET");
-  if (response !== null) {
-    const labels = [];
-    const datasets = [];
-    let entryData = [];
-    response.body.high.forEach((high, index) => {
-      low = response.body.low[index];
-      if (timeframe == "Yearly")
-        labels.push(moment(high.datestamp).format("YYYY"));
-      else if (timeframe == "Monthly")
-        labels.push(moment(high.datestamp).format("MMM YYYY"));
-      else if (timeframe == "Weekly")
-        labels.push(moment(high.start_datestamp).format("Do MMM YYYY"));
-      else
-        labels.push(moment(high.datestamp).format("Do MMM YYYY"));
-      if (response.body.low.length >= 1)
-        entryData.push([high.value, low.value]);
-      else
-        entryData.push(high.value);
-    });
-    datasets.push(createDataset(0, entryData, "High/Low", (response.body.low.length > 0) ? "bar" : "line"));
-    if (response.body.average.length > 0) {
-      entryData = [];
-      response.body.average.forEach(x => entryData.push(x.value));
-      datasets.push(createDataset(1, entryData, "Average", "line"));
-    }
-    createGraph(graphId, labels, datasets, unit, unitLabel);
-  }
-}
-
 async function loadSolarStats(timeframe, graphId, maxEntries = getCookie("weatherdan_max-entries") || 28) {
-  await loadHighLowStats(timeframe, graphId, "/api/solar", "lx", "Lux", maxEntries);
+  await loadTotalStats(timeframe, graphId, "/api/solar", "lx", "Lux", maxEntries);
 }
 
 async function loadUVIndexStats(timeframe, graphId, maxEntries = getCookie("weatherdan_max-entries") || 28) {
-  await loadHighLowStats(timeframe, graphId, "/api/uv-index", "", "Index", maxEntries);
+  await loadTotalStats(timeframe, graphId, "/api/uv-index", "", "Index", maxEntries);
 }
 
 async function loadWindStats(timeframe, graphId, maxEntries = getCookie("weatherdan_max-entries") || 28) {
-  await loadHighLowStats(timeframe, graphId, "/api/wind", "km/h", "Kilometers per Hour", maxEntries);
+  await loadTotalStats(timeframe, graphId, "/api/wind", "km/h", "Kilometers per Hour", maxEntries);
 }

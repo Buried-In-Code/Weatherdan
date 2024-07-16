@@ -6,20 +6,15 @@ from decimal import Decimal
 from pydantic import BaseModel as PyModel
 
 
-class BaseModel(
-    PyModel,
-    populate_by_name=True,
-    str_strip_whitespace=True,
-    extra="forbid",
-):
+class BaseModel(PyModel, populate_by_name=True, str_strip_whitespace=True, extra="forbid"):
     pass
 
 
 class Device(BaseModel):
-    id: int  # noqa: A003
+    id: int
     name: str
     mac: str
-    type: int  # noqa: A003
+    type: int
     date_zone_id: str
     createtime: datetime
     longitude: Decimal

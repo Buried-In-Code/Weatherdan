@@ -1,7 +1,8 @@
-__all__ = ["Settings"]
+__all__ = ["Settings", "Source"]
 
 import tomllib as tomlreader
 from datetime import datetime, timedelta
+from enum import Enum
 from pathlib import Path
 from typing import ClassVar, Self
 
@@ -22,10 +23,23 @@ class SettingsModel(
     pass
 
 
-class WebsiteSettings(SettingsModel):
-    host: str = "127.0.0.1"
-    port: int = 25710
-    reload: bool = False
+class Source(str, Enum):
+    POSTGRES = "POSTGRES"
+    SQLITE = "SQLITE"
+
+
+class DatabaseSettings(SettingsModel):
+    host: str = ""
+    name: str = "freyr.sqlite"
+    password: str = ""
+    source: Source = Source.SQLITE
+    user: str = ""
+
+    @property
+    def db_url(self: Self) -> str:
+        if self.source == Source.POSTGRES:
+            return f"postgresql+psycopg://{self.user}:{self.password}@{self.host}/{self.name}"
+        return f"sqlite:///{self.name}"
 
 
 class EcowittSettings(SettingsModel):
@@ -40,8 +54,15 @@ class UpdateSettings(SettingsModel):
     wind: datetime = datetime.now() - timedelta(days=365)
 
 
+class WebsiteSettings(SettingsModel):
+    host: str = "127.0.0.1"
+    port: int = 25710
+    reload: bool = False
+
+
 class Settings(SettingsModel):
     _filepath: ClassVar[Path] = get_config_root() / "settings.toml"
+    database: DatabaseSettings = DatabaseSettings()
     ecowitt: EcowittSettings = EcowittSettings()
     last_updated: UpdateSettings = UpdateSettings()
     website: WebsiteSettings = WebsiteSettings()

@@ -1,9 +1,10 @@
 {% macro input(label, name, value="") %}
   <div class="field">
-    <label class="label has-text-info">{{ label }}</label>
+    <label class="label has-text-info-bold" for="{{ name }}">{{ label }}</label>
     <div class="control is-expanded">
-      <input class="input" name="{{ name }}" placeholder="{{ label }}" type="text" value="{{ value }}">
+      <input class="input" id="{{ name }}" name="{{ name }}" placeholder="{{ label }}" type="text" value="{{ value }}">
     </div>
+    <p class="help is-danger" id="{{ name }}-error"></p>
   </div>
 {% endmacro %}
 
@@ -11,10 +12,11 @@
 
 {% macro input_date(label, name, value="") %}
   <div class="field">
-    <label class="label has-text-info">{{ label }}</label>
+    <label class="label has-text-info-bold" for="{{ name }}">{{ label }}</label>
     <div class="control is-expanded">
-      <input class="input" name="{{ name }}" placeholder="{{ label }}" type="date" value="{{ value }}">
+      <input class="input" id="{{ name }}" name="{{ name }}" placeholder="{{ label }}" type="date" value="{{ value }}">
     </div>
+    <p class="help is-danger" id="{{ name }}-error"></p>
   </div>
 {% endmacro %}
 
@@ -22,10 +24,11 @@
 
 {% macro input_number(label, name, value=0, min=0, max=1000) %}
   <div class="field">
-    <label class="label has-text-info">{{ label }}</label>
+    <label class="label has-text-info-bold" for="{{ name }}">{{ label }}</label>
     <div class="control is-expanded">
-      <input class="input" max="{{ max }}" min="{{ min }}" name="{{ name }}" placeholder="{{ label }}" type="number" value="{{ value or 0 }}">
+      <input class="input" id="{{ name }}" max="{{ max }}" min="{{ min }}" name="{{ name }}" placeholder="{{ label }}" type="number" value="{{ value or 0 }}">
     </div>
+    <p class="help is-danger" id="{{ name }}-error"></p>
   </div>
 {% endmacro %}
 
@@ -33,10 +36,10 @@
 
 {% macro select_number(label, name, value=0, options=[]) %}
   <div class="field">
-    <label class="label has-text-info">{{ label }}</label>
+    <label class="label has-text-info-bold" for="{{ name }}">{{ label }}</label>
     <div class="control is-expanded">
       <div class="select is-fullwidth">
-        <select name="{{ name }}" onchange="this.form.submit()">
+        <select class="input" id="{{ name }}" name="{{ name }}" onchange="this.form.submit()">
           <option value="0"{% if not value %} selected{% endif %}>{{ label }}</option>
           {% for entry in options %}
             <option value="{{ entry }}"{% if entry == value %}selected{% endif %}>{{ entry }}</option>
@@ -44,5 +47,6 @@
         </select>
       </div>
     </div>
+    <p class="help is-danger" id="{{ name }}-error"></p>
   </div>
 {% endmacro %}

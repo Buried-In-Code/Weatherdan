@@ -20,7 +20,7 @@ from rich.logging import RichHandler
 from rich.theme import Theme
 from rich.traceback import install
 
-__version__ = "0.6.0"
+__version__ = "0.6.1"
 CONSOLE = Console(
     theme=Theme(
         {

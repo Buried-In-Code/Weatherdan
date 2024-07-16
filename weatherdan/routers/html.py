@@ -2,7 +2,7 @@ __all__ = ["router"]
 
 from typing import Annotated
 
-from fastapi import APIRouter, Cookie, Request, Depends
+from fastapi import APIRouter, Cookie, Depends, Request
 from fastapi.responses import HTMLResponse, Response
 from fastapi.templating import Jinja2Templates
 from sqlmodel import Session, select
@@ -139,4 +139,3 @@ def wind(
             "month": month,
         },
     )
-

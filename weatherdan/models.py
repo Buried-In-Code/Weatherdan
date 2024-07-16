@@ -1,12 +1,4 @@
-__all__ = [
-    "GraphData",
-    "Rainfall",
-    "Reading",
-    "Solar",
-    "UVIndex",
-    "WeekReading",
-    "Wind",
-]
+__all__ = ["GraphData", "Rainfall", "Reading", "Solar", "UVIndex", "WeekReading", "Wind"]
 
 from datetime import date
 from decimal import Decimal

@@ -9,7 +9,7 @@ from typing import ClassVar, Self
 import tomli_w as tomlwriter
 from pydantic import BaseModel
 
-from weatherdan import get_config_root
+from weatherdan import get_config_root, get_data_root
 
 
 class SettingsModel(
@@ -29,8 +29,8 @@ class Source(str, Enum):
 
 
 class DatabaseSettings(SettingsModel):
+    database_name: str = str(get_data_root() / "weatherdan.sqlite")
     host: str = ""
-    name: str = "freyr.sqlite"
     password: str = ""
     source: Source = Source.SQLITE
     user: str = ""

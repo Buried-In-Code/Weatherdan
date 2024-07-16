@@ -1,8 +1,8 @@
 {% from "components/forms.jinja" import input_date, input_number %}
 
 {% macro add_high(title, unit, endpoint) %}
-  <div class="box">
-    <h5 class="title is-5 has-text-info-light">Add {{ title }}</h5>
+  <div class="box has-background-text-soft">
+    <h4 class="title is-4 has-text-text-bold">Add {{ title }}</h4>
     <form id="add-{{ title|lower }}-form" onsubmit="return false;">
       {{ input_date(label="Datestamp", name="datestamp") }}
       {% if unit %}
@@ -25,8 +25,8 @@
 
 
 {% macro remove_high(title, endpoint) %}
-  <div class="box">
-    <h5 class="title is-5 has-text-info-light">Remove {{ title }}</h5>
+  <div class="box has-background-text-soft">
+    <h4 class="title is-4 has-text-text-bold">Remove {{ title }}</h5>
     <form id="remove-{{ title|lower }}-form" onsubmit="return false;">
       {{ input_date(label="Datestamp", name="datestamp") }}
       <div class="buttons is-centered">
@@ -44,8 +44,8 @@
 
 
 {% macro add_total(title, unit, endpoint) %}
-  <div class="box">
-    <h5 class="title is-5 has-text-info-light">Add {{ title }}</h5>
+  <div class="box has-background-text-soft">
+    <h4 class="title is-4 has-text-text-bold">Add {{ title }}</h5>
     <form id="add-{{ title|lower }}-form" onsubmit="return false;">
       {{ input_date(label="Datestamp", name="datestamp") }}
       {% if unit %}
@@ -68,8 +68,8 @@
 
 
 {% macro remove_total(title, endpoint) %}
-  <div class="box">
-    <h5 class="title is-5 has-text-info-light">Remove {{ title }}</h5>
+  <div class="box has-background-text-soft">
+    <h4 class="title is-4 has-text-text-bold">Remove {{ title }}</h5>
     <form id="remove-{{ title|lower }}-form" onsubmit="return false;">
       {{ input_date(label="Datestamp", name="datestamp") }}
       <div class="buttons is-centered">

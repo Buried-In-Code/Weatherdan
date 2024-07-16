@@ -15,12 +15,26 @@ from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from timeit import default_timer
 
+from rich.console import Console
 from rich.logging import RichHandler
+from rich.theme import Theme
 from rich.traceback import install
 
-from weatherdan.console import CONSOLE
-
-__version__ = "0.5.2"
+__version__ = "0.6.0"
+CONSOLE = Console(
+    theme=Theme(
+        {
+            "prompt": "green",
+            "prompt.choices": "cyan",
+            "prompt.default": "dim cyan",
+            "logging.level.debug": "dim white",
+            "logging.level.info": "white",
+            "logging.level.warning": "yellow",
+            "logging.level.error": "bold red",
+            "logging.level.critical": "bold magenta",
+        }
+    )
+)
 
 
 def get_cache_root() -> Path:
@@ -68,9 +82,7 @@ def setup_logging(debug: bool = False) -> None:
                 console=CONSOLE,
             ),
             RotatingFileHandler(
-                filename=log_folder / "weatherdan.log",
-                maxBytes=100000000,
-                backupCount=3,
+                filename=log_folder / "weatherdan.log", maxBytes=100000000, backupCount=3
             ),
         ],
     )

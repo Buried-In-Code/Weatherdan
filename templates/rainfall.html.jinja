@@ -1,14 +1,14 @@
 {% from "components/forms.jinja" import select_number %}
 {% from "components/chart.jinja" import chart %}
 <!DOCTYPE html>
-<html lang="en-GB">
+<html lang="en-GB" data-theme="villain">
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1" name="viewport">
     <title>Weatherdan</title>
     <link href="https://use.fontawesome.com/releases/v6.3.0/css/all.css" rel="stylesheet">
-    <link disabled href="https://cdn.jsdelivr.net/gh/Buried-In-Code/Vegeta@0.9.4/hero/vegeta.min.css" id="light-theme" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/gh/Buried-In-Code/Vegeta@0.9.4/villain/vegeta.min.css" id="dark-theme" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bulma@1.0.1/css/bulma.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/Buried-In-Code/Vegeta@0.2.0/css/vegeta.min.css" rel="stylesheet">
     <link href="/static/css/styles.css" rel="stylesheet">
     <link href="/static/img/favicon.ico" id="favicon" rel="icon" type="image/x-icon">
 </head>
@@ -17,19 +17,19 @@
 <main class="section">
     <div class="container">
         <header class="block has-text-centered">
-            <h1 class="title is-1">Historical Wind</h1>
+            <h1 class="title is-1">Rainfall</h1>
         </header>
         <div class="columns is-centered">
             <div class="column is-one-quarter-tablet is-one-fifth-fullhd">
-                <div class="box">
-                    <h4 class="title is-4">Filter</h4>
+                <div class="box has-background-text-soft">
+                    <h4 class="title is-4 has-text-text-bold">Filter</h5>
                     <form accept-charset="UTF-8" method="GET">
                         {{ select_number(label="Select Year", name="year", value=year, options=year_list) }}
                         {% if year %}
                             {{ select_number(label="Select Month", name="month", value=month, options=month_list) }}
                         {% endif %}
                         <div class="buttons is-centered">
-                            <button class="button is-warning" onclick="resetForm('/wind/historical')" type="button">
+                            <button class="button is-warning" onclick="resetForm('/rainfall/historical')" type="button">
                                 <span class="icon">
                                     <i class="fa-solid fa-rotate"></i>
                                 </span>
@@ -71,7 +71,7 @@
 <script src="/static/js/bulma-navbar.js" type="text/javascript"></script>
 <script type="text/javascript">
   ready(() => {
-    refreshData("/api/wind");
+    refreshData("/api/rainfall");
     {% if month %}
       toggleChartLoading("daily-stats");
       toggleChartLoading("weekly-stats");
@@ -84,13 +84,13 @@
 
   ready(() => {
     {% if month %}
-      loadWindStats("Daily", "daily-stats", maxEntries=100);
-      loadWindStats("Weekly", "weekly-stats", maxEntries=100);
+      loadRainfallStats("Daily", "daily-stats", maxEntries=100);
+      loadRainfallStats("Weekly", "weekly-stats", maxEntries=100);
     {% endif %}
     {% if year %}
-      loadWindStats("Monthly", "monthly-stats", maxEntries=100);
+      loadRainfallStats("Monthly", "monthly-stats", maxEntries=100);
     {% endif %}
-    loadWindStats("Yearly", "yearly-stats", maxEntries=100);
+    loadRainfallStats("Yearly", "yearly-stats", maxEntries=100);
   });
 </script>
 </body>

@@ -9,6 +9,7 @@ from fastapi.staticfiles import StaticFiles
 
 from weatherdan import __version__, elapsed_timer, get_project_root, setup_logging
 from weatherdan.constants import constants
+from weatherdan.database import create_db_and_tables
 from weatherdan.routers.api import router as api_router
 from weatherdan.routers.html import router as html_router
 
@@ -20,22 +21,17 @@ def create_app() -> FastAPI:
     _app.mount("/static", StaticFiles(directory=get_project_root() / "static"), name="static")
     _app.include_router(html_router)
     _app.include_router(api_router)
+
+    setup_logging()
+    create_db_and_tables()
+    LOGGER.info(
+        "Listening on %s:%s", constants.settings.website.host, constants.settings.website.port
+    )
+    LOGGER.info("%s v%s started", _app.title, _app.version)
     return _app
 
 
 app = create_app()
-
-
-@app.on_event(event_type="startup")
-async def startup_event() -> None:
-    setup_logging()
-
-    LOGGER.info(
-        "Listening on %s:%s",
-        constants.settings.website.host,
-        constants.settings.website.port,
-    )
-    LOGGER.info("%s v%s started", app.title, app.version)
 
 
 @app.middleware(middleware_type="http")

@@ -72,9 +72,7 @@ class Ecowitt:
             raise ServiceError(msg) from err
 
     def _get_request(
-        self: Self,
-        endpoint: str,
-        params: dict[str, str] | None = None,
+        self: Self, endpoint: str, params: dict[str, str] | None = None
     ) -> dict[str, Any]:
         if params is None:
             params = {}
@@ -108,11 +106,7 @@ class Ecowitt:
             raise ServiceError(err) from err
 
     def _make_history_request(
-        self: Self,
-        device: str,
-        category: Category,
-        start_date: datetime,
-        end_date: datetime,
+        self: Self, device: str, category: Category, start_date: datetime, end_date: datetime
     ) -> dict[datetime, Decimal]:
         try:
             results = self._get_request(
@@ -140,21 +134,15 @@ class Ecowitt:
             raise ServiceError(err) from err
 
     def get_history_readings(
-        self: Self,
-        device: str,
-        category: Category,
-        start_date: datetime,
+        self: Self, device: str, category: Category, start_date: datetime
     ) -> dict[datetime, Decimal]:
         all_readings = {}
         while start_date < datetime.now():
             end_date = min(start_date + timedelta(days=31), datetime.now())
             all_readings.update(
                 self._make_history_request(
-                    device=device,
-                    category=category,
-                    start_date=start_date,
-                    end_date=end_date,
-                ),
+                    device=device, category=category, start_date=start_date, end_date=end_date
+                )
             )
             start_date += timedelta(days=30)
         return all_readings
@@ -181,9 +169,7 @@ class Ecowitt:
             raise ServiceError(err) from err
 
     def _retrieve_all_responses(
-        self: Self,
-        endpoint: str,
-        params: dict[str, Any] | None = None,
+        self: Self, endpoint: str, params: dict[str, Any] | None = None
     ) -> list[dict[str, Any]]:
         if params is None:
             params = {}

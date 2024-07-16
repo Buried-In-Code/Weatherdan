@@ -1,14 +1,14 @@
 {% from "components/forms.jinja" import input_number %}
 {% from "components/form_box.jinja" import add_high, remove_high, add_total, remove_total %}
 <!DOCTYPE html>
-<html lang="en-GB">
+<html lang="en-GB" data-theme="villain">
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1" name="viewport">
     <title>Weatherdan</title>
     <link href="https://use.fontawesome.com/releases/v6.3.0/css/all.css" rel="stylesheet">
-    <link disabled href="https://cdn.jsdelivr.net/gh/Buried-In-Code/Vegeta@0.9.4/hero/vegeta.min.css" id="light-theme" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/gh/Buried-In-Code/Vegeta@0.9.4/villain/vegeta.min.css" id="dark-theme" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bulma@1.0.1/css/bulma.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/gh/Buried-In-Code/Vegeta@0.2.0/css/vegeta.min.css" rel="stylesheet">
     <link href="/static/css/styles.css" rel="stylesheet">
     <link href="/static/img/favicon.ico" id="favicon" rel="icon" type="image/x-icon">
 </head>
@@ -21,7 +21,7 @@
         </header>
         <div class="columns is-centered is-multiline">
             <div class="column is-one-quarter-tablet is-one-fifth-fullhd">
-                <div class="box">
+                <div class="box has-background-text-soft">
                     <h5 class="title is-5 has-text-info-light">Graph Points</h5>
                     <form id="settings-form" onsubmit="return false;">
                         {{ input_number(label="Max Entries", name="max-entries", value=max_entries) }}

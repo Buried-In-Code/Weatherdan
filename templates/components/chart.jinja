@@ -1,11 +1,11 @@
 {% macro chart(label, id) %}
-<div class="box has-text-centered">
-    <h3 class="subtitle is-3">{{ label }}</h3>
-    <div class="block">
-        <progress class="progress" id="{{ id }}-loading"></progress>
-    </div>
+<div class="box has-text-centered has-background-text-soft">
+    <h3 class="title is-3 has-text-text-bold">{{ label }}</h3>
     <div class="chart-container" hidden>
-        <canvas height="500" id="{{ id }}" width="750"></canvas>
+        <canvas height="500" id="{{ id }}"></canvas>
+    </div>
+    <div class="block">
+        <progress class="progress is-info is-small" id="{{ id }}-loading"></progress>
     </div>
 </div>
 {% endmacro %}

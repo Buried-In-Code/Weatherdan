@@ -1,23 +1,35 @@
-__all__ = ["GraphData", "WeekGraphData", "Reading", "WeekReading"]
+__all__ = [
+    "GraphData",
+    "Rainfall",
+    "Reading",
+    "Solar",
+    "UVIndex",
+    "WeekReading",
+    "Wind",
+]
 
 from datetime import date
 from decimal import Decimal
 from typing import Self
 
-from pydantic import BaseModel, Field
+from sqlmodel import Field, SQLModel
 
 
-class Reading(BaseModel):
-    datestamp: date
+class Reading(SQLModel):
+    datestamp: date = Field(index=True, primary_key=True)
     value: Decimal
 
+
+class Rainfall(Reading, table=True):
+    __tablename__ = "rainfall"
+
     def __lt__(self: Self, other) -> int:  # noqa: ANN001
-        if not isinstance(other, Reading):
+        if not isinstance(other, Rainfall):
             raise NotImplementedError
         return self.datestamp < other.datestamp
 
     def __eq__(self: Self, other) -> bool:  # noqa: ANN001
-        if not isinstance(other, Reading):
+        if not isinstance(other, Rainfall):
             raise NotImplementedError
         return self.datestamp == other.datestamp
 
@@ -25,7 +37,58 @@ class Reading(BaseModel):
         return hash((type(self), self.datestamp))
 
 
-class WeekReading(BaseModel):
+class Solar(Reading, table=True):
+    __tablename__ = "solar"
+
+    def __lt__(self: Self, other) -> int:  # noqa: ANN001
+        if not isinstance(other, Solar):
+            raise NotImplementedError
+        return self.datestamp < other.datestamp
+
+    def __eq__(self: Self, other) -> bool:  # noqa: ANN001
+        if not isinstance(other, Solar):
+            raise NotImplementedError
+        return self.datestamp == other.datestamp
+
+    def __hash__(self: Self) -> int:
+        return hash((type(self), self.datestamp))
+
+
+class UVIndex(Reading, table=True):
+    __tablename__ = "uv_index"
+
+    def __lt__(self: Self, other) -> int:  # noqa: ANN001
+        if not isinstance(other, UVIndex):
+            raise NotImplementedError
+        return self.datestamp < other.datestamp
+
+    def __eq__(self: Self, other) -> bool:  # noqa: ANN001
+        if not isinstance(other, UVIndex):
+            raise NotImplementedError
+        return self.datestamp == other.datestamp
+
+    def __hash__(self: Self) -> int:
+        return hash((type(self), self.datestamp))
+
+
+class Wind(Reading, table=True):
+    __tablename__ = "wind"
+
+    def __lt__(self: Self, other) -> int:  # noqa: ANN001
+        if not isinstance(other, Wind):
+            raise NotImplementedError
+        return self.datestamp < other.datestamp
+
+    def __eq__(self: Self, other) -> bool:  # noqa: ANN001
+        if not isinstance(other, Wind):
+            raise NotImplementedError
+        return self.datestamp == other.datestamp
+
+    def __hash__(self: Self) -> int:
+        return hash((type(self), self.datestamp))
+
+
+class WeekReading(SQLModel):
     start_datestamp: date
     end_datestamp: date
     value: Decimal
@@ -48,13 +111,7 @@ class WeekReading(BaseModel):
         return hash((type(self), self.start_datestamp, self.end_datestamp))
 
 
-class GraphData(BaseModel):
-    high: list[Reading] = Field(default_factory=list)
-    average: list[Reading] = Field(default_factory=list)
-    low: list[Reading] = Field(default_factory=list)
-
-
-class WeekGraphData(BaseModel):
-    high: list[WeekReading] = Field(default_factory=list)
-    average: list[WeekReading] = Field(default_factory=list)
-    low: list[WeekReading] = Field(default_factory=list)
+class GraphData(SQLModel):
+    high: list[Reading | WeekReading] = Field(default_factory=list)
+    average: list[Reading | WeekReading] = Field(default_factory=list)
+    low: list[Reading | WeekReading] = Field(default_factory=list)

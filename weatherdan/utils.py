@@ -27,9 +27,7 @@ def get_week_ends(value: date) -> tuple[date, date]:
 
 
 def filter_entries(
-    entries: list[Reading],
-    year: int | None = None,
-    month: int | None = None,
+    entries: list[Reading], year: int | None = None, month: int | None = None
 ) -> list[Reading]:
     if year:
         entries = [x for x in entries if x.datestamp.year == year]
@@ -39,9 +37,7 @@ def filter_entries(
 
 
 def filter_week_entries(
-    entries: list[WeekReading],
-    year: int | None = None,
-    month: int | None = None,
+    entries: list[WeekReading], year: int | None = None, month: int | None = None
 ) -> list[WeekReading]:
     if year:
         entries = [x for x in entries if year in (x.start_datestamp.year, x.end_datestamp.year)]
@@ -65,9 +61,7 @@ def aggregate_entries(
 
 
 def get_daily_readings(
-    entries: list[Reading],
-    year: int | None = None,
-    month: int | None = None,
+    entries: list[Reading], year: int | None = None, month: int | None = None
 ) -> list[Reading]:
     return filter_entries(entries=entries, year=year, month=month)
 
@@ -90,9 +84,7 @@ def total_aggregation(key: date, values: list[Reading]) -> Reading:
 
 def total_week_aggregation(key: tuple[date, date], values: list[Reading]) -> WeekReading:
     return WeekReading(
-        start_datestamp=key[0],
-        end_datestamp=key[1],
-        value=sum(x.value for x in values),
+        start_datestamp=key[0], end_datestamp=key[1], value=sum(x.value for x in values)
     )
 
 
@@ -102,9 +94,7 @@ def high_aggregation(key: date, values: list[Reading]) -> Reading:
 
 def high_week_aggregation(key: tuple[date, date], values: list[Reading]) -> WeekReading:
     return WeekReading(
-        start_datestamp=key[0],
-        end_datestamp=key[1],
-        value=max(x.value for x in values),
+        start_datestamp=key[0], end_datestamp=key[1], value=max(x.value for x in values)
     )
 
 
@@ -116,9 +106,7 @@ def average_aggregation(key: date, values: list[Reading]) -> Reading:
 def average_week_aggregation(key: tuple[date, date], values: list[Reading]) -> WeekReading:
     values = [x.value for x in values]
     return WeekReading(
-        start_datestamp=key[0],
-        end_datestamp=key[1],
-        value=round(sum(values) / len(values), 2),
+        start_datestamp=key[0], end_datestamp=key[1], value=round(sum(values) / len(values), 2)
     )
 
 
@@ -128,96 +116,70 @@ def low_aggregation(key: date, values: list[Reading]) -> Reading:
 
 def low_week_aggregation(key: tuple[date, date], values: list[Reading]) -> WeekReading:
     return WeekReading(
-        start_datestamp=key[0],
-        end_datestamp=key[1],
-        value=min(x.value for x in values),
+        start_datestamp=key[0], end_datestamp=key[1], value=min(x.value for x in values)
     )
 
 
 def get_weekly_total_readings(
-    entries: list[Reading],
-    year: int | None = None,
-    month: int | None = None,
+    entries: list[Reading], year: int | None = None, month: int | None = None
 ) -> list[WeekReading]:
     entries = aggregate_entries(
-        entries=entries,
-        grouping=week_grouping,
-        aggregation=total_week_aggregation,
+        entries=entries, grouping=week_grouping, aggregation=total_week_aggregation
     )
     return filter_week_entries(entries=entries, year=year, month=month)
 
 
 def get_weekly_high_readings(
-    entries: list[Reading],
-    year: int | None = None,
-    month: int | None = None,
+    entries: list[Reading], year: int | None = None, month: int | None = None
 ) -> list[WeekReading]:
     entries = aggregate_entries(
-        entries=entries,
-        grouping=week_grouping,
-        aggregation=high_week_aggregation,
+        entries=entries, grouping=week_grouping, aggregation=high_week_aggregation
     )
     return filter_week_entries(entries=entries, year=year, month=month)
 
 
 def get_weekly_average_readings(
-    entries: list[Reading],
-    year: int | None = None,
-    month: int | None = None,
+    entries: list[Reading], year: int | None = None, month: int | None = None
 ) -> list[WeekReading]:
     entries = aggregate_entries(
-        entries=entries,
-        grouping=week_grouping,
-        aggregation=average_week_aggregation,
+        entries=entries, grouping=week_grouping, aggregation=average_week_aggregation
     )
     return filter_week_entries(entries=entries, year=year, month=month)
 
 
 def get_weekly_low_readings(
-    entries: list[Reading],
-    year: int | None = None,
-    month: int | None = None,
+    entries: list[Reading], year: int | None = None, month: int | None = None
 ) -> list[WeekReading]:
     entries = aggregate_entries(
-        entries=entries,
-        grouping=week_grouping,
-        aggregation=low_week_aggregation,
+        entries=entries, grouping=week_grouping, aggregation=low_week_aggregation
     )
     return filter_week_entries(entries=entries, year=year, month=month)
 
 
 def get_monthly_total_readings(entries: list[Reading], year: int | None = None) -> list[Reading]:
     entries = aggregate_entries(
-        entries=entries,
-        grouping=month_grouping,
-        aggregation=total_aggregation,
+        entries=entries, grouping=month_grouping, aggregation=total_aggregation
     )
     return filter_entries(entries=entries, year=year)
 
 
 def get_monthly_high_readings(entries: list[Reading], year: int | None = None) -> list[Reading]:
     entries = aggregate_entries(
-        entries=entries,
-        grouping=month_grouping,
-        aggregation=high_aggregation,
+        entries=entries, grouping=month_grouping, aggregation=high_aggregation
     )
     return filter_entries(entries=entries, year=year)
 
 
 def get_monthly_average_readings(entries: list[Reading], year: int | None = None) -> list[Reading]:
     entries = aggregate_entries(
-        entries=entries,
-        grouping=month_grouping,
-        aggregation=average_aggregation,
+        entries=entries, grouping=month_grouping, aggregation=average_aggregation
     )
     return filter_entries(entries=entries, year=year)
 
 
 def get_monthly_low_readings(entries: list[Reading], year: int | None = None) -> list[Reading]:
     entries = aggregate_entries(
-        entries=entries,
-        grouping=month_grouping,
-        aggregation=low_aggregation,
+        entries=entries, grouping=month_grouping, aggregation=low_aggregation
     )
     return filter_entries(entries=entries, year=year)
 
@@ -232,9 +194,7 @@ def get_yearly_high_readings(entries: list[Reading]) -> list[Reading]:
 
 def get_yearly_average_readings(entries: list[Reading]) -> list[Reading]:
     return aggregate_entries(
-        entries=entries,
-        grouping=year_grouping,
-        aggregation=average_aggregation,
+        entries=entries, grouping=year_grouping, aggregation=average_aggregation
     )
 
 

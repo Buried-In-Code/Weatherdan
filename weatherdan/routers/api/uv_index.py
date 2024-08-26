@@ -85,8 +85,7 @@ def refresh_readings(
     )
     for timestamp, value in history_readings.items():
         if reading := session.get(UVIndex, timestamp.date()):
-            if value > reading.value:
-                reading.value = value
+            reading.value = max(value, reading.value)
         else:
             reading = UVIndex(datestamp=timestamp.date(), value=value)
         session.add(reading)
@@ -96,8 +95,7 @@ def refresh_readings(
         device=constants.ecowitt.device.mac, category=Category.UV_INDEX
     ):
         if reading := session.get(UVIndex, live_reading.time.date()):
-            if live_reading.value > reading.value:
-                reading.value = live_reading.value
+            reading.value = max(live_reading.value, reading.value)
         else:
             reading = UVIndex(datestamp=live_reading.time.date(), value=live_reading.value)
         session.add(reading)

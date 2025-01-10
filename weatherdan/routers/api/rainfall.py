@@ -32,10 +32,10 @@ LOGGER = logging.getLogger(__name__)
 def list_readings(
     *,
     session: Annotated[Session, Depends(get_session)],
-    timeframe: Timeframe = Timeframe.DAILY,
-    year: int | None = None,
-    month: int | None = None,
-    max_entries: int = Query(alias="max-entries", default=28),
+    timeframe: Annotated[Timeframe, Query()] = Timeframe.DAILY,
+    year: Annotated[int | None, Query()] = None,
+    month: Annotated[int | None, Query()] = None,
+    max_entries: Annotated[int, Query(alias="max-entries")] = 28,
 ) -> list[Reading | WeekReading]:
     readings = sorted(session.exec(select(Rainfall)).all())
     if timeframe == Timeframe.DAILY:
@@ -48,11 +48,15 @@ def list_readings(
 
 
 @router.post(path="", status_code=201)
-def add_reading(*, session: Annotated[Session, Depends(get_session)], input: Reading) -> Rainfall:  # noqa: A002
-    if reading := session.get(Rainfall, input.datestamp):
-        reading.value = input.value
+def add_reading(
+    *,
+    session: Annotated[Session, Depends(get_session)],
+    body: Annotated[Reading, Body(alias="input")],
+) -> Rainfall:
+    if reading := session.get(Rainfall, body.datestamp):
+        reading.value = body.value
     else:
-        reading = Rainfall.model_validate(input)
+        reading = Rainfall.model_validate(body)
     session.add(reading)
     session.commit()
     session.refresh(reading)
@@ -61,7 +65,9 @@ def add_reading(*, session: Annotated[Session, Depends(get_session)], input: Rea
 
 @router.delete(path="", status_code=204)
 def remove_reading(
-    *, session: Annotated[Session, Depends(get_session)], datestamp: Annotated[date, Body(embed=True)]
+    *,
+    session: Annotated[Session, Depends(get_session)],
+    datestamp: Annotated[date, Body(embed=True)],
 ) -> None:
     reading = session.get(Rainfall, datestamp)
     if not reading:
@@ -72,7 +78,7 @@ def remove_reading(
 
 @router.put(path="", status_code=204)
 def refresh_readings(
-    *, session: Annotated[Session, Depends(get_session)], force: bool = False
+    *, session: Annotated[Session, Depends(get_session)], force: Annotated[bool, Query()] = False
 ) -> None:
     temp_time = datetime.now() - timedelta(hours=3)
     if not force and constants.settings.last_updated.rainfall >= temp_time:

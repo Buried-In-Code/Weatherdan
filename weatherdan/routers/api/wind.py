@@ -15,9 +15,15 @@ from weatherdan.responses import ErrorResponse
 from weatherdan.routers.api.timeframe import Timeframe
 from weatherdan.utils import (
     get_daily_readings,
-    get_monthly_total_readings,
-    get_weekly_total_readings,
-    get_yearly_total_readings,
+    get_monthly_low_readings,
+    get_monthly_high_readings,
+    get_monthly_average_readings,
+    get_weekly_low_readings,
+    get_weekly_high_readings,
+    get_weekly_average_readings,
+    get_yearly_low_readings,
+    get_yearly_high_readings,
+    get_yearly_average_readings,
 )
 
 router = APIRouter(
@@ -32,10 +38,10 @@ LOGGER = logging.getLogger(__name__)
 def list_readings(
     *,
     session: Annotated[Session, Depends(get_session)],
-    timeframe: Timeframe = Timeframe.DAILY,
-    year: int | None = None,
-    month: int | None = None,
-    max_entries: int = Query(alias="max-entries", default=28),
+    timeframe: Annotated[Timeframe, Query()] = Timeframe.DAILY,
+    year: Annotated[int | None, Query()] = None,
+    month: Annotated[int | None, Query()] = None,
+    max_entries: Annotated[int, Query(alias="max-entries")] = 28,
 ) -> list[Reading | WeekReading]:
     readings = sorted(session.exec(select(Wind)).all())
     if timeframe == Timeframe.DAILY:
@@ -48,11 +54,15 @@ def list_readings(
 
 
 @router.post(path="", status_code=201)
-def add_reading(*, session: Annotated[Session, Depends(get_session)], input: Reading) -> Wind:  # noqa: A002
-    if reading := session.get(Wind, input.datestamp):
-        reading.value = input.value
+def add_reading(
+    *,
+    session: Annotated[Session, Depends(get_session)],
+    body: Annotated[Reading, Body(alias="input")],
+) -> Wind:
+    if reading := session.get(Wind, body.datestamp):
+        reading.value = body.value
     else:
-        reading = Wind.model_validate(input)
+        reading = Wind.model_validate(body)
     session.add(reading)
     session.commit()
     session.refresh(reading)
@@ -61,7 +71,9 @@ def add_reading(*, session: Annotated[Session, Depends(get_session)], input: Rea
 
 @router.delete(path="", status_code=204)
 def remove_reading(
-    *, session: Annotated[Session, Depends(get_session)], datestamp: Annotated[date, Body(embed=True)]
+    *,
+    session: Annotated[Session, Depends(get_session)],
+    datestamp: Annotated[date, Body(embed=True)],
 ) -> None:
     reading = session.get(Wind, datestamp)
     if not reading:
@@ -72,7 +84,7 @@ def remove_reading(
 
 @router.put(path="", status_code=204)
 def refresh_readings(
-    *, session: Annotated[Session, Depends(get_session)], force: bool = False
+    *, session: Annotated[Session, Depends(get_session)], force: Annotated[bool, Query()] = False
 ) -> None:
     temp_time = datetime.now() - timedelta(hours=3)
     if not force and constants.settings.last_updated.wind >= temp_time:

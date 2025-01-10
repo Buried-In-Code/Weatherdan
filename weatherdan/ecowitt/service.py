@@ -13,7 +13,12 @@ from urllib.parse import urlencode
 from pydantic import TypeAdapter, ValidationError
 from ratelimit import limits, sleep_and_retry
 from requests import get
-from requests.exceptions import ConnectionError, HTTPError, JSONDecodeError, ReadTimeout
+from requests.exceptions import (
+    ConnectionError,  # noqa: A004
+    HTTPError,
+    JSONDecodeError,
+    ReadTimeout,
+)
 
 from weatherdan import __version__, elapsed_timer
 from weatherdan.ecowitt.category import Category

@@ -1,17 +1,17 @@
 __all__ = [
     "get_daily_readings",
-    "get_weekly_total_readings",
-    "get_monthly_total_readings",
-    "get_yearly_total_readings",
-    "get_weekly_high_readings",
-    "get_monthly_high_readings",
-    "get_yearly_high_readings",
-    "get_weekly_average_readings",
     "get_monthly_average_readings",
-    "get_yearly_average_readings",
-    "get_weekly_low_readings",
+    "get_monthly_high_readings",
     "get_monthly_low_readings",
+    "get_monthly_total_readings",
+    "get_weekly_average_readings",
+    "get_weekly_high_readings",
+    "get_weekly_low_readings",
+    "get_weekly_total_readings",
+    "get_yearly_average_readings",
+    "get_yearly_high_readings",
     "get_yearly_low_readings",
+    "get_yearly_total_readings",
 ]
 
 from collections.abc import Callable

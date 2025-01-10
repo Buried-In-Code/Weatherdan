@@ -1,4 +1,4 @@
-__all__ = ["ServiceError", "AuthenticationError"]
+__all__ = ["AuthenticationError", "ServiceError"]
 
 
 class ServiceError(Exception):

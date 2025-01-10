@@ -61,7 +61,7 @@ def add_reading(*, session: Annotated[Session, Depends(get_session)], input: Rea
 
 @router.delete(path="", status_code=204)
 def remove_reading(
-    *, session: Annotated[Session, Depends(get_session)], datestamp: date = Body(embed=True)
+    *, session: Annotated[Session, Depends(get_session)], datestamp: Annotated[date, Body(embed=True)]
 ) -> None:
     reading = session.get(Rainfall, datestamp)
     if not reading:
@@ -85,8 +85,7 @@ def refresh_readings(
     )
     for timestamp, value in history_readings.items():
         if reading := session.get(Rainfall, timestamp.date()):
-            if value > reading.value:
-                reading.value = value
+            reading.value = max(value, reading.value)
         else:
             reading = Rainfall(datestamp=timestamp.date(), value=value)
         session.add(reading)
@@ -96,8 +95,7 @@ def refresh_readings(
         device=constants.ecowitt.device.mac, category=Category.RAINFALL
     ):
         if reading := session.get(Rainfall, live_reading.time.date()):
-            if live_reading.value > reading.value:
-                reading.value = live_reading.value
+            reading.value = max(live_reading.value, reading.value)
         else:
             reading = Rainfall(datestamp=live_reading.time.date(), value=live_reading.value)
         session.add(reading)

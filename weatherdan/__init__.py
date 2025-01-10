@@ -1,11 +1,11 @@
 __all__ = [
     "__version__",
-    "get_project_root",
+    "elapsed_timer",
     "get_cache_root",
     "get_config_root",
     "get_data_root",
+    "get_project_root",
     "setup_logging",
-    "elapsed_timer",
 ]
 
 import logging

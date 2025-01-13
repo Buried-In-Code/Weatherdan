@@ -17,17 +17,17 @@
         <header class="block has-text-centered">
             <h1 class="title is-1">Dashboard</h1>
         </header>
-        <div class="columns is-centered is-multiline">
-            <div class="column is-full">
+        <div class="columns is-multiline is-centered is-desktop">
+            <div class="column is-half-desktop">
                 {{ chart(label="Rainfall", id="rainfall-stats") }}
             </div>
-            <div class="column is-full">
+            <div class="column is-half-desktop">
                 {{ chart(label="Solar", id="solar-stats") }}
             </div>
-            <div class="column is-full">
+            <div class="column is-half-desktop">
                 {{ chart(label="UV Index", id="uv-index-stats") }}
             </div>
-            <div class="column is-full">
+            <div class="column is-half-desktop">
                 {{ chart(label="Wind", id="wind-stats") }}
             </div>
         </div>

@@ -20,7 +20,7 @@ from rich.logging import RichHandler
 from rich.theme import Theme
 from rich.traceback import install
 
-__version__ = "0.6.3"
+__version__ = "0.7.0"
 CONSOLE = Console(
     theme=Theme(
         {
@@ -58,33 +58,38 @@ def get_data_root() -> Path:
     return folder
 
 
+def get_state_root() -> Path:
+    data_home = os.getenv("XDG_STATE_HOME", default=str(Path.home() / ".local" / "state"))
+    folder = Path(data_home).resolve() / "weatherdan"
+    folder.mkdir(exist_ok=True, parents=True)
+    return folder
+
+
 def get_project_root() -> Path:
     return Path(__file__).parent.parent
 
 
 def setup_logging(debug: bool = False) -> None:
-    install(show_locals=True, max_frames=5, console=CONSOLE)
-    log_folder = get_project_root() / "logs"
-    log_folder.mkdir(parents=True, exist_ok=True)
+    install(show_locals=True, max_frames=6, console=CONSOLE)
 
+    console_handler = RichHandler(
+        rich_tracebacks=True,
+        tracebacks_show_locals=True,
+        omit_repeated_times=False,
+        show_level=True,
+        show_time=False,
+        show_path=True,
+        console=CONSOLE,
+    )
+    console_handler.setLevel(logging.DEBUG if debug else logging.INFO)
+    console_handler.setFormatter(logging.Formatter("%(message)s"))
+    file_handler = logging.FileHandler(filename=get_state_root() / "weatherdan.log")
+    file_handler.setLevel(logging.DEBUG if debug else logging.INFO)
     logging.basicConfig(
         format="[%(asctime)s] [%(levelname)-8s] {%(name)s} | %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
         level=logging.DEBUG if debug else logging.INFO,
-        handlers=[
-            RichHandler(
-                rich_tracebacks=True,
-                tracebacks_show_locals=True,
-                omit_repeated_times=False,
-                show_level=False,
-                show_time=False,
-                show_path=False,
-                console=CONSOLE,
-            ),
-            RotatingFileHandler(
-                filename=log_folder / "weatherdan.log", maxBytes=100000000, backupCount=3
-            ),
-        ],
+        handlers=[console_handler, file_handler],
     )
 
     logging.getLogger("uvicorn").setLevel(logging.WARNING)

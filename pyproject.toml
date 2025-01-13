@@ -30,7 +30,7 @@ classifiers = [
   "Typing :: Typed"
 ]
 dependencies = [
-  "fastapi[standard]>=0.115.6",
+  "fastapi >= 0.115.6",
   "jinja2 >= 3.1.5",
   "pydantic >= 2.10.5",
   "ratelimit >= 2.2.1",
@@ -38,7 +38,7 @@ dependencies = [
   "rich >= 13.9.4",
   "sqlmodel >= 0.0.22",
   "tomli-w >= 1.1.0",
-  "uvicorn >= 0.34.0",
+  "uvicorn >= 0.34.0"
 ]
 description = "Rainfall tracking system using Ecowitt."
 dynamic = ["version"]
@@ -52,9 +52,6 @@ requires-python = ">= 3.13"
 postgres = [
   "psycopg >= 3.2.3"
 ]
-
-[project.scripts]
-Weatherdan = "run:main"
 
 [project.urls]
 Issues = "https://github.com/Buried-In-Code/Weatherdan/issues"

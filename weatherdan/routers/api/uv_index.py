@@ -10,14 +10,20 @@ from sqlmodel import Session, select
 from weatherdan.constants import constants
 from weatherdan.database import get_session
 from weatherdan.ecowitt.category import Category
-from weatherdan.models import Reading, UVIndex, WeekReading
+from weatherdan.models import GraphData, Reading, UVIndex
 from weatherdan.responses import ErrorResponse
 from weatherdan.routers.api.timeframe import Timeframe
 from weatherdan.utils import (
     get_daily_readings,
-    get_monthly_total_readings,
-    get_weekly_total_readings,
-    get_yearly_total_readings,
+    get_monthly_average_readings,
+    get_monthly_high_readings,
+    get_monthly_low_readings,
+    get_weekly_average_readings,
+    get_weekly_high_readings,
+    get_weekly_low_readings,
+    get_yearly_average_readings,
+    get_yearly_high_readings,
+    get_yearly_low_readings,
 )
 
 router = APIRouter(
@@ -36,15 +42,29 @@ def list_readings(
     year: Annotated[int | None, Query()] = None,
     month: Annotated[int | None, Query()] = None,
     max_entries: Annotated[int, Query(alias="max-entries")] = 28,
-) -> list[Reading | WeekReading]:
+) -> list[Reading] | GraphData:
     readings = sorted(session.exec(select(UVIndex)).all())
     if timeframe == Timeframe.DAILY:
         return get_daily_readings(entries=readings, year=year, month=month)[-max_entries:]
     if timeframe == Timeframe.WEEKLY:
-        return get_weekly_total_readings(entries=readings, year=year, month=month)[-max_entries:]
+        return GraphData(
+            high=get_weekly_high_readings(entries=readings, year=year, month=month)[-max_entries:],
+            low=get_weekly_low_readings(entries=readings, year=year, month=month)[-max_entries:],
+            average=get_weekly_average_readings(entries=readings, year=year, month=month)[
+                -max_entries:
+            ],
+        )
     if timeframe == Timeframe.MONTHLY:
-        return get_monthly_total_readings(entries=readings, year=year)[-max_entries:]
-    return get_yearly_total_readings(entries=readings)[-max_entries:]
+        return GraphData(
+            high=get_monthly_high_readings(entries=readings, year=year)[-max_entries:],
+            low=get_monthly_low_readings(entries=readings, year=year)[-max_entries:],
+            average=get_monthly_average_readings(entries=readings, year=year)[-max_entries:],
+        )
+    return GraphData(
+        high=get_yearly_high_readings(entries=readings)[-max_entries:],
+        low=get_yearly_low_readings(entries=readings)[-max_entries:],
+        average=get_yearly_average_readings(entries=readings)[-max_entries:],
+    )
 
 
 @router.post(path="", status_code=201)

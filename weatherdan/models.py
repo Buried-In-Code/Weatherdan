@@ -104,6 +104,6 @@ class WeekReading(SQLModel):
 
 
 class GraphData(SQLModel):
-    high: list[Reading | WeekReading] = Field(default_factory=list)
-    average: list[Reading | WeekReading] = Field(default_factory=list)
-    low: list[Reading | WeekReading] = Field(default_factory=list)
+    high: list[Reading] | list[WeekReading] = Field(default_factory=list)
+    average: list[Reading] | list[WeekReading] = Field(default_factory=list)
+    low: list[Reading] | list[WeekReading] = Field(default_factory=list)

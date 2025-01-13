@@ -1,13 +1,10 @@
-<img src="./static/img/logo.png" align="left" width="128" height="128" alt="Weatherdan Logo"/>
-
 # Weatherdan
 
-![Python](https://img.shields.io/badge/Python-3.11-green?style=flat-square)
+![Python](https://img.shields.io/badge/Python-3.13-green?style=flat-square)
 ![Status](https://img.shields.io/badge/Status-Beta-yellowgreen?style=flat-square)
 
-[![Rye](https://img.shields.io/badge/Rye-informational?style=flat-square&logo=rye&labelColor=grey)](https://rye.astral.sh)
-[![Pre-Commit](https://img.shields.io/badge/Pre--Commit-informational?style=flat-square&logo=pre-commit&labelColor=grey)](https://github.com/pre-commit/pre-commit)
-[![Ruff](https://img.shields.io/badge/Ruff-informational?style=flat-square&logo=ruff&labelColor=grey)](https://github.com/astral-sh/ruff)
+[![Pre-Commit](https://img.shields.io/badge/pre--commit-enabled-informational?logo=pre-commit&style=flat-square)](https://github.com/pre-commit/pre-commit)
+[![Ruff](https://img.shields.io/badge/ruff-enabled-informational?logo=ruff&style=flat-square)](https://github.com/astral-sh/ruff)
 
 [![Github - Version](https://img.shields.io/github/v/tag/Buried-In-Code/Weatherdan?logo=Github&label=Version&style=flat-square)](https://github.com/Buried-In-Code/Weatherdan/tags)
 [![Github - License](https://img.shields.io/github/license/Buried-In-Code/Weatherdan?logo=Github&label=License&style=flat-square)](https://opensource.org/licenses/MIT)
@@ -18,20 +15,14 @@ Currently, tracks total Rainfall and high, average and low for Solar, UV Index a
 
 ## Usage
 
-### via Pip
+### via uv
 
-1. Make sure you have a supported version of [Python](https://www.python.org/) installed: `python --version`
+1. Make sure you have [uv](https://docs.astral.sh/uv/) installed: `uv --version`
 2. Clone the repo: `git clone https://github.com/Buried-In-Code/Weatherdan`
-3. Install the project: `pip install .`
-4. Run using: `Weatherdan`
+3. Install the project: `uv sync`
+4. Run using: `uv run run.py`
 
-### via Pipx
-
-1. Make sure you have [Pipx](https://github.com/pypa/pipx) installed: `pipx --version`
-2. Install the project `pipx install git+https://github.com/Buried-In-Code/Weatherdan.git`
-3. Run using: `Weatherdan`
-
-### via Docker-Compose
+### via Docker Compose
 
 1. Make sure you have [Docker](https://www.docker.com/) installed: `docker --version`
 2. Make sure you have [Docker-Compose](https://github.com/docker/compose) installed: `docker-compose --version`
@@ -49,8 +40,10 @@ services:
     ports:
       - '25710:25710'
     volumes:
+      - './cache:/app/cache'
       - './config:/app/config'
       - './data:/app/data'
+      - './state:/app/state'
 ```
 
 4. Run using: `docker-compose up -d`

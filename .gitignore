@@ -2,21 +2,17 @@
 __pycache__/
 __pypackages__/
 .idea/
-.pytest_cache/
 .ruff_cache/
-.tox/
 .venv/
-.vscode/
 build/
 dist/
 logs/
 
 # =====Files=====
-*.csv
 *.iml
-.coverage
-.pdm.toml
+*.log
+.envrc
+.pdm-python
 .python-version
-
-# =====Project=====
 pdm.lock
+uv.lock

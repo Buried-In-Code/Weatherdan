@@ -1,14 +1,13 @@
 {% from "components/forms.jinja" import select_number %}
 {% from "components/chart.jinja" import chart %}
 <!DOCTYPE html>
-<html lang="en-GB" data-theme="villain">
+<html lang="en-GB" data-theme="dark">
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1" name="viewport">
     <title>Weatherdan</title>
     <link href="https://use.fontawesome.com/releases/v6.3.0/css/all.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bulma@1.0.1/css/bulma.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/gh/Buried-In-Code/Vegeta@0.2.0/css/vegeta.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" rel="stylesheet">
     <link href="/static/css/styles.css" rel="stylesheet">
     <link href="/static/img/favicon.ico" id="favicon" rel="icon" type="image/x-icon">
 </head>
@@ -40,21 +39,21 @@
                 </div>
             </div>
             <div class="column">
-                <div class="columns is-centered is-multiline">
+                <div class="columns is-multiline is-centered is-desktop">
                     {% if month %}
-                        <div class="column is-full">
+                        <div class="column is-half-desktop">
                             {{ chart(label="Daily Stats", id="daily-stats") }}
                         </div>
-                        <div class="column is-full">
+                        <div class="column is-half-desktop">
                             {{ chart(label="Weekly Stats", id="weekly-stats") }}
                         </div>
                     {% endif %}
                     {% if year %}
-                        <div class="column is-full">
+                        <div class="column is-half-desktop">
                             {{ chart(label="Monthly Stats", id="monthly-stats") }}
                         </div>
                     {% endif %}
-                    <div class="column is-full">
+                    <div class="column is-half-desktop">
                         {{ chart(label="Yearly Stats", id="yearly-stats") }}
                     </div>
                 </div>

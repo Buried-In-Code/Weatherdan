@@ -1,14 +1,13 @@
 {% from "components/forms.jinja" import input_number %}
 {% from "components/form_box.jinja" import add_high, remove_high, add_total, remove_total %}
 <!DOCTYPE html>
-<html lang="en-GB" data-theme="villain">
+<html lang="en-GB" data-theme="dark">
 <head>
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1" name="viewport">
     <title>Weatherdan</title>
     <link href="https://use.fontawesome.com/releases/v6.3.0/css/all.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bulma@1.0.1/css/bulma.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/gh/Buried-In-Code/Vegeta@0.2.0/css/vegeta.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css" rel="stylesheet">
     <link href="/static/css/styles.css" rel="stylesheet">
     <link href="/static/img/favicon.ico" id="favicon" rel="icon" type="image/x-icon">
 </head>
@@ -20,7 +19,7 @@
             <h1 class="title is-1">Editor</h1>
         </header>
         <div class="columns is-centered is-multiline">
-            <div class="column is-one-quarter-tablet is-one-fifth-fullhd">
+            <div class="column is-one-half-tablet is-one-third-desktop is-one-quarter-widescreen is-one-fifth-fullhd">
                 <div class="box has-background-text-soft">
                     <h4 class="title is-4 has-text-text-bold">Graph Points</h4>
                     <form id="settings-form" onsubmit="return false;">
@@ -36,28 +35,28 @@
                     </form>
                 </div>
             </div>
-            <div class="column is-one-quarter-tablet is-one-fifth-fullhd">
+            <div class="column is-one-half-tablet is-one-third-desktop is-one-quarter-widescreen is-one-fifth-fullhd">
                 {{ add_total("Rainfall", "mm", "/api/rainfall") }}
             </div>
-            <div class="column is-one-quarter-tablet is-one-fifth-fullhd">
+            <div class="column is-one-half-tablet is-one-third-desktop is-one-quarter-widescreen is-one-fifth-fullhd">
                 {{ remove_total("Rainfall", "/api/rainfall") }}
             </div>
-            <div class="column is-one-quarter-tablet is-one-fifth-fullhd">
+            <div class="column is-one-half-tablet is-one-third-desktop is-one-quarter-widescreen is-one-fifth-fullhd">
                 {{ add_high("Solar", "lx", "/api/solar") }}
             </div>
-            <div class="column is-one-quarter-tablet is-one-fifth-fullhd">
+            <div class="column is-one-half-tablet is-one-third-desktop is-one-quarter-widescreen is-one-fifth-fullhd">
                 {{ remove_high("Solar", "/api/solar") }}
             </div>
-            <div class="column is-one-quarter-tablet is-one-fifth-fullhd">
+            <div class="column is-one-half-tablet is-one-third-desktop is-one-quarter-widescreen is-one-fifth-fullhd">
                 {{ add_high("UV Index", "", "/api/uv-index") }}
             </div>
-            <div class="column is-one-quarter-tablet is-one-fifth-fullhd">
+            <div class="column is-one-half-tablet is-one-third-desktop is-one-quarter-widescreen is-one-fifth-fullhd">
                 {{ remove_high("UV Index", "/api/uv-index") }}
             </div>
-            <div class="column is-one-quarter-tablet is-one-fifth-fullhd">
+            <div class="column is-one-half-tablet is-one-third-desktop is-one-quarter-widescreen is-one-fifth-fullhd">
                 {{ add_high("Wind", "km/h", "/api/wind") }}
             </div>
-            <div class="column is-one-quarter-tablet is-one-fifth-fullhd">
+            <div class="column is-one-half-tablet is-one-third-desktop is-one-quarter-widescreen is-one-fifth-fullhd">
                 {{ remove_high("Wind", "/api/wind") }}
             </div>
         </div>

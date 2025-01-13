@@ -2,31 +2,43 @@
 build-backend = "hatchling.build"
 requires = ["hatchling"]
 
+[dependency-groups]
+dev = [
+  "pre-commit >= 4.0.1"
+]
+tests = [
+  "pytest >= 8.3.4",
+  "pytest-cov >= 6.0.0",
+  "tox >= 4.23.2",
+  "tox-uv >= 1.17.0"
+]
+
 [project]
 authors = [
   {email = "BuriedInCode@tuta.io", name = "BuriedInCode"}
 ]
 classifiers = [
   "Development Status :: 4 - Beta",
+  "Framework :: Pydantic :: 2",
   "Intended Audience :: End Users/Desktop",
   "License :: OSI Approved :: MIT License",
   "Natural Language :: English",
   "Operating System :: MacOS",
   "Operating System :: Microsoft :: Windows",
   "Operating System :: POSIX :: Linux",
-  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.13",
   "Typing :: Typed"
 ]
 dependencies = [
-  "fastapi >= 0.104.1",
-  "jinja2 >= 3.1.2",
-  "pydantic >= 2.5.2",
+  "fastapi >= 0.115.6",
+  "jinja2 >= 3.1.5",
+  "pydantic >= 2.10.5",
   "ratelimit >= 2.2.1",
-  "requests >= 2.31.0",
-  "rich >= 13.7.0",
-  "sqlmodel>=0.0.19",
-  "tomli-w >= 1.0.0",
-  "uvicorn >= 0.24.0"
+  "requests >= 2.32.3",
+  "rich >= 13.9.4",
+  "sqlmodel >= 0.0.22",
+  "tomli-w >= 1.1.0",
+  "uvicorn >= 0.34.0"
 ]
 description = "Rainfall tracking system using Ecowitt."
 dynamic = ["version"]
@@ -34,22 +46,31 @@ keywords = []
 license = {text = "MIT"}
 name = "weatherdan"
 readme = "README.md"
-requires-python = ">= 3.11"
+requires-python = ">= 3.13"
 
 [project.optional-dependencies]
 postgres = [
-  "psycopg >= 3.1.19"
+  "psycopg >= 3.2.3"
 ]
-
-[project.scripts]
-Weatherdan = "run:main"
 
 [project.urls]
 Issues = "https://github.com/Buried-In-Code/Weatherdan/issues"
 Source = "https://github.com/Buried-In-Code/Weatherdan"
 
+[tool.coverage.report]
+show_missing = true
+
+[tool.coverage.run]
+source = ["weatherdan"]
+
+[tool.hatch.build.targets.sdist]
+exclude = [".github/"]
+
 [tool.hatch.version]
 path = "weatherdan/__init__.py"
+
+[tool.pytest.ini_options]
+addopts = ["--cov"]
 
 [tool.ruff]
 fix = true
@@ -68,7 +89,6 @@ ignore = [
   "COM812",
   "D",
   "DTZ",
-  "EXE",
   "FBT",
   "PLR2004",
   "TCH"
@@ -101,7 +121,5 @@ convention = "google"
 [tool.ruff.lint.pyupgrade]
 keep-runtime-typing = true
 
-[tool.rye]
-dev-dependencies = [
-  "pre-commit >= 3.7.1"
-]
+[tool.tomlsort]
+all = true

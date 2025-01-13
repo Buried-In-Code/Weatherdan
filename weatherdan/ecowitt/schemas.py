@@ -20,6 +20,7 @@ class Device(BaseModel):
     longitude: Decimal
     latitude: Decimal
     stationtype: str
+    iotdevice_list: list[bytes]
 
 
 class LiveReading(BaseModel):

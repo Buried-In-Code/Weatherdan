@@ -1,8 +1,8 @@
-__all__ = ["router"]
+__all__ = ["router"]  # noqa: A005
 
 from typing import Annotated
 
-from fastapi import APIRouter, Cookie, Depends, Request
+from fastapi import APIRouter, Cookie, Depends, Query, Request
 from fastapi.responses import HTMLResponse, Response
 from fastapi.templating import Jinja2Templates
 from sqlmodel import Session, select
@@ -22,7 +22,7 @@ def dashboard(*, request: Request) -> Response:
 
 @router.get("/editor", response_class=HTMLResponse)
 def editor(
-    *, request: Request, max_entries: int = Cookie(alias="weatherdan_max-entries", default=28)
+    *, request: Request, max_entries: Annotated[int, Cookie(alias="weatherdan_max-entries")] = 28
 ) -> Response:
     return templates.TemplateResponse(
         "editor.html.jinja", {"request": request, "max_entries": max_entries}
@@ -34,9 +34,9 @@ def rainfall(
     *,
     request: Request,
     session: Annotated[Session, Depends(get_session)],
-    year: int = 0,
-    month: int = 0,
-    max_entries: int = Cookie(alias="weatherdan_max-entries", default=28),
+    year: Annotated[int, Query()] = 0,
+    month: Annotated[int, Query()] = 0,
+    max_entries: Annotated[int, Cookie(alias="weatherdan_max-entries")] = 28,
 ) -> Response:
     year_list = sorted({x.datestamp.year for x in session.exec(select(Rainfall)).all()})
     month_list = sorted(
@@ -65,9 +65,9 @@ def solar(
     *,
     request: Request,
     session: Annotated[Session, Depends(get_session)],
-    year: int = 0,
-    month: int = 0,
-    max_entries: int = Cookie(alias="weatherdan_max-entries", default=28),
+    year: Annotated[int, Query()] = 0,
+    month: Annotated[int, Query()] = 0,
+    max_entries: Annotated[int, Cookie(alias="weatherdan_max-entries")] = 28,
 ) -> Response:
     year_list = sorted({x.datestamp.year for x in session.exec(select(Solar)).all()})
     month_list = sorted(
@@ -92,9 +92,9 @@ def uv_index(
     *,
     request: Request,
     session: Annotated[Session, Depends(get_session)],
-    year: int = 0,
-    month: int = 0,
-    max_entries: int = Cookie(alias="weatherdan_max-entries", default=28),
+    year: Annotated[int, Query()] = 0,
+    month: Annotated[int, Query()] = 0,
+    max_entries: Annotated[int, Cookie(alias="weatherdan_max-entries")] = 28,
 ) -> Response:
     year_list = sorted({x.datestamp.year for x in session.exec(select(UVIndex)).all()})
     month_list = sorted(
@@ -119,9 +119,9 @@ def wind(
     *,
     request: Request,
     session: Annotated[Session, Depends(get_session)],
-    year: int = 0,
-    month: int = 0,
-    max_entries: int = Cookie(alias="weatherdan_max-entries", default=28),
+    year: Annotated[int, Query()] = 0,
+    month: Annotated[int, Query()] = 0,
+    max_entries: Annotated[int, Cookie(alias="weatherdan_max-entries")] = 28,
 ) -> Response:
     year_list = sorted({x.datestamp.year for x in session.exec(select(Wind)).all()})
     month_list = sorted(

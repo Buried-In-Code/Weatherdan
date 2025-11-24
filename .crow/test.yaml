@@ -1,0 +1,14 @@
+depends_on:
+  - lint
+
+when:
+  - event: push
+    branch: main
+  - event: pull_request
+    branch: main
+
+steps:
+  - name: Gradle Junit
+    image: eclipse-temurin:21
+    commands:
+      - ./gradlew clean test

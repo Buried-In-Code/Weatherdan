@@ -1,0 +1,11 @@
+when:
+  - event: push
+    branch: main
+  - event: pull_request
+    branch: main
+
+steps:
+  - name: Gradle spotless
+    image: eclipse-temurin:21
+    commands:
+      - ./gradlew clean spotlessCheck

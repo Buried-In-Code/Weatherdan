@@ -1,0 +1,22 @@
+when:
+  - event: tag
+
+steps:
+  publish-release:
+    image: "woodpeckerci/plugin-release:0.2"
+    settings:
+      api-key:
+        from_secret: release-token
+      draft: true
+      title: v${CI_COMMIT_TAG}
+
+  publish-docker:
+    image: "codeberg.org/crow-plugins/docker-buildx:1.1"
+    settings:
+      repo: codefloe.com/BuriedInCode/Weatherdan
+      registry: codefloe.com
+      platforms: linux/amd64,linux/arm64
+      auto_tag: true
+      username: BuriedInCode
+      password:
+        from_secret: docker-token

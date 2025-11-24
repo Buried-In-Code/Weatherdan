@@ -12,6 +12,8 @@
 ![Status](https://img.shields.io/badge/Status-Beta-yellowgreen?style=flat-square)
 [![License](https://img.shields.io/badge/License-MIT-informational?style=flat-square)](https://opensource.org/licenses/MIT)
 
+[![Pipeline Status](https://ci.codefloe.com/api/badges/542/status.svg)](https://ci.codefloe.com/repos/542)
+
 Retrieve weather information from Ecowitt devices and display in graphs, allows for manual additions and updates.\
 Currently, tracks total Rainfall and high, average and low for Solar, UV Index and Wind readings.
 

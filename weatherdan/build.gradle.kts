@@ -65,4 +65,4 @@ val compileSass by
     outputs.file("src/main/resources/static/css/bulma-custom.css")
   }
 
-tasks.processResources { dependsOn(compileSass) }
+// tasks.processResources { dependsOn(compileSass) }

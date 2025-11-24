@@ -58,9 +58,9 @@ class DeviceTest {
       val result = session.getDevice(macAddress = "98:CD:AC:31:4F:F1")
       assertNotNull(result)
       assertAll(
-        { assertEquals(38, result.lastUpdate.wind.windDirection.value) },
+        { assertEquals(61, result.lastUpdate.wind.windDirection.value) },
         { assertEquals("º", result.lastUpdate.wind.windDirection.unit) },
-        { assertEquals(Instant.fromEpochSeconds(1763952167), result.lastUpdate.wind.windDirection.timestamp) },
+        { assertEquals(Instant.fromEpochSeconds(1763958999), result.lastUpdate.wind.windDirection.timestamp) },
       )
     }
 

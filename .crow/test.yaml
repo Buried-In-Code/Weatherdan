@@ -9,6 +9,11 @@ when:
 
 steps:
   - name: Gradle Junit
-    image: eclipse-temurin:21
+    image: "eclipse-temurin:21"
+    environment:
+      ECOWITT__APPLICATION_KEY:
+        from_secret: application-key
+      ECOWITT__API_KEY:
+        from_secret: api-key
     commands:
       - ./gradlew clean test

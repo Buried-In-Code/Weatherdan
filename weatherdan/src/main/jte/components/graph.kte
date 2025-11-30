@@ -1,0 +1,9 @@
+@param id: String
+@param label: String
+
+<div class="box has-text-centered has-background-text-soft">
+  <h3 class="title is-3 has-text-text-bold">${ label }</h3>
+  <div class="chart-container">
+    <canvas height="500" id="${ id }"></canvas>
+  </div>
+</div>

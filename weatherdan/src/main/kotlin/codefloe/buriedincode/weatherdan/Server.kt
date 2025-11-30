@@ -3,6 +3,8 @@ package codefloe.buriedincode.weatherdan
 import codefloe.buriedincode.weatherdan.Utils.log
 import codefloe.buriedincode.weatherdan.Utils.settings
 import codefloe.buriedincode.weatherdan.Utils.toHumanReadable
+import codefloe.buriedincode.weatherdan.controllers.RainfallController
+import codefloe.buriedincode.weatherdan.controllers.SolarController
 import gg.jte.ContentType as JteType
 import gg.jte.TemplateEngine
 import gg.jte.resolve.DirectoryCodeResolver
@@ -15,7 +17,9 @@ import io.javalin.http.ContentType
 import io.javalin.rendering.FileRenderer
 import io.javalin.rendering.template.JavalinJte
 import java.nio.file.Path
+import kotlin.collections.mapOf
 import kotlin.io.path.div
+import kotlin.time.ExperimentalTime
 
 object Server {
   @JvmStatic private val LOGGER = KotlinLogging.logger {}
@@ -29,6 +33,7 @@ object Server {
     }
   }
 
+  @OptIn(ExperimentalTime::class)
   private fun createJavalinApp(renderer: FileRenderer): Javalin {
     return Javalin.create {
       it.fileRenderer(fileRenderer = renderer)
@@ -48,7 +53,28 @@ object Server {
       it.router.caseInsensitiveRoutes = true
       it.router.ignoreTrailingSlashes = true
       it.router.treatMultipleSlashesAsSingleSlash = true
-      it.router.apiBuilder { path("/") { get { ctx -> ctx.render("templates/index.kte") } } }
+      it.router.apiBuilder {
+        path("/") {
+          get { ctx ->
+            ctx.render(
+              "templates/index.kte",
+              mapOf(
+                "graphs" to
+                  listOf(
+                    GraphUnit(id = "rainfall", label = "Rainfall", unit = settings.units.rainfall.display),
+                    GraphUnit(id = "solar", label = "Solar Irradiance", unit = settings.units.solarIrradiance.display),
+                  )
+              ),
+            )
+          }
+        }
+        path("rainfall") { get("script", RainfallController::generateGraphScript) }
+        path("solar") { get("script", SolarController::generateGraphScript) }
+        path("api") {
+          path("rainfall") { get("refresh", RainfallController::refreshData) }
+          path("solar") { get("refresh", SolarController::refreshData) }
+        }
+      }
       it.staticFiles.add {
         it.hostedPath = "/static"
         it.directory = "/static"

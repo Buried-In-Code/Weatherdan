@@ -1,0 +1,19 @@
+<nav class="navbar is-primary is-fixed-top" role="navigation" aria-label="main navigation">
+  <div class="navbar-brand">
+    <a class="navbar-item" href="/">
+      <img src="/static/img/logo.png" alt="Weatherdan Logo">
+      Weatherdan
+    </a>
+    <span class="navbar-burger burger has-text-primary-invert" data-target="navMenu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </span>
+  </div>
+  <div class="navbar-menu" id="navMenu">
+    <div class="navbar-start">
+    </div>
+    <div class="navbar-end">
+    </div>
+  </div>
+</nav>

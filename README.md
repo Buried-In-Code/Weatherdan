@@ -1,3 +1,5 @@
+<img src="./weatherdan/src/main/resources/static/img/logo.png" align="left" width="128" height="128" alt="Weatherdan Logo"/>
+
 # Weatherdan
 
 ![Java Version](https://img.shields.io/badge/Temurin-21-green?style=flat-square&logo=eclipse-adoptium)

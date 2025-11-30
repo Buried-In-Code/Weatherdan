@@ -3,6 +3,10 @@ package codefloe.buriedincode.ecowitt
 import codefloe.buriedincode.ecowitt.schemas.BasicDevice
 import codefloe.buriedincode.ecowitt.schemas.Device
 import codefloe.buriedincode.ecowitt.schemas.PagedResponse
+import codefloe.buriedincode.ecowitt.schemas.RainfallReading
+import codefloe.buriedincode.ecowitt.schemas.RainfallUnit
+import codefloe.buriedincode.ecowitt.schemas.SolarIrradianceUnit
+import codefloe.buriedincode.ecowitt.schemas.SolarReading
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.oshai.kotlinlogging.Level
 import java.io.IOException
@@ -57,7 +61,6 @@ class Ecowitt(
       LOGGER.log(level) { "GET: ${response.statusCode()} - $uri" }
       if (response.statusCode() == 200) {
         val content = JSON.parseToJsonElement(response.body()).jsonObject
-        LOGGER.error { content.toString() }
         val code = content["code"]?.jsonPrimitive?.longOrNull
         val message = content["msg"]?.jsonPrimitive?.content ?: content.toString()
         when (code) {
@@ -70,6 +73,7 @@ class Ecowitt(
         }
       }
 
+      LOGGER.error { response.body() }
       throw ServiceException(response.body())
     } catch (ioe: IOException) {
       throw ServiceException(cause = ioe)
@@ -94,14 +98,16 @@ class Ecowitt(
   }
 
   @Throws(ServiceException::class, AuthenticationException::class)
-  internal inline fun <reified T> getRequest(uri: URI): T {
-    this.cache?.select(url = uri.toString())?.let {
-      try {
-        LOGGER.debug { "Using cached response for $uri" }
-        return JSON.decodeFromString(it)
-      } catch (se: SerializationException) {
-        LOGGER.warn(se) { "Unable to deserialize cached response" }
-        this.cache.delete(url = uri.toString())
+  internal inline fun <reified T> getRequest(uri: URI, skipCache: Boolean = false): T {
+    if (!skipCache) {
+      this.cache?.select(url = uri.toString())?.let {
+        try {
+          LOGGER.debug { "Using cached response for $uri" }
+          return JSON.decodeFromString(it)
+        } catch (se: SerializationException) {
+          LOGGER.warn(se) { "Unable to deserialize cached response" }
+          this.cache.delete(url = uri.toString())
+        }
       }
     }
     val response = this.performGetRequest(uri = uri)
@@ -129,13 +135,39 @@ class Ecowitt(
   }
 
   @Throws(ServiceException::class, AuthenticationException::class)
-  internal inline fun <reified T> fetchItem(endpoint: String, params: Map<String, String?> = emptyMap()): T {
-    return getRequest<T>(uri = encodeURI(endpoint = endpoint, params = params))
+  internal inline fun <reified T> fetchItem(
+    endpoint: String,
+    params: Map<String, String?> = emptyMap(),
+    skipCache: Boolean = false,
+  ): T {
+    return getRequest<T>(uri = encodeURI(endpoint = endpoint, params = params), skipCache = skipCache)
   }
 
   fun listDevices(): List<BasicDevice> = fetchList(endpoint = "/device/list")
 
   fun getDevice(macAddress: String): Device = fetchItem(endpoint = "/device/info", params = mapOf("mac" to macAddress))
+
+  fun getLiveRainfall(macAddress: String, rainfallUnit: RainfallUnit = RainfallUnit.IN): RainfallReading =
+    fetchItem(
+      endpoint = "/device/real_time",
+      params = mapOf("mac" to macAddress, "call_back" to "rainfall.daily", "rainfall_unitid" to rainfallUnit.value),
+      skipCache = true,
+    )
+
+  fun getLiveSolar(
+    macAddress: String,
+    solarIrradianceUnit: SolarIrradianceUnit = SolarIrradianceUnit.WM2,
+  ): SolarReading =
+    fetchItem(
+      endpoint = "/device/real_time",
+      params =
+        mapOf(
+          "mac" to macAddress,
+          "call_back" to "solar_and_uvi.solar",
+          "solar_irradiance_unitid" to solarIrradianceUnit.value,
+        ),
+      skipCache = true,
+    )
 
   companion object {
     @JvmStatic private val LOGGER = KotlinLogging.logger {}

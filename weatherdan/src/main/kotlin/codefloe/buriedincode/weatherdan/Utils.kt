@@ -8,6 +8,9 @@ import io.github.oshai.kotlinlogging.Level
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.sql.Connection
+import java.time.format.DateTimeFormatter
+import java.time.temporal.TemporalAccessor
+import java.util.Locale
 import kotlin.io.path.createDirectories
 import kotlin.io.path.div
 import kotlin.io.path.exists
@@ -16,6 +19,8 @@ import kotlin.time.Duration.Companion.hours
 import kotlin.time.DurationUnit
 import kotlin.time.measureTimedValue
 import kotlin.time.toDuration
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toJavaLocalDate
 import org.jetbrains.exposed.v1.core.DatabaseConfig
 import org.jetbrains.exposed.v1.core.ExperimentalKeywordApi
 import org.jetbrains.exposed.v1.core.Slf4jSqlDebugLogger
@@ -57,7 +62,7 @@ object Utils {
 
   internal val settings: Settings by lazy { Settings.load() }
 
-  val ecowitt: Ecowitt by lazy {
+  internal val ECOWITT: Ecowitt by lazy {
     Ecowitt(
       applicationKey = settings.ecowitt.applicationKey,
       apiKey = settings.ecowitt.apiKey,
@@ -71,6 +76,24 @@ object Utils {
       System.setProperty("javax.net.ssl.trustStorePassword", it.password)
     }
     listOf(this.CACHE_ROOT, this.CONFIG_ROOT, this.DATA_ROOT).forEach { if (!it.exists()) it.createDirectories() }
+  }
+
+  private fun getDaySuffix(day: Int): String {
+    return when (day) {
+      1,
+      21,
+      31 -> "st"
+      2,
+      22,
+      32 -> "nd"
+      3,
+      23 -> "rd"
+      else -> "th"
+    }
+  }
+
+  private fun TemporalAccessor.formatToPattern(pattern: String): String {
+    return DateTimeFormatter.ofPattern(pattern, Locale.ENGLISH).format(this)
   }
 
   internal fun KLogger.log(level: Level, message: () -> Any?) {
@@ -90,7 +113,11 @@ object Utils {
 
   internal fun Float.toHumanReadable(): String = this.toLong().toHumanReadable()
 
-  fun <T> transaction(block: () -> T): T {
+  internal fun LocalDate.toHumanReadable(): String {
+    return this.toJavaLocalDate().formatToPattern("d'${getDaySuffix(this.day)}' MMM yyyy")
+  }
+
+  internal fun <T> transaction(block: () -> T): T {
     val result = measureTimedValue {
       transaction(transactionIsolation = Connection.TRANSACTION_SERIALIZABLE, db = this.DATABASE) {
         addLogger(Slf4jSqlDebugLogger)

@@ -3,8 +3,7 @@ package codefloe.buriedincode.weatherdan
 import codefloe.buriedincode.weatherdan.Utils.log
 import codefloe.buriedincode.weatherdan.Utils.settings
 import codefloe.buriedincode.weatherdan.Utils.toHumanReadable
-import codefloe.buriedincode.weatherdan.controllers.RainfallController
-import codefloe.buriedincode.weatherdan.controllers.SolarController
+import codefloe.buriedincode.weatherdan.controllers.WeatherController
 import gg.jte.ContentType as JteType
 import gg.jte.TemplateEngine
 import gg.jte.resolve.DirectoryCodeResolver
@@ -63,16 +62,16 @@ object Server {
                   listOf(
                     GraphUnit(id = "rainfall", label = "Rainfall", unit = settings.units.rainfall.display),
                     GraphUnit(id = "solar", label = "Solar Irradiance", unit = settings.units.solarIrradiance.display),
+                    GraphUnit(id = "uv-index", label = "UV Index", unit = ""),
+                    GraphUnit(id = "wind", label = "Wind Speed", unit = settings.units.windSpeed.display),
                   )
               ),
             )
           }
         }
-        path("rainfall") { get("script", RainfallController::generateGraphScript) }
-        path("solar") { get("script", SolarController::generateGraphScript) }
-        path("api") {
-          path("rainfall") { get("refresh", RainfallController::refreshData) }
-          path("solar") { get("refresh", SolarController::refreshData) }
+        path("graph") {
+          get("daily", WeatherController::loadDailyGraphScripts)
+          get("script", WeatherController::loadGraphScripts)
         }
       }
       it.staticFiles.add {

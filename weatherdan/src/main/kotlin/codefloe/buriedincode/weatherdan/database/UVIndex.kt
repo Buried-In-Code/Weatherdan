@@ -16,15 +16,15 @@ import org.jetbrains.exposed.v1.datetime.timestamp
 import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 
 @OptIn(ExperimentalTime::class)
-class Rainfall(id: EntityID<Long>) : LongEntity(id), Comparable<Rainfall> {
-  companion object : LongEntityClass<Rainfall>(RainfallTable), Weather<Rainfall, Double> {
-    val comparator = compareBy(Rainfall::timestamp)
+class UVIndex(id: EntityID<Long>) : LongEntity(id), Comparable<UVIndex> {
+  companion object : LongEntityClass<UVIndex>(UVIndexTable), Weather<UVIndex, Int> {
+    val comparator = compareBy(UVIndex::timestamp)
 
-    override fun findOrNull(timestamp: Instant): Rainfall? {
-      return find { RainfallTable.timestampCol eq timestamp }.firstOrNull()
+    override fun findOrNull(timestamp: Instant): UVIndex? {
+      return find { UVIndexTable.timestampCol eq timestamp }.firstOrNull()
     }
 
-    override fun findOrCreate(timestamp: Instant, amount: Double): Rainfall {
+    override fun findOrCreate(timestamp: Instant, amount: Int): UVIndex {
       return findOrNull(timestamp = timestamp)
         ?: new {
           this.timestamp = timestamp
@@ -32,7 +32,7 @@ class Rainfall(id: EntityID<Long>) : LongEntity(id), Comparable<Rainfall> {
         }
     }
 
-    override fun getGraphData(): Pair<List<String>, List<Double>> {
+    override fun getGraphData(): Pair<List<String>, List<Int>> {
       val data =
         all()
           .sorted()
@@ -42,16 +42,16 @@ class Rainfall(id: EntityID<Long>) : LongEntity(id), Comparable<Rainfall> {
     }
   }
 
-  var timestamp: Instant by RainfallTable.timestampCol
-  var amount: Double by RainfallTable.amountCol
+  var timestamp: Instant by UVIndexTable.timestampCol
+  var amount: Int by UVIndexTable.amountCol
 
-  override fun compareTo(other: Rainfall): Int = comparator.compare(this, other)
+  override fun compareTo(other: UVIndex): Int = comparator.compare(this, other)
 }
 
 @OptIn(ExperimentalTime::class)
-object RainfallTable : LongIdTable(name = "rainfall") {
+object UVIndexTable : LongIdTable(name = "uv_index") {
   val timestampCol: Column<Instant> = timestamp(name = "timestamp").uniqueIndex()
-  val amountCol: Column<Double> = double(name = "amount")
+  val amountCol: Column<Int> = integer(name = "amount")
 
   init {
     transaction { SchemaUtils.create(this) }

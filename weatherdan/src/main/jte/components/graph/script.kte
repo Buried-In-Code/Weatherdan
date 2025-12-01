@@ -1,0 +1,16 @@
+@import codefloe.buriedincode.weatherdan.GraphUnit
+@import gg.jte.support.ForSupport
+@param graphs: List<GraphUnit>
+
+@for(entry in graphs)
+  <script type="text/javascript">
+    ready(() => {
+      let chart = Chart.getChart("${ entry.id }");
+      chart.data.labels = $unsafe{ entry.labels.joinToString(",", "[", "]") { "\"$it\"" } };
+      @for(dataset in ForSupport.of(entry.datasets))
+        chart.data.datasets[${ dataset.index }].data = ${ dataset.get().joinToString(",", "[", "]") };
+      @endfor
+      chart.update();
+    });
+  </script>
+@endfor

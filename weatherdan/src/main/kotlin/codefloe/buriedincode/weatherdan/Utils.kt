@@ -66,7 +66,7 @@ object Utils {
     Ecowitt(
       applicationKey = settings.ecowitt.applicationKey,
       apiKey = settings.ecowitt.apiKey,
-      cache = SQLiteCache(path = this.CACHE_ROOT / "ecowitt.sqlite", expiry = 3.hours),
+      cache = SQLiteCache(path = this.CACHE_ROOT / "ecowitt.sqlite", expiry = 1.hours),
     )
   }
 

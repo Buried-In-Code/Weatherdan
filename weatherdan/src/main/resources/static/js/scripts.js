@@ -5,6 +5,16 @@ function ready(callback) {
     callback();
 }
 
+function getBulmaColour(name) {
+  const tempElement = document.createElement("div");
+  tempElement.className = `has-background-${name}`;
+  document.body.appendChild(tempElement);
+  const computedStyle = getComputedStyle(tempElement);
+  const colour = computedStyle.backgroundColor;
+  document.body.removeChild(tempElement);
+  return colour;
+}
+
 function createChart(ctx, unit) {
   new Chart(ctx, {
     type: "line",
@@ -21,7 +31,15 @@ function createChart(ctx, unit) {
       },
       plugins: {
         legend: {
-          display: false
+          display: false,
+          labels: {
+            color: getBulmaColour("text")
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => `${ctx.formattedValue} ${unit}`
+          }
         }
       },
       responsive: true,
@@ -30,17 +48,31 @@ function createChart(ctx, unit) {
         x: {
           title: {
             display: true,
-            text: "Timestamp"
+            text: "Timestamp",
+            color: getBulmaColour("text")
           },
-          position: "bottom"
+          position: "bottom",
+          ticks: {
+            color: getBulmaColour("text")
+          },
+          grid: {
+            color: getBulmaColour("text-50")
+          }
         },
         y: {
           title: {
             display: true,
-            text: unit
+            text: unit,
+            color: getBulmaColour("text")
           },
           position: "left",
-          beginAtZero: false
+          beginAtZero: false,
+          ticks: {
+            color: getBulmaColour("text")
+          },
+          grid: {
+            color: getBulmaColour("text-50")
+          }
         }
       }
     }

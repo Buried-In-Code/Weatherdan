@@ -16,15 +16,15 @@ import org.jetbrains.exposed.v1.datetime.timestamp
 import org.jetbrains.exposed.v1.jdbc.SchemaUtils
 
 @OptIn(ExperimentalTime::class)
-class Rainfall(id: EntityID<Long>) : LongEntity(id), Comparable<Rainfall> {
-  companion object : LongEntityClass<Rainfall>(RainfallTable), Weather<Rainfall, Double> {
-    val comparator = compareBy(Rainfall::timestamp)
+class Wind(id: EntityID<Long>) : LongEntity(id), Comparable<Wind> {
+  companion object : LongEntityClass<Wind>(WindTable), Weather<Wind, Double> {
+    val comparator = compareBy(Wind::timestamp)
 
-    override fun findOrNull(timestamp: Instant): Rainfall? {
-      return find { RainfallTable.timestampCol eq timestamp }.firstOrNull()
+    override fun findOrNull(timestamp: Instant): Wind? {
+      return find { WindTable.timestampCol eq timestamp }.firstOrNull()
     }
 
-    override fun findOrCreate(timestamp: Instant, amount: Double): Rainfall {
+    override fun findOrCreate(timestamp: Instant, amount: Double): Wind {
       return findOrNull(timestamp = timestamp)
         ?: new {
           this.timestamp = timestamp
@@ -42,14 +42,14 @@ class Rainfall(id: EntityID<Long>) : LongEntity(id), Comparable<Rainfall> {
     }
   }
 
-  var timestamp: Instant by RainfallTable.timestampCol
-  var amount: Double by RainfallTable.amountCol
+  var timestamp: Instant by WindTable.timestampCol
+  var amount: Double by WindTable.amountCol
 
-  override fun compareTo(other: Rainfall): Int = comparator.compare(this, other)
+  override fun compareTo(other: Wind): Int = comparator.compare(this, other)
 }
 
 @OptIn(ExperimentalTime::class)
-object RainfallTable : LongIdTable(name = "rainfall") {
+object WindTable : LongIdTable(name = "wind") {
   val timestampCol: Column<Instant> = timestamp(name = "timestamp").uniqueIndex()
   val amountCol: Column<Double> = double(name = "amount")
 

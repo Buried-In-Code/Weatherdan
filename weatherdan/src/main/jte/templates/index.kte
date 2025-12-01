@@ -13,17 +13,17 @@
   <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.7/dist/htmx.min.js"></script>
   <script src="https://unpkg.com/htmx-ext-loading-states@2.0.1/loading-states.js"></script>
 </head>
-<body class="has-navbar-fixed-top">
+<body class="has-navbar-fixed-top" hx-ext="loading-states">
   @template.components.navbar()
   <main class="section">
     <header class="block has-text-centered">
       <h1 class="title is-1">Weatherdan</h1>
     </header>
     <div class="container">
-      <div class="grid is-col-min-25 is-gap-2">
+      <div class="grid is-col-min-18 is-gap-2">
         @for(entry in graphs)
-          <div class="cell">
-            @template.components.graph(id = entry.id, label = entry.label)
+          <div class="cell" id="loading">
+            @template.components.graph(id = entry.id, label = entry.label!!)
           </div>
         @endfor
       </div>
@@ -33,15 +33,15 @@
   <script src="/static/js/scripts.js" type="text/javascript"></script>
   <script src="/static/js/bulma-theme.js" type="text/javascript"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4" type="text/javascript"></script>
-  @for(entry in graphs)
-    <div hx-get="/${ entry.id }/script" hx-trigger="load, every 180m" hx-swap="innerHTML">
+  <div hx-get="/graph/daily" hx-trigger="load, every 60m" hx-swap="innerHTML" data-loading-class="skeleton-block" data-loading-target="#loading">
+    @for(entry in graphs)
       <script type="text/javascript">
         ready(() => {
           let ctx = document.getElementById("${ entry.id }");
           createChart(ctx, "${ entry.unit }");
         });
       </script>
-    </div>
-  @endfor
+    @endfor
+  </div>
 </body>
 </html>

@@ -5,3 +5,5 @@ open class ServiceException(message: String? = null, cause: Throwable? = null) :
 class AuthenticationException(message: String? = null, cause: Throwable? = null) : ServiceException(message, cause)
 
 class CacheException(message: String? = null, cause: Throwable? = null) : ServiceException(message, cause)
+
+class RateLimitException(message: String? = null, cause: Throwable? = null) : ServiceException(message, cause)

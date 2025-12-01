@@ -1,12 +1,16 @@
 package codefloe.buriedincode.ecowitt
 
 import codefloe.buriedincode.ecowitt.schemas.BasicDevice
+import codefloe.buriedincode.ecowitt.schemas.CapacityUnit
 import codefloe.buriedincode.ecowitt.schemas.Device
+import codefloe.buriedincode.ecowitt.schemas.HistoryReading
+import codefloe.buriedincode.ecowitt.schemas.LiveReading
 import codefloe.buriedincode.ecowitt.schemas.PagedResponse
-import codefloe.buriedincode.ecowitt.schemas.RainfallReading
+import codefloe.buriedincode.ecowitt.schemas.PressureUnit
 import codefloe.buriedincode.ecowitt.schemas.RainfallUnit
 import codefloe.buriedincode.ecowitt.schemas.SolarIrradianceUnit
-import codefloe.buriedincode.ecowitt.schemas.SolarReading
+import codefloe.buriedincode.ecowitt.schemas.TempUnit
+import codefloe.buriedincode.ecowitt.schemas.WindSpeedUnit
 import io.github.oshai.kotlinlogging.KotlinLogging
 import io.github.oshai.kotlinlogging.Level
 import java.io.IOException
@@ -17,9 +21,13 @@ import java.net.http.HttpConnectTimeoutException
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
 import java.nio.charset.StandardCharsets
+import kotlin.time.Clock
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 import kotlin.time.toJavaDuration
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
@@ -34,56 +42,68 @@ class Ecowitt(
   private val apiKey: String,
   private val cache: SQLiteCache? = null,
   timeout: Duration = 30.seconds,
+  private val maxRetries: Int = 5,
 ) {
   private val client: HttpClient =
     HttpClient.newBuilder().followRedirects(HttpClient.Redirect.ALWAYS).connectTimeout(timeout.toJavaDuration()).build()
 
   @OptIn(ExperimentalTime::class)
-  @Throws(ServiceException::class, AuthenticationException::class)
+  @Throws(ServiceException::class, AuthenticationException::class, RateLimitException::class)
   private fun performGetRequest(uri: URI): String {
-    try {
-      val request =
-        HttpRequest.newBuilder()
-          .uri(uri)
-          .setHeader("Accept", "application/json")
-          .setHeader("User-Agent", "Weatherdan/0.8.0 ($OS_AGENT; $LANGUAGE_AGENT)")
-          .GET()
-          .build()
-      val response = this.client.send(request, HttpResponse.BodyHandlers.ofString())
-      val level =
-        when (response.statusCode()) {
-          in 100 until 200 -> Level.WARN
-          in 200 until 300 -> Level.INFO
-          in 300 until 400 -> Level.WARN
-          in 400 until 500 -> Level.ERROR
-          else -> Level.ERROR
+    var attempt = 0
+    while (attempt < this.maxRetries) {
+      try {
+        val request =
+          HttpRequest.newBuilder()
+            .uri(uri)
+            .setHeader("Accept", "application/json")
+            .setHeader("User-Agent", "Weatherdan/0.8.0 ($OS_AGENT; $LANGUAGE_AGENT)")
+            .GET()
+            .build()
+        val response = this.client.send(request, HttpResponse.BodyHandlers.ofString())
+        val level =
+          when (response.statusCode()) {
+            in 100 until 200 -> Level.WARN
+            in 200 until 300 -> Level.INFO
+            in 300 until 400 -> Level.WARN
+            in 400 until 500 -> Level.ERROR
+            else -> Level.ERROR
+          }
+        LOGGER.log(level) { "GET: ${response.statusCode()} - $uri" }
+        if (response.statusCode() == 200) {
+          val content = JSON.parseToJsonElement(response.body()).jsonObject
+          val code = content["code"]?.jsonPrimitive?.longOrNull
+          val message = content["msg"]?.jsonPrimitive?.content ?: content.toString()
+          when (code) {
+            0L -> return content["data"]?.jsonObject?.toString() ?: throw ServiceException(message)
+            40010L,
+            40011L,
+            40017L,
+            40018L -> throw AuthenticationException(message)
+            -1L -> {
+              val backoffDelay = 10.seconds * (attempt + 1)
+              LOGGER.warn { "Received 429 Too Many Requests. Retrying in ${backoffDelay}..." }
+              Thread.sleep(backoffDelay.inWholeMilliseconds)
+              attempt++
+              continue
+            }
+            else -> throw ServiceException("$code | $message")
+          }
         }
-      LOGGER.log(level) { "GET: ${response.statusCode()} - $uri" }
-      if (response.statusCode() == 200) {
-        val content = JSON.parseToJsonElement(response.body()).jsonObject
-        val code = content["code"]?.jsonPrimitive?.longOrNull
-        val message = content["msg"]?.jsonPrimitive?.content ?: content.toString()
-        when (code) {
-          0L -> return content["data"]?.jsonObject?.toString() ?: throw ServiceException(message)
-          40010L,
-          40011L,
-          40017L,
-          40018L -> throw AuthenticationException(message)
-          else -> throw ServiceException("$code | $message")
-        }
-      }
 
-      LOGGER.error { response.body() }
-      throw ServiceException(response.body())
-    } catch (ioe: IOException) {
-      throw ServiceException(cause = ioe)
-    } catch (hcte: HttpConnectTimeoutException) {
-      throw ServiceException(cause = hcte)
-    } catch (ie: InterruptedException) {
-      throw ServiceException(cause = ie)
-    } catch (se: SerializationException) {
-      throw ServiceException(cause = se)
+        LOGGER.error { response.body() }
+        throw ServiceException(response.body())
+      } catch (ioe: IOException) {
+        throw ServiceException(cause = ioe)
+      } catch (hcte: HttpConnectTimeoutException) {
+        throw ServiceException(cause = hcte)
+      } catch (ie: InterruptedException) {
+        throw ServiceException(cause = ie)
+      } catch (se: SerializationException) {
+        throw ServiceException(cause = se)
+      }
     }
+    throw RateLimitException("Max retries reached for $uri")
   }
 
   internal fun encodeURI(endpoint: String, params: Map<String, String?> = emptyMap()): URI {
@@ -97,17 +117,15 @@ class Ecowitt(
     return URI.create("$BASE_API$endpoint${if (encodedParams.isEmpty()) "" else "?$encodedParams"}")
   }
 
-  @Throws(ServiceException::class, AuthenticationException::class)
-  internal inline fun <reified T> getRequest(uri: URI, skipCache: Boolean = false): T {
-    if (!skipCache) {
-      this.cache?.select(url = uri.toString())?.let {
-        try {
-          LOGGER.debug { "Using cached response for $uri" }
-          return JSON.decodeFromString(it)
-        } catch (se: SerializationException) {
-          LOGGER.warn(se) { "Unable to deserialize cached response" }
-          this.cache.delete(url = uri.toString())
-        }
+  @Throws(ServiceException::class, AuthenticationException::class, RateLimitException::class)
+  internal inline fun <reified T> getRequest(uri: URI): T {
+    this.cache?.select(url = uri.toString())?.let {
+      try {
+        LOGGER.debug { "Using cached response for $uri" }
+        return JSON.decodeFromString(it)
+      } catch (se: SerializationException) {
+        LOGGER.warn(se) { "Unable to deserialize cached response" }
+        this.cache.delete(url = uri.toString())
       }
     }
     val response = this.performGetRequest(uri = uri)
@@ -119,7 +137,7 @@ class Ecowitt(
     }
   }
 
-  @Throws(ServiceException::class, AuthenticationException::class)
+  @Throws(ServiceException::class, AuthenticationException::class, RateLimitException::class)
   internal inline fun <reified T> fetchList(endpoint: String, params: Map<String, String?> = emptyMap()): List<T> {
     val results = mutableListOf<T>()
     var page = params.getOrDefault("page", "1")?.toInt() ?: 1
@@ -134,40 +152,101 @@ class Ecowitt(
     return results
   }
 
-  @Throws(ServiceException::class, AuthenticationException::class)
-  internal inline fun <reified T> fetchItem(
-    endpoint: String,
-    params: Map<String, String?> = emptyMap(),
-    skipCache: Boolean = false,
-  ): T {
-    return getRequest<T>(uri = encodeURI(endpoint = endpoint, params = params), skipCache = skipCache)
+  @Throws(ServiceException::class, AuthenticationException::class, RateLimitException::class)
+  internal inline fun <reified T> fetchItem(endpoint: String, params: Map<String, String?> = emptyMap()): T {
+    return getRequest<T>(uri = encodeURI(endpoint = endpoint, params = params))
   }
 
+  @Throws(ServiceException::class, AuthenticationException::class, RateLimitException::class)
   fun listDevices(): List<BasicDevice> = fetchList(endpoint = "/device/list")
 
+  @Throws(ServiceException::class, AuthenticationException::class, RateLimitException::class)
   fun getDevice(macAddress: String): Device = fetchItem(endpoint = "/device/info", params = mapOf("mac" to macAddress))
 
-  fun getLiveRainfall(macAddress: String, rainfallUnit: RainfallUnit = RainfallUnit.IN): RainfallReading =
-    fetchItem(
-      endpoint = "/device/real_time",
-      params = mapOf("mac" to macAddress, "call_back" to "rainfall.daily", "rainfall_unitid" to rainfallUnit.value),
-      skipCache = true,
-    )
-
-  fun getLiveSolar(
+  @Throws(ServiceException::class, AuthenticationException::class, RateLimitException::class)
+  fun getLiveReadings(
     macAddress: String,
+    tempUnit: TempUnit = TempUnit.F,
+    pressureUnit: PressureUnit = PressureUnit.INHG,
+    windSpeedUnit: WindSpeedUnit = WindSpeedUnit.MPH,
+    rainfallUnit: RainfallUnit = RainfallUnit.IN,
     solarIrradianceUnit: SolarIrradianceUnit = SolarIrradianceUnit.WM2,
-  ): SolarReading =
-    fetchItem(
+    capacityUnit: CapacityUnit = CapacityUnit.L,
+  ): LiveReading {
+    val callbacks = listOf("rainfall.daily", "solar_and_uvi.solar", "solar_and_uvi.uvi", "wind.wind_speed")
+    return fetchItem(
       endpoint = "/device/real_time",
       params =
         mapOf(
           "mac" to macAddress,
-          "call_back" to "solar_and_uvi.solar",
+          "call_back" to callbacks.joinToString(","),
+          "temp_unitid" to tempUnit.value,
+          "pressure_unitid" to pressureUnit.value,
+          "wind_speed_unitid" to windSpeedUnit.value,
+          "rainfall_unitid" to rainfallUnit.value,
           "solar_irradiance_unitid" to solarIrradianceUnit.value,
+          "capacity_unitid" to capacityUnit.value,
         ),
-      skipCache = true,
     )
+  }
+
+  @OptIn(ExperimentalTime::class)
+  private fun Instant.roundUpHour(): Instant {
+    val oneHour = 1.hours.inWholeMilliseconds
+    val current = this.toEpochMilliseconds()
+    val rounded = ((current + oneHour - 1) / oneHour) * oneHour
+    return Instant.fromEpochMilliseconds(rounded)
+  }
+
+  @OptIn(ExperimentalTime::class)
+  @Throws(ServiceException::class, AuthenticationException::class, RateLimitException::class)
+  fun getHistoryReadings(
+    macAddress: String,
+    start: Instant,
+    end: Instant = Clock.System.now().roundUpHour(),
+    tempUnit: TempUnit = TempUnit.F,
+    pressureUnit: PressureUnit = PressureUnit.INHG,
+    windSpeedUnit: WindSpeedUnit = WindSpeedUnit.MPH,
+    rainfallUnit: RainfallUnit = RainfallUnit.IN,
+    solarIrradianceUnit: SolarIrradianceUnit = SolarIrradianceUnit.WM2,
+    capacityUnit: CapacityUnit = CapacityUnit.L,
+  ): List<HistoryReading> {
+    val callbacks = listOf("rainfall.daily", "solar_and_uvi.solar", "solar_and_uvi.uvi", "wind.wind_speed")
+    val maxDuration = 30.days
+    val allReadings = mutableListOf<HistoryReading>()
+    var currentStart = start
+    while (currentStart < end) {
+      val currentEnd = minOf(currentStart + maxDuration, end)
+      LOGGER.info { "Fetching history from $currentStart to $currentEnd" }
+      try {
+        val readings =
+          fetchItem<HistoryReading>(
+            endpoint = "/device/history",
+            params =
+              mapOf(
+                "mac" to macAddress,
+                "start_date" to currentStart.toString(),
+                "end_date" to currentEnd.toString(),
+                "cycle_type" to "30min",
+                "call_back" to callbacks.joinToString(","),
+                "temp_unitid" to tempUnit.value,
+                "pressure_unitid" to pressureUnit.value,
+                "wind_speed_unitid" to windSpeedUnit.value,
+                "rainfall_unitid" to rainfallUnit.value,
+                "solar_irradiance_unitid" to solarIrradianceUnit.value,
+                "capacity_unitid" to capacityUnit.value,
+              ),
+          )
+        allReadings.add(readings)
+      } catch (iae: IllegalArgumentException) {
+        if (iae.message?.contains("JsonArray is not a JsonObject", ignoreCase = true) != true) {
+          throw iae
+        }
+      }
+      currentStart = currentEnd
+    }
+    return allReadings
+  }
 
   companion object {
     @JvmStatic private val LOGGER = KotlinLogging.logger {}

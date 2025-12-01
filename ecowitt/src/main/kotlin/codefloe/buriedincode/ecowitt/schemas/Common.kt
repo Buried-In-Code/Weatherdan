@@ -21,3 +21,10 @@ data class Measurement<T>(private val time: Long, val unit: String, val value: T
   val timestamp: Instant
     get() = Instant.fromEpochSeconds(time)
 }
+
+@OptIn(ExperimentalTime::class)
+@Serializable
+data class MeasurementList<T>(val unit: String, private val list: Map<Long, T>) {
+  val values: Map<Instant, T>
+    get() = list.mapKeys { Instant.fromEpochSeconds(it.key) }
+}

@@ -52,7 +52,7 @@ object Server {
       it.router.caseInsensitiveRoutes = true
       it.router.ignoreTrailingSlashes = true
       it.router.treatMultipleSlashesAsSingleSlash = true
-      it.router.apiBuilder {
+      it.routes.apiBuilder {
         path("/") {
           get { ctx ->
             ctx.render(

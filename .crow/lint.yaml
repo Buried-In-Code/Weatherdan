@@ -5,7 +5,7 @@ when:
     branch: main
 
 steps:
-  - name: Gradle spotless
-    image: eclipse-temurin:21
+  - name: Spotless
+    image: "docker.io/gradle:9.2.1-jdk21"
     commands:
-      - ./gradlew clean spotlessCheck
+      - gradle spotlessCheck

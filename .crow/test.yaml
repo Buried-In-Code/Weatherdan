@@ -8,12 +8,12 @@ when:
     branch: main
 
 steps:
-  - name: Gradle Junit
-    image: "eclipse-temurin:21"
+  - name: JUnit
+    image: "docker.io/gradle:9.2.1-jdk21"
     environment:
       ECOWITT__APPLICATION_KEY:
         from_secret: application-key
       ECOWITT__API_KEY:
         from_secret: api-key
     commands:
-      - ./gradlew clean test
+      - gradle test

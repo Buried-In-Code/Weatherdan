@@ -9,7 +9,7 @@ when:
 
 steps:
   - name: JUnit
-    image: "docker.io/gradle:9.3.0-jdk21"
+    image: "docker.io/gradle:9.3.1-jdk21"
     environment:
       ECOWITT__APPLICATION_KEY:
         from_secret: application-key

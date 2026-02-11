@@ -11,9 +11,9 @@ steps:
       title: v${CI_COMMIT_TAG}
 
   publish-docker:
-    image: "codeberg.org/crow-plugins/docker-buildx:1.1"
+    image: "codefloe.com/crow-plugins/docker-buildx:2.1"
     settings:
-      repo: codefloe.com/BuriedInCode/Weatherdan
+      repo: codefloe.com/buriedincode/weatherdan
       registry: codefloe.com
       platforms: linux/amd64,linux/arm64
       auto_tag: true

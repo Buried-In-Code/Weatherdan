@@ -55,9 +55,9 @@ subprojects {
     runtimeOnly(rootProject.libs.sqlite.jdbc)
   }
 
-  kotlin { jvmToolchain(21) }
+  kotlin { jvmToolchain(17) }
 
-  java { toolchain { languageVersion = JavaLanguageVersion.of(21) } }
+  java { toolchain { languageVersion = JavaLanguageVersion.of(17) } }
 }
 
 fun isNonStable(version: String): Boolean {

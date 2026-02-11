@@ -21,7 +21,7 @@ application {
 
 jte {
   precompile()
-  kotlinCompileArgs = arrayOf("-jvm-target", "21")
+  kotlinCompileArgs = arrayOf("-jvm-target", "17")
 }
 
 tasks.clean { doLast { delete("$projectDir/jte-classes") } }

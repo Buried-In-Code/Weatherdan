@@ -1,10 +1,10 @@
-FROM --platform=$BUILDPLATFORM gradle:9.3.1-jdk21 AS builder
+FROM --platform=$BUILDPLATFORM gradle:9.3.1-jdk17 AS builder
 
 WORKDIR /data
 COPY . /data/
-RUN gradle build
+RUN gradle build -x test
 
-FROM --platform=$TARGETPLATFORM eclipse-temurin:21.0.9_10-jre
+FROM --platform=$TARGETPLATFORM eclipse-temurin:17-jre
 
 WORKDIR /app
 COPY --from=builder /data/app/build/libs/app-0.8.0-all.jar /app/Weatherdan.jar

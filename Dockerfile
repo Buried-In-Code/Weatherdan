@@ -7,7 +7,7 @@ RUN gradle build -x test
 FROM --platform=$TARGETPLATFORM eclipse-temurin:17-jre
 
 WORKDIR /app
-COPY --from=builder /data/build/libs/Weatherdan-0.8.0-all.jar /app/Weatherdan.jar
+COPY --from=builder /data/weatherdan/build/libs/weatherdan-0.8.0-all.jar /app/Weatherdan.jar
 ENV XDG_CACHE_HOME=/app/cache \
     XDG_CONFIG_HOME=/app/config \
     XDG_DATA_HOME=/app/data \

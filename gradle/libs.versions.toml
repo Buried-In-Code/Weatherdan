@@ -4,7 +4,7 @@ jackson = "2.21.0"
 javalin = "7.0.0-beta.2"
 jte = "3.2.3"
 junit = "6.0.2"
-kotlin = "2.2.21"
+kotlin = "2.3.10"
 log4j2 = "2.25.3"
 
 [plugins]

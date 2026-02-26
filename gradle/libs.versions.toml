@@ -1,6 +1,6 @@
 [versions]
 exposed = "1.0.0"
-jackson = "2.21.0"
+jackson = "2.21.1"
 javalin = "7.0.0"
 jte = "3.2.3"
 junit = "6.0.3"

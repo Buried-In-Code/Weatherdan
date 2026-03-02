@@ -1,5 +1,5 @@
 [versions]
-exposed = "1.1.0"
+exposed = "1.1.1"
 jackson = "2.21.1"
 javalin = "7.0.0"
 jte = "3.2.3"

@@ -1,7 +1,7 @@
 [versions]
 exposed = "1.1.1"
 jackson = "2.21.1"
-javalin = "7.0.0"
+javalin = "7.0.1"
 jte = "3.2.3"
 junit = "6.0.3"
 kotlin = "2.3.10"

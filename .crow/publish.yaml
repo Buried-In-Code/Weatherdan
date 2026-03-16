@@ -3,7 +3,7 @@ when:
 
 steps:
   publish-release:
-    image: "woodpeckerci/plugin-release:0.2"
+    image: "woodpeckerci/plugin-release:0.3"
     settings:
       api-key:
         from_secret: release-token

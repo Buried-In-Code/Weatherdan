@@ -6,6 +6,6 @@ when:
 
 steps:
   - name: Spotless
-    image: "docker.io/gradle:9.4.0-jdk21"
+    image: "docker.io/gradle:9.4.1-jdk21"
     commands:
       - gradle spotlessCheck

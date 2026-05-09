@@ -36,7 +36,7 @@ kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime",
 kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version = "1.11.0" }
 log4j2-jcl = { module = "org.apache.logging.log4j:log4j-jcl", version.ref = "log4j2" }
 log4j2-slf4j2 = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "log4j2" }
-sqlite-jdbc = { group = "org.xerial", name = "sqlite-jdbc", version = "3.53.0.0" }
+sqlite-jdbc = { group = "org.xerial", name = "sqlite-jdbc", version = "3.53.1.0" }
 
 [bundles]
 exposed = ["exposed-core", "exposed-dao", "exposed-jdbc", "exposed-kotlin-datetime"]

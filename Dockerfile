@@ -4,7 +4,7 @@ WORKDIR /data
 COPY . /data/
 RUN gradle build -x test
 
-FROM --platform=$TARGETPLATFORM eclipse-temurin:17.0.19_10-jre
+FROM --platform=$TARGETPLATFORM eclipse-temurin:25.0.2_10-jre
 
 WORKDIR /app
 COPY --from=builder /data/weatherdan/build/libs/weatherdan-0.8.0-all.jar /app/Weatherdan.jar

@@ -31,7 +31,7 @@ jte-core = { group = "gg.jte", name = "jte", version.ref = "jte" }
 jte-kotlin = { group = "gg.jte", name = "jte-kotlin", version.ref = "jte" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
 junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher", version.ref = "junit" }
-kotlin-logging = { group = "io.github.oshai", name = "kotlin-logging", version = "8.0.03" }
+kotlin-logging = { group = "io.github.oshai", name = "kotlin-logging", version = "8.0.4" }
 kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version = "0.7.1-0.6.x-compat" }
 kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version = "1.11.0" }
 log4j2-jcl = { module = "org.apache.logging.log4j:log4j-jcl", version.ref = "log4j2" }

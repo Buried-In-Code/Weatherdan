@@ -11,7 +11,7 @@ log4j2 = "2.26.0"
 jte = { id = "gg.jte.gradle", version.ref = "jte" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-shadow = { id = "com.gradleup.shadow", version = "9.4.1" }
+shadow = { id = "com.gradleup.shadow", version = "9.4.2" }
 spotless = { id = "com.diffplug.spotless", version = "8.6.0" }
 versions = { id = "com.github.ben-manes.versions", version = "0.54.0" }
 

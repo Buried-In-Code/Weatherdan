@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM gradle:9.5.1-jdk17 AS builder
+FROM --platform=$BUILDPLATFORM gradle:9.6.1-jdk17 AS builder
 
 WORKDIR /data
 COPY . /data/

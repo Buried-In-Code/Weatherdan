@@ -12,7 +12,7 @@ jte = { id = "gg.jte.gradle", version.ref = "jte" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 shadow = { id = "com.gradleup.shadow", version = "9.6.1" }
-spotless = { id = "com.diffplug.spotless", version = "8.8.0" }
+spotless = { id = "com.diffplug.spotless", version = "8.9.0" }
 versions = { id = "com.github.ben-manes.versions", version = "0.56.0" }
 
 [libraries]

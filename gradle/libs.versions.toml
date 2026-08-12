@@ -13,7 +13,7 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 shadow = { id = "com.gradleup.shadow", version = "9.6.1" }
 spotless = { id = "com.diffplug.spotless", version = "8.9.0" }
-versions = { id = "com.github.ben-manes.versions", version = "0.60.0" }
+versions = { id = "com.github.ben-manes.versions", version = "0.61.0" }
 
 [libraries]
 exposed-core = { group = "org.jetbrains.exposed", name = "exposed-core", version.ref = "exposed" }

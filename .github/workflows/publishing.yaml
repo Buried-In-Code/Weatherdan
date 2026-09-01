@@ -34,7 +34,7 @@ jobs:
           tags: |
             type=pep440,pattern={{version}}
       - name: Build and Push
-        uses: docker/build-push-action@v5.1.0
+        uses: docker/build-push-action@v7.3.0
         with:
           context: .
           push: true

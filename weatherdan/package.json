@@ -2,7 +2,7 @@
   "name": "weatherdan-sass",
   "private": true,
   "devDependencies": {
-    "sass": "^1.90.0",
+    "sass": "^1.108.2",
     "bulma": "^1.0.4"
   }
 }
